@@ -1,0 +1,1223 @@
+{
+  "1": [
+    {
+      "lineNumber": 1,
+      "surahNumber": 1,
+      "isBismillah": false
+    }
+  ],
+  "2": [
+    {
+      "lineNumber": 1,
+      "surahNumber": 2,
+      "isBismillah": false
+    },
+    {
+      "lineNumber": 2,
+      "surahNumber": 2,
+      "isBismillah": true
+    }
+  ],
+  "50": [
+    {
+      "lineNumber": 1,
+      "surahNumber": 3,
+      "isBismillah": false
+    },
+    {
+      "lineNumber": 2,
+      "surahNumber": 3,
+      "isBismillah": true
+    }
+  ],
+  "77": [
+    {
+      "lineNumber": 1,
+      "surahNumber": 4,
+      "isBismillah": true
+    }
+  ],
+  "106": [
+    {
+      "lineNumber": 6,
+      "surahNumber": 5,
+      "isBismillah": false
+    },
+    {
+      "lineNumber": 7,
+      "surahNumber": 5,
+      "isBismillah": true
+    }
+  ],
+  "128": [
+    {
+      "lineNumber": 1,
+      "surahNumber": 6,
+      "isBismillah": false
+    },
+    {
+      "lineNumber": 2,
+      "surahNumber": 6,
+      "isBismillah": true
+    }
+  ],
+  "151": [
+    {
+      "lineNumber": 1,
+      "surahNumber": 7,
+      "isBismillah": false
+    },
+    {
+      "lineNumber": 2,
+      "surahNumber": 7,
+      "isBismillah": true
+    }
+  ],
+  "177": [
+    {
+      "lineNumber": 1,
+      "surahNumber": 8,
+      "isBismillah": false
+    },
+    {
+      "lineNumber": 2,
+      "surahNumber": 8,
+      "isBismillah": true
+    }
+  ],
+  "187": [
+    {
+      "lineNumber": 1,
+      "surahNumber": 9,
+      "isBismillah": false
+    }
+  ],
+  "208": [
+    {
+      "lineNumber": 1,
+      "surahNumber": 10,
+      "isBismillah": true
+    }
+  ],
+  "221": [
+    {
+      "lineNumber": 7,
+      "surahNumber": 11,
+      "isBismillah": false
+    },
+    {
+      "lineNumber": 8,
+      "surahNumber": 11,
+      "isBismillah": true
+    }
+  ],
+  "235": [
+    {
+      "lineNumber": 9,
+      "surahNumber": 12,
+      "isBismillah": false
+    },
+    {
+      "lineNumber": 10,
+      "surahNumber": 12,
+      "isBismillah": true
+    }
+  ],
+  "249": [
+    {
+      "lineNumber": 1,
+      "surahNumber": 13,
+      "isBismillah": false
+    },
+    {
+      "lineNumber": 2,
+      "surahNumber": 13,
+      "isBismillah": true
+    }
+  ],
+  "255": [
+    {
+      "lineNumber": 3,
+      "surahNumber": 14,
+      "isBismillah": false
+    },
+    {
+      "lineNumber": 4,
+      "surahNumber": 14,
+      "isBismillah": true
+    }
+  ],
+  "262": [
+    {
+      "lineNumber": 1,
+      "surahNumber": 15,
+      "isBismillah": false
+    },
+    {
+      "lineNumber": 2,
+      "surahNumber": 15,
+      "isBismillah": true
+    }
+  ],
+  "267": [
+    {
+      "lineNumber": 7,
+      "surahNumber": 16,
+      "isBismillah": false
+    },
+    {
+      "lineNumber": 8,
+      "surahNumber": 16,
+      "isBismillah": true
+    }
+  ],
+  "282": [
+    {
+      "lineNumber": 1,
+      "surahNumber": 17,
+      "isBismillah": false
+    },
+    {
+      "lineNumber": 2,
+      "surahNumber": 17,
+      "isBismillah": true
+    }
+  ],
+  "293": [
+    {
+      "lineNumber": 10,
+      "surahNumber": 18,
+      "isBismillah": false
+    },
+    {
+      "lineNumber": 11,
+      "surahNumber": 18,
+      "isBismillah": true
+    }
+  ],
+  "305": [
+    {
+      "lineNumber": 1,
+      "surahNumber": 19,
+      "isBismillah": false
+    },
+    {
+      "lineNumber": 2,
+      "surahNumber": 19,
+      "isBismillah": true
+    }
+  ],
+  "312": [
+    {
+      "lineNumber": 5,
+      "surahNumber": 20,
+      "isBismillah": false
+    },
+    {
+      "lineNumber": 6,
+      "surahNumber": 20,
+      "isBismillah": true
+    }
+  ],
+  "322": [
+    {
+      "lineNumber": 1,
+      "surahNumber": 21,
+      "isBismillah": false
+    },
+    {
+      "lineNumber": 2,
+      "surahNumber": 21,
+      "isBismillah": true
+    }
+  ],
+  "332": [
+    {
+      "lineNumber": 1,
+      "surahNumber": 22,
+      "isBismillah": true
+    }
+  ],
+  "342": [
+    {
+      "lineNumber": 1,
+      "surahNumber": 23,
+      "isBismillah": true
+    }
+  ],
+  "350": [
+    {
+      "lineNumber": 1,
+      "surahNumber": 24,
+      "isBismillah": true
+    }
+  ],
+  "359": [
+    {
+      "lineNumber": 11,
+      "surahNumber": 25,
+      "isBismillah": false
+    },
+    {
+      "lineNumber": 12,
+      "surahNumber": 25,
+      "isBismillah": true
+    }
+  ],
+  "367": [
+    {
+      "lineNumber": 1,
+      "surahNumber": 26,
+      "isBismillah": true
+    }
+  ],
+  "377": [
+    {
+      "lineNumber": 1,
+      "surahNumber": 27,
+      "isBismillah": true
+    }
+  ],
+  "385": [
+    {
+      "lineNumber": 8,
+      "surahNumber": 28,
+      "isBismillah": false
+    },
+    {
+      "lineNumber": 9,
+      "surahNumber": 28,
+      "isBismillah": true
+    }
+  ],
+  "396": [
+    {
+      "lineNumber": 8,
+      "surahNumber": 29,
+      "isBismillah": false
+    },
+    {
+      "lineNumber": 9,
+      "surahNumber": 29,
+      "isBismillah": true
+    }
+  ],
+  "404": [
+    {
+      "lineNumber": 10,
+      "surahNumber": 30,
+      "isBismillah": false
+    },
+    {
+      "lineNumber": 11,
+      "surahNumber": 30,
+      "isBismillah": true
+    }
+  ],
+  "411": [
+    {
+      "lineNumber": 1,
+      "surahNumber": 31,
+      "isBismillah": false
+    },
+    {
+      "lineNumber": 2,
+      "surahNumber": 31,
+      "isBismillah": true
+    }
+  ],
+  "415": [
+    {
+      "lineNumber": 1,
+      "surahNumber": 32,
+      "isBismillah": true
+    }
+  ],
+  "418": [
+    {
+      "lineNumber": 1,
+      "surahNumber": 33,
+      "isBismillah": true
+    }
+  ],
+  "428": [
+    {
+      "lineNumber": 1,
+      "surahNumber": 34,
+      "isBismillah": false
+    },
+    {
+      "lineNumber": 2,
+      "surahNumber": 34,
+      "isBismillah": true
+    }
+  ],
+  "434": [
+    {
+      "lineNumber": 8,
+      "surahNumber": 35,
+      "isBismillah": false
+    },
+    {
+      "lineNumber": 9,
+      "surahNumber": 35,
+      "isBismillah": true
+    }
+  ],
+  "440": [
+    {
+      "lineNumber": 4,
+      "surahNumber": 36,
+      "isBismillah": false
+    },
+    {
+      "lineNumber": 5,
+      "surahNumber": 36,
+      "isBismillah": true
+    }
+  ],
+  "446": [
+    {
+      "lineNumber": 1,
+      "surahNumber": 37,
+      "isBismillah": true
+    }
+  ],
+  "453": [
+    {
+      "lineNumber": 1,
+      "surahNumber": 38,
+      "isBismillah": true
+    }
+  ],
+  "458": [
+    {
+      "lineNumber": 4,
+      "surahNumber": 39,
+      "isBismillah": false
+    },
+    {
+      "lineNumber": 5,
+      "surahNumber": 39,
+      "isBismillah": true
+    }
+  ],
+  "467": [
+    {
+      "lineNumber": 3,
+      "surahNumber": 40,
+      "isBismillah": false
+    },
+    {
+      "lineNumber": 4,
+      "surahNumber": 40,
+      "isBismillah": true
+    }
+  ],
+  "477": [
+    {
+      "lineNumber": 1,
+      "surahNumber": 41,
+      "isBismillah": false
+    },
+    {
+      "lineNumber": 2,
+      "surahNumber": 41,
+      "isBismillah": true
+    }
+  ],
+  "483": [
+    {
+      "lineNumber": 1,
+      "surahNumber": 42,
+      "isBismillah": false
+    },
+    {
+      "lineNumber": 2,
+      "surahNumber": 42,
+      "isBismillah": true
+    }
+  ],
+  "489": [
+    {
+      "lineNumber": 5,
+      "surahNumber": 43,
+      "isBismillah": false
+    },
+    {
+      "lineNumber": 6,
+      "surahNumber": 43,
+      "isBismillah": true
+    }
+  ],
+  "496": [
+    {
+      "lineNumber": 1,
+      "surahNumber": 44,
+      "isBismillah": false
+    },
+    {
+      "lineNumber": 2,
+      "surahNumber": 44,
+      "isBismillah": true
+    }
+  ],
+  "499": [
+    {
+      "lineNumber": 1,
+      "surahNumber": 45,
+      "isBismillah": true
+    }
+  ],
+  "502": [
+    {
+      "lineNumber": 7,
+      "surahNumber": 46,
+      "isBismillah": false
+    },
+    {
+      "lineNumber": 8,
+      "surahNumber": 46,
+      "isBismillah": true
+    }
+  ],
+  "507": [
+    {
+      "lineNumber": 1,
+      "surahNumber": 47,
+      "isBismillah": true
+    }
+  ],
+  "511": [
+    {
+      "lineNumber": 1,
+      "surahNumber": 48,
+      "isBismillah": false
+    },
+    {
+      "lineNumber": 2,
+      "surahNumber": 48,
+      "isBismillah": true
+    }
+  ],
+  "515": [
+    {
+      "lineNumber": 7,
+      "surahNumber": 49,
+      "isBismillah": false
+    },
+    {
+      "lineNumber": 8,
+      "surahNumber": 49,
+      "isBismillah": true
+    }
+  ],
+  "518": [
+    {
+      "lineNumber": 1,
+      "surahNumber": 50,
+      "isBismillah": false
+    },
+    {
+      "lineNumber": 2,
+      "surahNumber": 50,
+      "isBismillah": true
+    }
+  ],
+  "520": [
+    {
+      "lineNumber": 12,
+      "surahNumber": 51,
+      "isBismillah": false
+    },
+    {
+      "lineNumber": 13,
+      "surahNumber": 51,
+      "isBismillah": true
+    }
+  ],
+  "523": [
+    {
+      "lineNumber": 8,
+      "surahNumber": 52,
+      "isBismillah": false
+    },
+    {
+      "lineNumber": 9,
+      "surahNumber": 52,
+      "isBismillah": true
+    }
+  ],
+  "526": [
+    {
+      "lineNumber": 1,
+      "surahNumber": 53,
+      "isBismillah": true
+    }
+  ],
+  "528": [
+    {
+      "lineNumber": 9,
+      "surahNumber": 54,
+      "isBismillah": false
+    },
+    {
+      "lineNumber": 10,
+      "surahNumber": 54,
+      "isBismillah": true
+    }
+  ],
+  "531": [
+    {
+      "lineNumber": 5,
+      "surahNumber": 55,
+      "isBismillah": false
+    },
+    {
+      "lineNumber": 6,
+      "surahNumber": 55,
+      "isBismillah": true
+    }
+  ],
+  "534": [
+    {
+      "lineNumber": 7,
+      "surahNumber": 56,
+      "isBismillah": false
+    },
+    {
+      "lineNumber": 8,
+      "surahNumber": 56,
+      "isBismillah": true
+    }
+  ],
+  "537": [
+    {
+      "lineNumber": 11,
+      "surahNumber": 57,
+      "isBismillah": false
+    },
+    {
+      "lineNumber": 12,
+      "surahNumber": 57,
+      "isBismillah": true
+    }
+  ],
+  "542": [
+    {
+      "lineNumber": 1,
+      "surahNumber": 58,
+      "isBismillah": false
+    },
+    {
+      "lineNumber": 2,
+      "surahNumber": 58,
+      "isBismillah": true
+    }
+  ],
+  "545": [
+    {
+      "lineNumber": 7,
+      "surahNumber": 59,
+      "isBismillah": false
+    },
+    {
+      "lineNumber": 8,
+      "surahNumber": 59,
+      "isBismillah": true
+    }
+  ],
+  "549": [
+    {
+      "lineNumber": 1,
+      "surahNumber": 60,
+      "isBismillah": true
+    }
+  ],
+  "551": [
+    {
+      "lineNumber": 7,
+      "surahNumber": 61,
+      "isBismillah": false
+    },
+    {
+      "lineNumber": 8,
+      "surahNumber": 61,
+      "isBismillah": true
+    }
+  ],
+  "553": [
+    {
+      "lineNumber": 1,
+      "surahNumber": 62,
+      "isBismillah": false
+    },
+    {
+      "lineNumber": 2,
+      "surahNumber": 62,
+      "isBismillah": true
+    }
+  ],
+  "554": [
+    {
+      "lineNumber": 7,
+      "surahNumber": 63,
+      "isBismillah": false
+    },
+    {
+      "lineNumber": 8,
+      "surahNumber": 63,
+      "isBismillah": true
+    }
+  ],
+  "556": [
+    {
+      "lineNumber": 1,
+      "surahNumber": 64,
+      "isBismillah": true
+    }
+  ],
+  "558": [
+    {
+      "lineNumber": 1,
+      "surahNumber": 65,
+      "isBismillah": true
+    }
+  ],
+  "560": [
+    {
+      "lineNumber": 1,
+      "surahNumber": 66,
+      "isBismillah": false
+    },
+    {
+      "lineNumber": 2,
+      "surahNumber": 66,
+      "isBismillah": true
+    }
+  ],
+  "562": [
+    {
+      "lineNumber": 1,
+      "surahNumber": 67,
+      "isBismillah": false
+    },
+    {
+      "lineNumber": 2,
+      "surahNumber": 67,
+      "isBismillah": true
+    }
+  ],
+  "564": [
+    {
+      "lineNumber": 6,
+      "surahNumber": 68,
+      "isBismillah": false
+    },
+    {
+      "lineNumber": 7,
+      "surahNumber": 68,
+      "isBismillah": true
+    }
+  ],
+  "566": [
+    {
+      "lineNumber": 9,
+      "surahNumber": 69,
+      "isBismillah": false
+    },
+    {
+      "lineNumber": 10,
+      "surahNumber": 69,
+      "isBismillah": true
+    }
+  ],
+  "568": [
+    {
+      "lineNumber": 9,
+      "surahNumber": 70,
+      "isBismillah": false
+    },
+    {
+      "lineNumber": 10,
+      "surahNumber": 70,
+      "isBismillah": true
+    }
+  ],
+  "570": [
+    {
+      "lineNumber": 5,
+      "surahNumber": 71,
+      "isBismillah": false
+    },
+    {
+      "lineNumber": 6,
+      "surahNumber": 71,
+      "isBismillah": true
+    }
+  ],
+  "572": [
+    {
+      "lineNumber": 1,
+      "surahNumber": 72,
+      "isBismillah": false
+    },
+    {
+      "lineNumber": 2,
+      "surahNumber": 72,
+      "isBismillah": true
+    }
+  ],
+  "574": [
+    {
+      "lineNumber": 1,
+      "surahNumber": 73,
+      "isBismillah": false
+    },
+    {
+      "lineNumber": 2,
+      "surahNumber": 73,
+      "isBismillah": true
+    }
+  ],
+  "575": [
+    {
+      "lineNumber": 8,
+      "surahNumber": 74,
+      "isBismillah": false
+    },
+    {
+      "lineNumber": 9,
+      "surahNumber": 74,
+      "isBismillah": true
+    }
+  ],
+  "577": [
+    {
+      "lineNumber": 6,
+      "surahNumber": 75,
+      "isBismillah": false
+    },
+    {
+      "lineNumber": 7,
+      "surahNumber": 75,
+      "isBismillah": true
+    }
+  ],
+  "578": [
+    {
+      "lineNumber": 9,
+      "surahNumber": 76,
+      "isBismillah": false
+    },
+    {
+      "lineNumber": 10,
+      "surahNumber": 76,
+      "isBismillah": true
+    }
+  ],
+  "580": [
+    {
+      "lineNumber": 7,
+      "surahNumber": 77,
+      "isBismillah": false
+    },
+    {
+      "lineNumber": 8,
+      "surahNumber": 77,
+      "isBismillah": true
+    }
+  ],
+  "582": [
+    {
+      "lineNumber": 1,
+      "surahNumber": 78,
+      "isBismillah": false
+    },
+    {
+      "lineNumber": 2,
+      "surahNumber": 78,
+      "isBismillah": true
+    }
+  ],
+  "583": [
+    {
+      "lineNumber": 8,
+      "surahNumber": 79,
+      "isBismillah": false
+    },
+    {
+      "lineNumber": 9,
+      "surahNumber": 79,
+      "isBismillah": true
+    }
+  ],
+  "585": [
+    {
+      "lineNumber": 1,
+      "surahNumber": 80,
+      "isBismillah": true
+    }
+  ],
+  "586": [
+    {
+      "lineNumber": 1,
+      "surahNumber": 81,
+      "isBismillah": false
+    },
+    {
+      "lineNumber": 2,
+      "surahNumber": 81,
+      "isBismillah": true
+    }
+  ],
+  "587": [
+    {
+      "lineNumber": 1,
+      "surahNumber": 82,
+      "isBismillah": true
+    },
+    {
+      "lineNumber": 11,
+      "surahNumber": 83,
+      "isBismillah": false
+    },
+    {
+      "lineNumber": 12,
+      "surahNumber": 83,
+      "isBismillah": true
+    }
+  ],
+  "589": [
+    {
+      "lineNumber": 2,
+      "surahNumber": 84,
+      "isBismillah": false
+    },
+    {
+      "lineNumber": 3,
+      "surahNumber": 84,
+      "isBismillah": true
+    }
+  ],
+  "590": [
+    {
+      "lineNumber": 1,
+      "surahNumber": 85,
+      "isBismillah": false
+    },
+    {
+      "lineNumber": 2,
+      "surahNumber": 85,
+      "isBismillah": true
+    }
+  ],
+  "591": [
+    {
+      "lineNumber": 1,
+      "surahNumber": 86,
+      "isBismillah": true
+    },
+    {
+      "lineNumber": 8,
+      "surahNumber": 87,
+      "isBismillah": false
+    },
+    {
+      "lineNumber": 9,
+      "surahNumber": 87,
+      "isBismillah": true
+    }
+  ],
+  "592": [
+    {
+      "lineNumber": 3,
+      "surahNumber": 88,
+      "isBismillah": false
+    },
+    {
+      "lineNumber": 4,
+      "surahNumber": 88,
+      "isBismillah": true
+    }
+  ],
+  "593": [
+    {
+      "lineNumber": 1,
+      "surahNumber": 89,
+      "isBismillah": false
+    },
+    {
+      "lineNumber": 2,
+      "surahNumber": 89,
+      "isBismillah": true
+    }
+  ],
+  "594": [
+    {
+      "lineNumber": 4,
+      "surahNumber": 90,
+      "isBismillah": false
+    },
+    {
+      "lineNumber": 5,
+      "surahNumber": 90,
+      "isBismillah": true
+    }
+  ],
+  "595": [
+    {
+      "lineNumber": 1,
+      "surahNumber": 91,
+      "isBismillah": true
+    },
+    {
+      "lineNumber": 9,
+      "surahNumber": 92,
+      "isBismillah": false
+    },
+    {
+      "lineNumber": 10,
+      "surahNumber": 92,
+      "isBismillah": true
+    }
+  ],
+  "596": [
+    {
+      "lineNumber": 4,
+      "surahNumber": 93,
+      "isBismillah": false
+    },
+    {
+      "lineNumber": 5,
+      "surahNumber": 93,
+      "isBismillah": true
+    },
+    {
+      "lineNumber": 11,
+      "surahNumber": 94,
+      "isBismillah": false
+    },
+    {
+      "lineNumber": 12,
+      "surahNumber": 94,
+      "isBismillah": true
+    }
+  ],
+  "597": [
+    {
+      "lineNumber": 1,
+      "surahNumber": 95,
+      "isBismillah": false
+    },
+    {
+      "lineNumber": 2,
+      "surahNumber": 95,
+      "isBismillah": true
+    },
+    {
+      "lineNumber": 7,
+      "surahNumber": 96,
+      "isBismillah": false
+    },
+    {
+      "lineNumber": 8,
+      "surahNumber": 96,
+      "isBismillah": true
+    }
+  ],
+  "598": [
+    {
+      "lineNumber": 1,
+      "surahNumber": 97,
+      "isBismillah": false
+    },
+    {
+      "lineNumber": 2,
+      "surahNumber": 97,
+      "isBismillah": true
+    },
+    {
+      "lineNumber": 6,
+      "surahNumber": 98,
+      "isBismillah": false
+    },
+    {
+      "lineNumber": 7,
+      "surahNumber": 98,
+      "isBismillah": true
+    }
+  ],
+  "599": [
+    {
+      "lineNumber": 3,
+      "surahNumber": 99,
+      "isBismillah": false
+    },
+    {
+      "lineNumber": 4,
+      "surahNumber": 99,
+      "isBismillah": true
+    },
+    {
+      "lineNumber": 10,
+      "surahNumber": 100,
+      "isBismillah": false
+    },
+    {
+      "lineNumber": 11,
+      "surahNumber": 100,
+      "isBismillah": true
+    }
+  ],
+  "600": [
+    {
+      "lineNumber": 2,
+      "surahNumber": 101,
+      "isBismillah": false
+    },
+    {
+      "lineNumber": 3,
+      "surahNumber": 101,
+      "isBismillah": true
+    },
+    {
+      "lineNumber": 10,
+      "surahNumber": 102,
+      "isBismillah": false
+    },
+    {
+      "lineNumber": 11,
+      "surahNumber": 102,
+      "isBismillah": true
+    }
+  ],
+  "601": [
+    {
+      "lineNumber": 1,
+      "surahNumber": 103,
+      "isBismillah": false
+    },
+    {
+      "lineNumber": 2,
+      "surahNumber": 103,
+      "isBismillah": true
+    },
+    {
+      "lineNumber": 5,
+      "surahNumber": 104,
+      "isBismillah": false
+    },
+    {
+      "lineNumber": 6,
+      "surahNumber": 104,
+      "isBismillah": true
+    },
+    {
+      "lineNumber": 11,
+      "surahNumber": 105,
+      "isBismillah": false
+    },
+    {
+      "lineNumber": 12,
+      "surahNumber": 105,
+      "isBismillah": true
+    }
+  ],
+  "602": [
+    {
+      "lineNumber": 1,
+      "surahNumber": 106,
+      "isBismillah": false
+    },
+    {
+      "lineNumber": 2,
+      "surahNumber": 106,
+      "isBismillah": true
+    },
+    {
+      "lineNumber": 6,
+      "surahNumber": 107,
+      "isBismillah": false
+    },
+    {
+      "lineNumber": 7,
+      "surahNumber": 107,
+      "isBismillah": true
+    },
+    {
+      "lineNumber": 12,
+      "surahNumber": 108,
+      "isBismillah": false
+    },
+    {
+      "lineNumber": 13,
+      "surahNumber": 108,
+      "isBismillah": true
+    }
+  ],
+  "603": [
+    {
+      "lineNumber": 1,
+      "surahNumber": 109,
+      "isBismillah": false
+    },
+    {
+      "lineNumber": 2,
+      "surahNumber": 109,
+      "isBismillah": true
+    },
+    {
+      "lineNumber": 6,
+      "surahNumber": 110,
+      "isBismillah": false
+    },
+    {
+      "lineNumber": 7,
+      "surahNumber": 110,
+      "isBismillah": true
+    },
+    {
+      "lineNumber": 11,
+      "surahNumber": 111,
+      "isBismillah": false
+    },
+    {
+      "lineNumber": 12,
+      "surahNumber": 111,
+      "isBismillah": true
+    }
+  ],
+  "604": [
+    {
+      "lineNumber": 1,
+      "surahNumber": 112,
+      "isBismillah": false
+    },
+    {
+      "lineNumber": 2,
+      "surahNumber": 112,
+      "isBismillah": true
+    },
+    {
+      "lineNumber": 5,
+      "surahNumber": 113,
+      "isBismillah": false
+    },
+    {
+      "lineNumber": 6,
+      "surahNumber": 113,
+      "isBismillah": true
+    },
+    {
+      "lineNumber": 10,
+      "surahNumber": 114,
+      "isBismillah": false
+    },
+    {
+      "lineNumber": 11,
+      "surahNumber": 114,
+      "isBismillah": true
+    }
+  ]
+}

@@ -1,0 +1,8 @@
+targets:
+  $default:
+    builders:
+      retrofit_generator:
+        generate_for:
+          include:
+            - lib/src/core/network/**
+            - lib/src/features/**/data/datasources/**

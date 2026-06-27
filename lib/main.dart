@@ -1,0 +1,66 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:intl/date_symbol_data_local.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'src/core/database/app_database.dart';
+import 'src/core/database/database_initializer.dart';
+import 'src/core/database/database_provider.dart';
+import 'src/core/database/shared_preferences_provider.dart';
+import 'src/core/router/app_router.dart';
+import 'src/core/theme/app_theme.dart';
+
+
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  // Initialize date formatting for Arabic
+  await initializeDateFormatting('ar', null);
+
+  // Create database instance and populate data if empty (offline Quran, Hadith, Adhkar)
+  final db = AppDatabase();
+  final initializer = DatabaseInitializer(db);
+  await initializer.initializeDatabase();
+
+  final sharedPrefs = await SharedPreferences.getInstance();
+
+  runApp(
+    ProviderScope(
+      overrides: [
+        databaseProvider.overrideWithValue(db),
+        sharedPreferencesProvider.overrideWithValue(sharedPrefs),
+      ],
+      child: const MyApp(),
+    ),
+  );
+}
+
+class MyApp extends ConsumerWidget {
+  const MyApp({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    return MaterialApp.router(
+      title: 'زاد المسلم',
+      debugShowCheckedModeBanner: false,
+      
+      // Themes
+      theme: AppTheme.lightTheme,
+      themeMode: ThemeMode.light,
+      
+      // Navigation
+      routerConfig: appRouter,
+      
+      // Localization Support (RTL by default for Arabic UI)
+      locale: const Locale('ar'),
+      localizationsDelegates: const [
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
+      supportedLocales: const [
+        Locale('ar'),
+      ],
+    );
+  }
+}

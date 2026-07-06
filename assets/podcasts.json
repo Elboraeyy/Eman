@@ -1,0 +1,152 @@
+{
+  "podcasts": [
+    {
+      "id": 1,
+      "title": "خواطر وتفسير الشيخ الشعراوي",
+      "publisher": "فضيلة الشيخ محمد متولي الشعراوي",
+      "description": "خواطر إيمانية وتفسير مبسط وعميق لآيات القرآن الكريم بأسلوب الشيخ الشعراوي الفريد.",
+      "imageUrl": "https://www.al-shaarawy.com/images/default-cover.jpg",
+      "episodes": [
+        {
+          "id": 101,
+          "title": "خواطر في الصبر الرضا بالقضاء",
+          "duration": "28:15",
+          "url": "https://archive.org/download/Sharawy_Tafseer/001.mp3",
+          "pubDate": "2026-01-01"
+        },
+        {
+          "id": 102,
+          "title": "أسرار الفاتحة وفضلها العظيم",
+          "duration": "35:40",
+          "url": "https://archive.org/download/Sharawy_Tafseer/002.mp3",
+          "pubDate": "2026-01-10"
+        },
+        {
+          "id": 103,
+          "title": "الرزق وأسبابه الحقيقية في القرآن",
+          "duration": "31:22",
+          "url": "https://archive.org/download/Sharawy_Tafseer/003.mp3",
+          "pubDate": "2026-01-20"
+        },
+        {
+          "id": 104,
+          "title": "علاقة العبد بربه وحقيقة التقوى",
+          "duration": "25:50",
+          "url": "https://archive.org/download/Sharawy_Tafseer/004.mp3",
+          "pubDate": "2026-01-30"
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "title": "روائع خطب الشيخ كشك",
+      "publisher": "فضيلة الشيخ عبد الحميد كشك",
+      "description": "مجموعة من أقوى الخطب المنبرية للشيخ كشك (فارس المنابر) رحمه الله في مختلف القضايا الإيمانية.",
+      "imageUrl": "https://archive.org/download/kishk_images/cover.jpg",
+      "episodes": [
+        {
+          "id": 201,
+          "title": "خطبة الموت والقبر والآخرة",
+          "duration": "45:12",
+          "url": "https://archive.org/download/Kishk-Complete/001.mp3",
+          "pubDate": "2026-02-01"
+        },
+        {
+          "id": 202,
+          "title": "الصلاة عماد الدين وعاقبة تاركها",
+          "duration": "40:30",
+          "url": "https://archive.org/download/Kishk-Complete/002.mp3",
+          "pubDate": "2026-02-15"
+        },
+        {
+          "id": 203,
+          "title": "قصة النبي يوسف عليه السلام والوفاء",
+          "duration": "50:05",
+          "url": "https://archive.org/download/Kishk-Complete/003.mp3",
+          "pubDate": "2026-03-01"
+        },
+        {
+          "id": 204,
+          "title": "بر الوالدين وحقوق الأرحام",
+          "duration": "38:45",
+          "url": "https://archive.org/download/Kishk-Complete/004.mp3",
+          "pubDate": "2026-03-15"
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "title": "سلسلة بودكاست وعي",
+      "publisher": "أحمد عبد المنعم، حازم الصديق، شريف علي",
+      "description": "بودكاست شبابي إيماني يناقش قضايا الهوية والوعي الإسلامي والتحديات المعاصرة التي تواجه الشباب.",
+      "imageUrl": "https://waiepodcast.com/cover.jpg",
+      "episodes": [
+        {
+          "id": 301,
+          "title": "حلقة: كيف تستعيد شغفك بذكر الله والعبادة؟",
+          "duration": "55:18",
+          "url": "https://archive.org/download/waie-podcast/001.mp3",
+          "pubDate": "2026-04-01"
+        },
+        {
+          "id": 302,
+          "title": "حلقة: معركة الوعي والتمسك بالقيم في زمن الفتن",
+          "duration": "48:50",
+          "url": "https://archive.org/download/waie-podcast/002.mp3",
+          "pubDate": "2026-04-15"
+        },
+        {
+          "id": 303,
+          "title": "حلقة: عمارة القلوب بالقرآن والتدبر اليومي",
+          "duration": "52:10",
+          "url": "https://archive.org/download/waie-podcast/003.mp3",
+          "pubDate": "2026-05-01"
+        },
+        {
+          "id": 304,
+          "title": "حلقة: خطوات عملية لبناء أسرة مسلمة واعية",
+          "duration": "58:30",
+          "url": "https://archive.org/download/waie-podcast/004.mp3",
+          "pubDate": "2026-05-15"
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "title": "السيرة النبوية والدروس المستفادة",
+      "publisher": "الدكتور طارق السويدان",
+      "description": "شرح تاريخي رائع ومفصل لقصة حياة خير الأنام محمد ﷺ من الولادة إلى الوفاة بأسلوب شيق ومليء بالعبر.",
+      "imageUrl": "https://suwaidan.com/seerah.jpg",
+      "episodes": [
+        {
+          "id": 401,
+          "title": "الحلقة الأولى: مكة قبل البعثة وميلاد المصطفى",
+          "duration": "35:10",
+          "url": "https://archive.org/download/Sira_Suwaidan/01.mp3",
+          "pubDate": "2026-06-01"
+        },
+        {
+          "id": 402,
+          "title": "الحلقة الثانية: نزول الوحي وبدء الدعوة السرية",
+          "duration": "38:40",
+          "url": "https://archive.org/download/Sira_Suwaidan/02.mp3",
+          "pubDate": "2026-06-10"
+        },
+        {
+          "id": 403,
+          "title": "الحلقة الثالثة: الجهر بالدعوة ومواجهة كفار قريش",
+          "duration": "41:22",
+          "url": "https://archive.org/download/Sira_Suwaidan/03.mp3",
+          "pubDate": "2026-06-20"
+        },
+        {
+          "id": 404,
+          "title": "الحلقة الرابعة: الهجرة المباركة للمدينة وتأسيس الدولة",
+          "duration": "46:15",
+          "url": "https://archive.org/download/Sira_Suwaidan/04.mp3",
+          "pubDate": "2026-06-30"
+        }
+      ]
+    }
+  ]
+}

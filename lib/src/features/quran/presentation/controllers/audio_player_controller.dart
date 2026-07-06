@@ -9,21 +9,60 @@ class Reciter {
   final String nameEnglish;
   final String nameArabic;
   final String server;
+  final String? surahServer;
 
   const Reciter({
     required this.id,
     required this.nameEnglish,
     required this.nameArabic,
     required this.server,
+    this.surahServer,
   });
 }
 
 const List<Reciter> staticReciters = [
-  Reciter(id: 'abdul_basit', nameEnglish: 'Abdul Basit', nameArabic: 'عبد الباسط عبد الصمد', server: 'https://everyayah.com/data/Abdul_Basit_Murattal_192kbps/'),
-  Reciter(id: 'al_hudhaifi', nameEnglish: 'Al-Hudhaifi', nameArabic: 'صالح الحذيفي', server: 'https://everyayah.com/data/Hudhaifi_128kbps/'),
-  Reciter(id: 'al_minshawi', nameEnglish: 'Al-Minshawi', nameArabic: 'محمد صديق المنشاوي', server: 'https://everyayah.com/data/Minshawy_Murattal_128kbps/'),
-  Reciter(id: 'mishary_alfasy', nameEnglish: 'Mishary Alafasy', nameArabic: 'مشاري العفاسي', server: 'https://everyayah.com/data/Alafasy_128kbps/'),
-  Reciter(id: 'saad_al_ghamdi', nameEnglish: 'Saad Al-Ghamdi', nameArabic: 'سعد الغامدي', server: 'https://everyayah.com/data/Ghamadi_40kbps/'),
+  Reciter(
+    id: 'abdul_basit',
+    nameEnglish: 'Abdul Basit',
+    nameArabic: 'عبد الباسط عبد الصمد',
+    server: 'https://everyayah.com/data/Abdul_Basit_Murattal_192kbps/',
+    surahServer: 'https://server7.mp3quran.net/basit/',
+  ),
+  Reciter(
+    id: 'al_hudhaifi',
+    nameEnglish: 'Al-Hudhaifi',
+    nameArabic: 'صالح الحذيفي',
+    server: 'https://everyayah.com/data/Hudhaifi_128kbps/',
+    surahServer: 'https://server9.mp3quran.net/hudhaifi/',
+  ),
+  Reciter(
+    id: 'al_minshawi',
+    nameEnglish: 'Al-Minshawi',
+    nameArabic: 'محمد صديق المنشاوي',
+    server: 'https://everyayah.com/data/Minshawy_Murattal_128kbps/',
+    surahServer: 'https://server11.mp3quran.net/minsh/',
+  ),
+  Reciter(
+    id: 'mishary_alfasy',
+    nameEnglish: 'Mishary Alafasy',
+    nameArabic: 'مشاري العفاسي',
+    server: 'https://everyayah.com/data/Alafasy_128kbps/',
+    surahServer: 'https://server8.mp3quran.net/afs/',
+  ),
+  Reciter(
+    id: 'saad_al_ghamdi',
+    nameEnglish: 'Saad Al-Ghamdi',
+    nameArabic: 'سعد الغامدي',
+    server: 'https://everyayah.com/data/Ghamadi_40kbps/',
+    surahServer: 'https://server7.mp3quran.net/s_gmd/',
+  ),
+  Reciter(
+    id: 'maher_al_muaiqly',
+    nameEnglish: 'Maher Al-Muaiqly',
+    nameArabic: 'ماهر المعيقلي',
+    server: 'https://everyayah.com/data/MaherAlMuaiqly128kbps/',
+    surahServer: 'https://server12.mp3quran.net/maher/',
+  ),
 ];
 
 class AudioPlaybackState {
@@ -38,6 +77,9 @@ class AudioPlaybackState {
   final double playbackSpeed;
   final bool isSingleAyahPlay;
   final bool isLoading;
+  final String? customTitle;
+  final String? customSubtitle;
+  final bool isLiveStream;
 
   AudioPlaybackState({
     required this.isPlaying,
@@ -51,6 +93,9 @@ class AudioPlaybackState {
     required this.playbackSpeed,
     required this.isSingleAyahPlay,
     required this.isLoading,
+    this.customTitle,
+    this.customSubtitle,
+    this.isLiveStream = false,
   });
 
   AudioPlaybackState copyWith({
@@ -65,6 +110,9 @@ class AudioPlaybackState {
     double? playbackSpeed,
     bool? isSingleAyahPlay,
     bool? isLoading,
+    String? customTitle,
+    String? customSubtitle,
+    bool? isLiveStream,
   }) {
     return AudioPlaybackState(
       isPlaying: isPlaying ?? this.isPlaying,
@@ -78,6 +126,9 @@ class AudioPlaybackState {
       playbackSpeed: playbackSpeed ?? this.playbackSpeed,
       isSingleAyahPlay: isSingleAyahPlay ?? this.isSingleAyahPlay,
       isLoading: isLoading ?? this.isLoading,
+      customTitle: customTitle ?? this.customTitle,
+      customSubtitle: customSubtitle ?? this.customSubtitle,
+      isLiveStream: isLiveStream ?? this.isLiveStream,
     );
   }
 }
@@ -112,6 +163,9 @@ class AudioPlayerNotifier extends Notifier<AudioPlaybackState> {
       playbackSpeed: 1.0,
       isSingleAyahPlay: false,
       isLoading: false,
+      customTitle: null,
+      customSubtitle: null,
+      isLiveStream: false,
     );
   }
 
@@ -147,15 +201,25 @@ class AudioPlayerNotifier extends Notifier<AudioPlaybackState> {
 
       if (processingState == ProcessingState.completed) {
         if (state.isPageMode) {
-          state = state.copyWith(
-            isPageMode: false,
-            currentAyahIndex: -1,
+          state = AudioPlaybackState(
             isPlaying: false,
+            currentSurah: 0,
+            currentAyahIndex: -1,
+            position: Duration.zero,
+            duration: Duration.zero,
+            activeReciterId: state.activeReciterId,
+            isPageMode: false,
+            pageVerses: [],
+            playbackSpeed: state.playbackSpeed,
+            isSingleAyahPlay: false,
+            isLoading: false,
           );
           _pageCompletedController.add(null);
-        } else {
+        } else if (state.currentSurah > 0) {
           final nextSurah = (state.currentSurah % 114) + 1;
           playSurah(state.activeReciterId, nextSurah);
+        } else {
+          stop();
         }
       }
     });
@@ -176,7 +240,8 @@ class AudioPlayerNotifier extends Notifier<AudioPlaybackState> {
 
   String _getSurahAudioUrl(Reciter reciter, int surah) {
     final sStr = surah.toString().padLeft(3, '0');
-    return '${reciter.server}$sStr.mp3';
+    final baseUrl = reciter.surahServer ?? reciter.server;
+    return '$baseUrl$sStr.mp3';
   }
 
   Future<void> playSurah(String reciterId, int surahNumber) async {
@@ -184,19 +249,28 @@ class AudioPlayerNotifier extends Notifier<AudioPlaybackState> {
       final reciter = _getReciter(reciterId);
       final url = _getSurahAudioUrl(reciter, surahNumber);
 
-      state = state.copyWith(
-        activeReciterId: reciterId,
+      state = AudioPlaybackState(
+        isPlaying: false,
         currentSurah: surahNumber,
-        isPageMode: false,
         currentAyahIndex: -1,
+        position: Duration.zero,
+        duration: Duration.zero,
+        activeReciterId: reciterId,
+        isPageMode: false,
         pageVerses: [],
+        playbackSpeed: state.playbackSpeed,
         isSingleAyahPlay: false,
+        isLoading: true,
+        customTitle: null,
+        customSubtitle: null,
+        isLiveStream: false,
       );
 
       await _player.setUrl(url);
       _player.play();
     } catch (e) {
       debugPrint('AudioPlayerNotifier Error: Failed to play surah: $e');
+      state = state.copyWith(isLoading: false);
     }
   }
 
@@ -211,19 +285,28 @@ class AudioPlayerNotifier extends Notifier<AudioPlaybackState> {
         return AudioSource.uri(Uri.parse(_getAyahAudioUrl(reciter, v.surahNumber, v.ayahNumber)));
       }).toList();
 
-      state = state.copyWith(
-        activeReciterId: reciterId,
+      state = AudioPlaybackState(
+        isPlaying: false,
         currentSurah: verses.first.surahNumber,
-        isPageMode: true,
-        isSingleAyahPlay: false,
         currentAyahIndex: 0,
+        position: Duration.zero,
+        duration: Duration.zero,
+        activeReciterId: reciterId,
+        isPageMode: true,
         pageVerses: verses,
+        playbackSpeed: state.playbackSpeed,
+        isSingleAyahPlay: false,
+        isLoading: true,
+        customTitle: null,
+        customSubtitle: null,
+        isLiveStream: false,
       );
 
       await _player.setAudioSources(sources);
       _player.play();
     } catch (e) {
       debugPrint('AudioPlayerNotifier Error: Failed to play page: $e');
+      state = state.copyWith(isLoading: false);
     }
   }
 
@@ -232,19 +315,28 @@ class AudioPlayerNotifier extends Notifier<AudioPlaybackState> {
       final reciter = _getReciter(reciterId);
       final url = _getAyahAudioUrl(reciter, surahNumber, ayahNumber);
 
-      state = state.copyWith(
-        activeReciterId: reciterId,
+      state = AudioPlaybackState(
+        isPlaying: false,
         currentSurah: surahNumber,
-        isPageMode: false,
         currentAyahIndex: -1,
+        position: Duration.zero,
+        duration: Duration.zero,
+        activeReciterId: reciterId,
+        isPageMode: false,
         pageVerses: [],
+        playbackSpeed: state.playbackSpeed,
         isSingleAyahPlay: false,
+        isLoading: true,
+        customTitle: null,
+        customSubtitle: null,
+        isLiveStream: false,
       );
 
       await _player.setUrl(url);
       _player.play();
     } catch (e) {
       debugPrint('AudioPlayerNotifier Error: Failed to play single ayah: $e');
+      state = state.copyWith(isLoading: false);
     }
   }
 
@@ -253,19 +345,55 @@ class AudioPlayerNotifier extends Notifier<AudioPlaybackState> {
       final reciter = _getReciter(reciterId);
       final url = _getAyahAudioUrl(reciter, verse.surahNumber, verse.ayahNumber);
 
-      state = state.copyWith(
-        activeReciterId: reciterId,
+      state = AudioPlaybackState(
+        isPlaying: false,
         currentSurah: verse.surahNumber,
-        isPageMode: true,
-        isSingleAyahPlay: true,
         currentAyahIndex: 0,
+        position: Duration.zero,
+        duration: Duration.zero,
+        activeReciterId: reciterId,
+        isPageMode: true,
         pageVerses: [verse],
+        playbackSpeed: state.playbackSpeed,
+        isSingleAyahPlay: true,
+        isLoading: true,
+        customTitle: null,
+        customSubtitle: null,
+        isLiveStream: false,
       );
 
       await _player.setUrl(url);
       _player.play();
     } catch (e) {
       debugPrint('AudioPlayerNotifier Error: Failed to play single ayah: $e');
+      state = state.copyWith(isLoading: false);
+    }
+  }
+
+  Future<void> playUrl(String url, {required String title, required String subtitle, bool isLiveStream = false}) async {
+    try {
+      state = AudioPlaybackState(
+        isPlaying: false,
+        currentSurah: -1, // Custom URL indicator
+        currentAyahIndex: -1,
+        position: Duration.zero,
+        duration: Duration.zero,
+        activeReciterId: 'custom',
+        isPageMode: false,
+        pageVerses: [],
+        playbackSpeed: state.playbackSpeed,
+        isSingleAyahPlay: false,
+        isLoading: true,
+        customTitle: title,
+        customSubtitle: subtitle,
+        isLiveStream: isLiveStream,
+      );
+
+      await _player.setUrl(url);
+      _player.play();
+    } catch (e) {
+      debugPrint('AudioPlayerNotifier Error: Failed to play custom URL: $e');
+      state = state.copyWith(isLoading: false);
     }
   }
 
@@ -279,12 +407,21 @@ class AudioPlayerNotifier extends Notifier<AudioPlaybackState> {
 
   void stop() {
     _player.stop();
-    state = state.copyWith(
-      isPageMode: false,
+    state = AudioPlaybackState(
+      isPlaying: false,
+      currentSurah: 0,
       currentAyahIndex: -1,
+      position: Duration.zero,
+      duration: Duration.zero,
+      activeReciterId: state.activeReciterId,
+      isPageMode: false,
       pageVerses: [],
+      playbackSpeed: state.playbackSpeed,
       isSingleAyahPlay: false,
       isLoading: false,
+      customTitle: null,
+      customSubtitle: null,
+      isLiveStream: false,
     );
   }
 
@@ -297,7 +434,7 @@ class AudioPlayerNotifier extends Notifier<AudioPlaybackState> {
       if (state.currentAyahIndex < state.pageVerses.length - 1) {
         _player.seekToNext();
       }
-    } else {
+    } else if (state.currentSurah > 0) {
       final nextSurah = (state.currentSurah % 114) + 1;
       await playSurah(state.activeReciterId, nextSurah);
     }
@@ -308,7 +445,7 @@ class AudioPlayerNotifier extends Notifier<AudioPlaybackState> {
       if (state.currentAyahIndex > 0) {
         _player.seekToPrevious();
       }
-    } else {
+    } else if (state.currentSurah > 0) {
       final prevSurah = state.currentSurah == 1 ? 114 : state.currentSurah - 1;
       await playSurah(state.activeReciterId, prevSurah);
     }
@@ -323,7 +460,7 @@ class AudioPlayerNotifier extends Notifier<AudioPlaybackState> {
     state = state.copyWith(activeReciterId: reciterId);
     
     // If playing, restart with new reciter
-    if (state.isPlaying) {
+    if (state.isPlaying && state.currentSurah > 0) {
       if (state.isPageMode) {
         playPageAyahs(reciterId, state.pageVerses);
       } else {

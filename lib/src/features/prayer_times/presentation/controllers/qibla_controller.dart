@@ -3,6 +3,7 @@ import 'dart:math' as math;
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_compass/flutter_compass.dart';
+import 'package:zad/src/core/database/shared_preferences_provider.dart';
 import '../../data/repositories/prayer_repository_provider.dart';
 
 class FallbackCity {
@@ -53,6 +54,7 @@ class QiblaState {
   final double distanceToKaaba;
   final bool usingFallbackCity;
   final FallbackCity? selectedFallbackCity;
+  final bool hapticEnabled;
 
   QiblaState({
     required this.heading,
@@ -65,6 +67,7 @@ class QiblaState {
     required this.cityName,
     required this.distanceToKaaba,
     required this.usingFallbackCity,
+    required this.hapticEnabled,
     this.selectedFallbackCity,
     this.errorMessage,
   });
@@ -81,6 +84,7 @@ class QiblaState {
     double? distanceToKaaba,
     bool? usingFallbackCity,
     FallbackCity? selectedFallbackCity,
+    bool? hapticEnabled,
     String? errorMessage,
   }) {
     return QiblaState(
@@ -95,6 +99,7 @@ class QiblaState {
       distanceToKaaba: distanceToKaaba ?? this.distanceToKaaba,
       usingFallbackCity: usingFallbackCity ?? this.usingFallbackCity,
       selectedFallbackCity: selectedFallbackCity ?? this.selectedFallbackCity,
+      hapticEnabled: hapticEnabled ?? this.hapticEnabled,
       errorMessage: errorMessage ?? this.errorMessage,
     );
   }
@@ -110,6 +115,10 @@ class QiblaNotifier extends Notifier<QiblaState> {
     ref.onDispose(() {
       _compassSubscription?.cancel();
     });
+
+    final prefs = ref.read(sharedPreferencesProvider);
+    final haptic = prefs.getBool('qibla_haptic_enabled') ?? true;
+
     _startTracking();
     return QiblaState(
       heading: 0.0,
@@ -122,6 +131,7 @@ class QiblaNotifier extends Notifier<QiblaState> {
       cityName: 'جاري التحديد...',
       distanceToKaaba: 0.0,
       usingFallbackCity: false,
+      hapticEnabled: haptic,
     );
   }
 
@@ -131,8 +141,8 @@ class QiblaNotifier extends Notifier<QiblaState> {
       final location = await repo.getCurrentLocation();
       
       if (location == null) {
-        // If GPS fails, switch to manual fallback city (default to Mecca)
-        final defaultCity = fallbackCities[0]; // Mecca
+        // If GPS fails, switch to manual fallback city (default to Cairo)
+        final defaultCity = fallbackCities[4]; // Cairo
         _switchToManualCity(defaultCity, errorMessage: null); // Don't show blocking error, just fallback gracefully
         _startCompassListening(defaultCity.latitude, defaultCity.longitude);
         return;
@@ -154,8 +164,8 @@ class QiblaNotifier extends Notifier<QiblaState> {
 
       _startCompassListening(location.latitude, location.longitude);
     } catch (e) {
-      // Graceful fallback on exception
-      final defaultCity = fallbackCities[0]; // Mecca
+      // Graceful fallback on exception (Cairo)
+      final defaultCity = fallbackCities[4]; // Cairo
       _switchToManualCity(defaultCity, errorMessage: 'حدث خطأ أثناء تشغيل البوصلة. تم تفعيل التحديد اليدوي.');
       _startCompassListening(defaultCity.latitude, defaultCity.longitude);
     }
@@ -178,10 +188,13 @@ class QiblaNotifier extends Notifier<QiblaState> {
     );
   }
 
-  void selectManualCity(FallbackCity city) {
-    _switchToManualCity(city);
-    // Restart compass listening with the new coordinates
-    _startCompassListening(city.latitude, city.longitude);
+
+
+  Future<void> toggleHaptic() async {
+    final prefs = ref.read(sharedPreferencesProvider);
+    final newVal = !state.hapticEnabled;
+    await prefs.setBool('qibla_haptic_enabled', newVal);
+    state = state.copyWith(hapticEnabled: newVal);
   }
 
   Future<void> enableGps() async {
@@ -224,7 +237,7 @@ class QiblaNotifier extends Notifier<QiblaState> {
       final isAligned = needleAngle <= 4 || needleAngle >= 356;
 
       // Trigger haptic feedback when entering aligned state
-      if (isAligned && !_hasHapticTriggered) {
+      if (state.hapticEnabled && isAligned && !_hasHapticTriggered) {
         HapticFeedback.lightImpact();
         _hasHapticTriggered = true;
       } else if (!isAligned) {

@@ -9,6 +9,7 @@ import '../../data/repositories/quran_repository_provider.dart';
 import '../../domain/entities/quran_entities.dart';
 import '../controllers/audio_player_controller.dart';
 import 'mushaf_screen.dart'; // Reuses providers like verseTafsirProvider, isVerseFavoriteProvider
+import 'package:zad/src/core/widgets/arabic_text.dart';
 
 final surahDetailsProvider = FutureProvider.family<List<Ayah>, int>((ref, surahNumber) async {
   final repo = ref.watch(quranRepositoryProvider);
@@ -52,12 +53,12 @@ class _SurahDetailScreenState extends ConsumerState<SurahDetailScreen> with Sing
     return Scaffold(
       appBar: AppBar(
         title: surahAsync.when(
-          data: (surah) => Text(
+          data: (surah) => ArabicText(
             surah?.nameArabic ?? 'تفاصيل السورة',
             style: GoogleFonts.cairo(fontWeight: FontWeight.bold),
           ),
           loading: () => const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2)),
-          error: (err, _) => const Text('خطأ'),
+          error: (err, _) => const ArabicText('خطأ'),
         ),
         bottom: TabBar(
           controller: _tabController,
@@ -76,7 +77,7 @@ class _SurahDetailScreenState extends ConsumerState<SurahDetailScreen> with Sing
         data: (ayahs) {
           if (ayahs.isEmpty) {
             return Center(
-              child: Text(
+              child: ArabicText(
                 'لا توجد آيات متوفرة حالياً.',
                 style: GoogleFonts.cairo(fontSize: 16),
               ),
@@ -92,7 +93,7 @@ class _SurahDetailScreenState extends ConsumerState<SurahDetailScreen> with Sing
           );
         },
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (err, _) => Center(child: Text('حدث خطأ في تحميل السورة: $err')),
+        error: (err, _) => Center(child: ArabicText('حدث خطأ في تحميل السورة: $err')),
       ),
     );
   }
@@ -145,9 +146,9 @@ class _SurahDetailScreenState extends ConsumerState<SurahDetailScreen> with Sing
                     border: Border.all(color: theme.colorScheme.secondary.withValues(alpha: 0.3)),
                   ),
                   child: Center(
-                    child: Text(
+                    child: ArabicText(
                       ayah.numberInSurah.toString(),
-                      style: GoogleFonts.robotoMono(
+                      style: GoogleFonts.cairo(
                         fontWeight: FontWeight.bold,
                         fontSize: 12,
                         color: theme.colorScheme.secondary,
@@ -208,7 +209,7 @@ class _SurahDetailScreenState extends ConsumerState<SurahDetailScreen> with Sing
             // Text Content based on mode
             if (mode == 0) ...[
               // Quranic text in Arabic
-              Text(
+              ArabicText(
                 ayah.textUthmani.isNotEmpty ? ayah.textUthmani : ayah.text,
                 style: GoogleFonts.amiri(
                   fontSize: 22,
@@ -220,7 +221,7 @@ class _SurahDetailScreenState extends ConsumerState<SurahDetailScreen> with Sing
               ),
             ] else if (mode == 1) ...[
               // Arabic text on top, translation below
-              Text(
+              ArabicText(
                 ayah.textUthmani.isNotEmpty ? ayah.textUthmani : ayah.text,
                 style: GoogleFonts.amiri(
                   fontSize: 20,
@@ -231,7 +232,7 @@ class _SurahDetailScreenState extends ConsumerState<SurahDetailScreen> with Sing
               ),
               const SizedBox(height: 12),
               translationAsync!.when(
-                data: (text) => Text(
+                data: (text) => ArabicText(
                   text,
                   style: GoogleFonts.inter(
                     fontSize: 14,
@@ -241,11 +242,11 @@ class _SurahDetailScreenState extends ConsumerState<SurahDetailScreen> with Sing
                   textAlign: TextAlign.left,
                 ),
                 loading: () => const LinearProgressIndicator(),
-                error: (err, _) => Text('Error loading translation: $err'),
+                error: (err, _) => ArabicText('Error loading translation: $err'),
               ),
             ] else if (mode == 2) ...[
               // Arabic text on top, Tafsir below
-              Text(
+              ArabicText(
                 ayah.textUthmani.isNotEmpty ? ayah.textUthmani : ayah.text,
                 style: GoogleFonts.amiri(
                   fontSize: 20,
@@ -256,7 +257,7 @@ class _SurahDetailScreenState extends ConsumerState<SurahDetailScreen> with Sing
               ),
               const SizedBox(height: 12),
               muyassarAsync!.when(
-                data: (text) => Text(
+                data: (text) => ArabicText(
                   text,
                   style: GoogleFonts.cairo(
                     fontSize: 14,
@@ -267,7 +268,7 @@ class _SurahDetailScreenState extends ConsumerState<SurahDetailScreen> with Sing
                   textAlign: TextAlign.right,
                 ),
                 loading: () => const LinearProgressIndicator(),
-                error: (err, _) => Text('حدث خطأ في تحميل التفسير: $err'),
+                error: (err, _) => ArabicText('حدث خطأ في تحميل التفسير: $err'),
               ),
             ],
           ],

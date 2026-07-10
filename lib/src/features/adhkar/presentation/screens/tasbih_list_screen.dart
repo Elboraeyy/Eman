@@ -6,6 +6,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter/services.dart';
 import '../../data/repositories/adhkar_repository_provider.dart';
 import '../../domain/entities/adhkar_entities.dart';
+import 'package:zad/src/core/widgets/arabic_text.dart';
 
 final tasbihListProvider = FutureProvider<List<Tasbih>>((ref) async {
   final repo = ref.watch(adhkarRepositoryProvider);
@@ -28,7 +29,7 @@ class TasbihListScreen extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(
+        title: ArabicText(
           'المسبحة الإلكترونية',
           style: GoogleFonts.cairo(fontWeight: FontWeight.bold),
         ),
@@ -56,19 +57,19 @@ class TasbihListScreen extends ConsumerWidget {
                       child: Column(
                         children: [
                           tasbihsAsync.when(
-                            data: (list) => Text(
+                            data: (list) => ArabicText(
                               list.length.toString(),
-                              style: GoogleFonts.robotoMono(
+                              style: GoogleFonts.cairo(
                                 fontSize: 24,
                                 fontWeight: FontWeight.bold,
                                 color: theme.colorScheme.primary,
                               ),
                             ),
                             loading: () => const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2)),
-                            error: (_, __) => const Text('0'),
+                            error: (_, __) => const ArabicText('0'),
                           ),
                           const SizedBox(height: 4),
-                          Text(
+                          ArabicText(
                             'عدد الأذكار',
                             style: GoogleFonts.cairo(fontSize: 12, color: theme.disabledColor),
                           ),
@@ -87,19 +88,19 @@ class TasbihListScreen extends ConsumerWidget {
                       child: Column(
                         children: [
                           totalLifetimeAsync.when(
-                            data: (count) => Text(
+                            data: (count) => ArabicText(
                               count.toString(),
-                              style: GoogleFonts.robotoMono(
+                              style: GoogleFonts.cairo(
                                 fontSize: 24,
                                 fontWeight: FontWeight.bold,
                                 color: theme.colorScheme.primary,
                               ),
                             ),
                             loading: () => const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2)),
-                            error: (_, __) => const Text('0'),
+                            error: (_, __) => const ArabicText('0'),
                           ),
                           const SizedBox(height: 4),
-                          Text(
+                          ArabicText(
                             'إجمالي التسبيحات',
                             style: GoogleFonts.cairo(fontSize: 12, color: theme.disabledColor),
                           ),
@@ -117,7 +118,7 @@ class TasbihListScreen extends ConsumerWidget {
               data: (list) {
                 if (list.isEmpty) {
                   return Center(
-                    child: Text(
+                    child: ArabicText(
                       'لا توجد أذكار مضافة للتسبيح.',
                       style: GoogleFonts.cairo(fontSize: 14),
                     ),
@@ -132,7 +133,7 @@ class TasbihListScreen extends ConsumerWidget {
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
                     if (defaults.isNotEmpty) ...[
-                      Text(
+                      ArabicText(
                         'التسابيح الأساسية',
                         style: GoogleFonts.cairo(
                           fontSize: 16,
@@ -153,7 +154,7 @@ class TasbihListScreen extends ConsumerWidget {
                       const SizedBox(height: 24),
                     ],
                     if (customs.isNotEmpty) ...[
-                      Text(
+                      ArabicText(
                         'أذكاري المخصصة',
                         style: GoogleFonts.cairo(
                           fontSize: 16,
@@ -176,7 +177,7 @@ class TasbihListScreen extends ConsumerWidget {
                 );
               },
               loading: () => const Center(child: CircularProgressIndicator()),
-              error: (err, _) => Center(child: Text('خطأ في تحميل الأذكار: $err')),
+              error: (err, _) => Center(child: ArabicText('خطأ في تحميل الأذكار: $err')),
             ),
           ],
         ),
@@ -195,13 +196,13 @@ class TasbihListScreen extends ConsumerWidget {
       child: ListTile(
         contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         onTap: () => context.push('/adhkar/tasbih/counting/${t.id}'),
-        title: Text(
+        title: ArabicText(
           t.phrase,
           style: GoogleFonts.cairo(fontWeight: FontWeight.bold, fontSize: 16),
         ),
         subtitle: Padding(
           padding: const EdgeInsets.only(top: 4.0),
-          child: Text(
+          child: ArabicText(
             'الهدف: ${t.target} - المكتمل اليوم: ${t.count}',
             style: GoogleFonts.cairo(fontSize: 12, color: theme.colorScheme.secondary, fontWeight: FontWeight.w600),
           ),
@@ -241,7 +242,7 @@ class TasbihListScreen extends ConsumerWidget {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text(
+        title: ArabicText(
           'إضافة تسبيحة مخصصة',
           style: GoogleFonts.cairo(fontWeight: FontWeight.bold),
           textAlign: TextAlign.center,
@@ -272,7 +273,7 @@ class TasbihListScreen extends ConsumerWidget {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: Text('إلغاء', style: GoogleFonts.cairo()),
+            child: ArabicText('إلغاء', style: GoogleFonts.cairo()),
           ),
           TextButton(
             onPressed: () async {
@@ -285,7 +286,7 @@ class TasbihListScreen extends ConsumerWidget {
                 if (context.mounted) Navigator.pop(context);
               }
             },
-            child: Text('حفظ', style: GoogleFonts.cairo(fontWeight: FontWeight.bold)),
+            child: ArabicText('حفظ', style: GoogleFonts.cairo(fontWeight: FontWeight.bold)),
           ),
         ],
       ),

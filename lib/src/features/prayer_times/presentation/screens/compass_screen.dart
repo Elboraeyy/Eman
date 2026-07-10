@@ -5,6 +5,7 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart' hide TextDirection;
 import '../controllers/qibla_controller.dart';
+import 'package:zad/src/core/widgets/arabic_text.dart';
 
 class CompassScreen extends ConsumerWidget {
   const CompassScreen({super.key});
@@ -16,24 +17,26 @@ class CompassScreen extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(
+        title: ArabicText(
           'اتجاه القبلة',
           style: GoogleFonts.cairo(fontWeight: FontWeight.bold),
         ),
         actions: [
+          IconButton(
+            icon: Icon(qiblaState.hapticEnabled ? Icons.vibration : Icons.portable_wifi_off_outlined),
+            tooltip: qiblaState.hapticEnabled ? 'تعطيل الاهتزاز عند المحاذاة' : 'تفعيل الاهتزاز عند المحاذاة',
+            color: qiblaState.hapticEnabled ? theme.colorScheme.primary : theme.disabledColor,
+            onPressed: () {
+              ref.read(qiblaProvider.notifier).toggleHaptic();
+            },
+          ),
           if (qiblaState.usingFallbackCity)
-            TextButton.icon(
+            IconButton(
+              icon: const Icon(Icons.gps_fixed),
+              tooltip: 'تحديث الموقع من الـ GPS',
               onPressed: () {
                 ref.read(qiblaProvider.notifier).enableGps();
               },
-              icon: const Icon(Icons.gps_fixed, size: 16),
-              label: Text(
-                'تفعيل الـ GPS',
-                style: GoogleFonts.cairo(fontWeight: FontWeight.bold, fontSize: 13),
-              ),
-              style: TextButton.styleFrom(
-                foregroundColor: theme.colorScheme.primary,
-              ),
             ),
         ],
       ),
@@ -47,7 +50,7 @@ class CompassScreen extends ConsumerWidget {
                       valueColor: AlwaysStoppedAnimation<Color>(theme.colorScheme.primary),
                     ),
                     const SizedBox(height: 16),
-                    Text(
+                    ArabicText(
                       'جاري تحديد الموقع وحساب القبلة...',
                       style: GoogleFonts.cairo(fontSize: 16, color: theme.colorScheme.primary),
                     ),
@@ -60,9 +63,13 @@ class CompassScreen extends ConsumerWidget {
                   children: [
                     // 1. Location Banner (Premium Header)
                     _buildLocationHeaderCard(qiblaState, theme),
+                    const SizedBox(height: 16),
+
+                    // 2. Calibration Instructions Banner
+                    _buildCalibrationBanner(theme),
                     const SizedBox(height: 24),
 
-                    // 2. Compass Stack
+                    // 3. Compass Stack
                     Center(
                       child: SizedBox(
                         width: 290,
@@ -70,7 +77,7 @@ class CompassScreen extends ConsumerWidget {
                         child: Stack(
                           alignment: Alignment.center,
                           children: [
-                            // Aligned Glow Effect
+                            // Aligned Glow Effect (Emerald Green)
                             if (qiblaState.isAligned)
                               Container(
                                 width: 290,
@@ -79,7 +86,7 @@ class CompassScreen extends ConsumerWidget {
                                   shape: BoxShape.circle,
                                   boxShadow: [
                                     BoxShadow(
-                                      color: theme.colorScheme.primary.withValues(alpha: 0.35),
+                                      color: const Color(0xFF2E7D32).withValues(alpha: 0.35),
                                       blurRadius: 40,
                                       spreadRadius: 10,
                                     ),
@@ -87,6 +94,17 @@ class CompassScreen extends ConsumerWidget {
                                 ),
                               ).animate(onPlay: (controller) => controller.repeat(reverse: true))
                                .scale(begin: const Offset(1, 1), end: const Offset(1.05, 1.05), duration: 1500.ms),
+
+                            // Proximity/Alignment Ring
+                            CustomPaint(
+                              size: const Size(290, 290),
+                              painter: CompassProximityRingPainter(
+                                needleAngle: qiblaState.needleAngle,
+                                isAligned: qiblaState.isAligned,
+                                goldColor: theme.colorScheme.secondary,
+                                emeraldColor: const Color(0xFF2E7D32),
+                              ),
+                            ),
 
                             // Outer Compass Dial (N, S, E, W & degree ticks)
                             Transform.rotate(
@@ -122,7 +140,7 @@ class CompassScreen extends ConsumerWidget {
                               decoration: BoxDecoration(
                                 shape: BoxShape.circle,
                                 color: qiblaState.isAligned
-                                    ? theme.colorScheme.primary
+                                    ? const Color(0xFF2E7D32)
                                     : theme.colorScheme.secondary,
                                 boxShadow: const [
                                   BoxShadow(
@@ -146,11 +164,11 @@ class CompassScreen extends ConsumerWidget {
                     ),
                     const SizedBox(height: 32),
 
-                    // 3. Guidance Panel
+                    // 4. Guidance Panel
                     _buildGuidanceCard(qiblaState, theme),
                     const SizedBox(height: 24),
 
-                    // 4. Distance & Angle Cards (Side by side)
+                    // 5. Distance & Angle Cards (Side by side)
                     Row(
                       children: [
                         Expanded(
@@ -175,34 +193,8 @@ class CompassScreen extends ConsumerWidget {
                       ],
                     ),
                     const SizedBox(height: 24),
-
-                    // 5. Change City Manually Button
-                    OutlinedButton.icon(
-                      onPressed: () {
-                        showModalBottomSheet(
-                          context: context,
-                          isScrollControlled: true,
-                          backgroundColor: Colors.transparent,
-                          builder: (context) => const _CitySelectorBottomSheet(),
-                        );
-                      },
-                      icon: const Icon(Icons.location_city_outlined),
-                      label: Text(
-                        'تغيير المدينة يدوياً',
-                        style: GoogleFonts.cairo(fontWeight: FontWeight.bold),
-                      ),
-                      style: OutlinedButton.styleFrom(
-                        foregroundColor: theme.colorScheme.secondary,
-                        side: BorderSide(color: theme.colorScheme.secondary),
-                        minimumSize: const Size(double.infinity, 52),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(24),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 12),
-                    Text(
-                      'ضع الهاتف في وضع مسطح وتجنب وضعه بالقرب من الأجهزة المغناطيسية لضمان دقة القراءة.',
+                    ArabicText(
+                      'تجنب وضع الهاتف بالقرب من الأجهزة المغناطيسية لضمان دقة القراءة.',
                       textAlign: TextAlign.center,
                       style: GoogleFonts.cairo(
                         fontSize: 12,
@@ -212,6 +204,32 @@ class CompassScreen extends ConsumerWidget {
                   ],
                 ),
               ),
+      ),
+    );
+  }
+
+  Widget _buildCalibrationBanner(ThemeData theme) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      decoration: BoxDecoration(
+        color: theme.colorScheme.secondary.withValues(alpha: 0.05),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: theme.colorScheme.secondary.withValues(alpha: 0.15)),
+      ),
+      child: Row(
+        children: [
+          Icon(Icons.info_outline, color: theme.colorScheme.secondary, size: 20),
+          const SizedBox(width: 12),
+          Expanded(
+            child: ArabicText(
+              'للحصول على قراءة دقيقة، ضع الهاتف بشكل مسطح وحركه بمسار شكل رقم 8 (⒏) لضبط البوصلة.',
+              style: GoogleFonts.cairo(
+                fontSize: 11,
+                color: theme.textTheme.bodyMedium?.color?.withValues(alpha: 0.8),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -242,7 +260,7 @@ class CompassScreen extends ConsumerWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
+                ArabicText(
                   state.cityName,
                   style: GoogleFonts.cairo(
                     fontWeight: FontWeight.bold,
@@ -250,38 +268,14 @@ class CompassScreen extends ConsumerWidget {
                     color: theme.textTheme.titleLarge?.color,
                   ),
                 ),
-                Text(
+                ArabicText(
                   '${state.latitude.toStringAsFixed(4)}° N, ${state.longitude.toStringAsFixed(4)}° E',
-                  style: GoogleFonts.robotoMono(
+                  style: GoogleFonts.cairo(
                     fontSize: 12,
                     color: theme.textTheme.bodyMedium?.color,
                   ),
                 ),
               ],
-            ),
-          ),
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-            decoration: BoxDecoration(
-              color: state.usingFallbackCity
-                  ? theme.colorScheme.secondary.withValues(alpha: 0.12)
-                  : theme.colorScheme.primary.withValues(alpha: 0.12),
-              borderRadius: BorderRadius.circular(30),
-              border: Border.all(
-                color: state.usingFallbackCity
-                    ? theme.colorScheme.secondary.withValues(alpha: 0.2)
-                    : theme.colorScheme.primary.withValues(alpha: 0.2),
-              ),
-          ),
-            child: Text(
-              state.usingFallbackCity ? 'تحديد يدوي' : 'تحديد تلقائي',
-              style: GoogleFonts.cairo(
-                fontSize: 11,
-                fontWeight: FontWeight.bold,
-                color: state.usingFallbackCity
-                    ? theme.colorScheme.secondary
-                    : theme.colorScheme.primary,
-              ),
             ),
           ),
         ],
@@ -301,10 +295,9 @@ class CompassScreen extends ConsumerWidget {
     if (isAligned) {
       text = 'أنت موازي للقبلة تماماً الآن 🕋';
       icon = Icons.check_circle;
-      color = theme.colorScheme.primary;
-      strokeColor = theme.colorScheme.primary;
+      color = const Color(0xFF2E7D32);
+      strokeColor = const Color(0xFF2E7D32);
     } else {
-      // If angle is between 0 and 180, turn right. If 180 and 360, turn left.
       if (needleAngle > 0 && needleAngle <= 180) {
         text = 'أدر الهاتف لليمين بـ ${needleAngle.toStringAsFixed(0)}° ↻';
         icon = Icons.rotate_right;
@@ -321,17 +314,17 @@ class CompassScreen extends ConsumerWidget {
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
       decoration: BoxDecoration(
         color: isAligned
-            ? theme.colorScheme.primary.withValues(alpha: 0.1)
+            ? const Color(0xFF2E7D32).withValues(alpha: 0.1)
             : theme.colorScheme.surface,
         borderRadius: BorderRadius.circular(24),
         border: Border.all(
-          color: isAligned ? theme.colorScheme.primary : strokeColor,
+          color: isAligned ? const Color(0xFF2E7D32) : strokeColor,
           width: isAligned ? 2 : 1,
         ),
         boxShadow: isAligned
             ? [
                 BoxShadow(
-                  color: theme.colorScheme.primary.withValues(alpha: 0.15),
+                  color: const Color(0xFF2E7D32).withValues(alpha: 0.15),
                   blurRadius: 10,
                   offset: const Offset(0, 4),
                 )
@@ -347,12 +340,12 @@ class CompassScreen extends ConsumerWidget {
             size: 28,
           ),
           const SizedBox(width: 12),
-          Text(
+          ArabicText(
             text,
             style: GoogleFonts.cairo(
               fontSize: 16,
               fontWeight: FontWeight.bold,
-              color: isAligned ? theme.colorScheme.primary : theme.textTheme.titleLarge?.color,
+              color: isAligned ? const Color(0xFF2E7D32) : theme.textTheme.titleLarge?.color,
             ),
           ),
         ],
@@ -381,7 +374,7 @@ class CompassScreen extends ConsumerWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(
+              ArabicText(
                 title,
                 style: GoogleFonts.cairo(
                   fontSize: 13,
@@ -397,15 +390,15 @@ class CompassScreen extends ConsumerWidget {
             ],
           ),
           const SizedBox(height: 10),
-          Text(
+          ArabicText(
             value,
-            style: GoogleFonts.robotoMono(
+            style: GoogleFonts.cairo(
               fontSize: 22,
               fontWeight: FontWeight.bold,
               color: theme.colorScheme.primary,
             ),
           ),
-          Text(
+          ArabicText(
             subtitle,
             style: GoogleFonts.cairo(
               fontSize: 11,
@@ -420,6 +413,62 @@ class CompassScreen extends ConsumerWidget {
   String _formatDistance(double distance) {
     final NumberFormat formatter = NumberFormat('#,###', 'ar');
     return formatter.format(distance.round());
+  }
+}
+
+class CompassProximityRingPainter extends CustomPainter {
+  final double needleAngle;
+  final bool isAligned;
+  final Color goldColor;
+  final Color emeraldColor;
+
+  CompassProximityRingPainter({
+    required this.needleAngle,
+    required this.isAligned,
+    required this.goldColor,
+    required this.emeraldColor,
+  });
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final center = Offset(size.width / 2, size.height / 2);
+    final radius = size.width / 2;
+
+    final angleDiff = needleAngle > 180 ? 360 - needleAngle : needleAngle;
+    final proximity = (1.0 - (angleDiff / 180.0)).clamp(0.0, 1.0);
+
+    final color = Color.lerp(goldColor, emeraldColor, math.pow(proximity, 3).toDouble()) ?? goldColor;
+
+    final ringPaint = Paint()
+      ..color = color.withValues(alpha: isAligned ? 0.8 : 0.3)
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = isAligned ? 5.0 : 3.0
+      ..strokeCap = StrokeCap.round;
+
+    canvas.drawCircle(
+      center,
+      radius - 2,
+      Paint()
+        ..color = Colors.black.withValues(alpha: 0.05)
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = 3,
+    );
+
+    final sweepAngle = proximity * 2 * math.pi;
+    final startAngle = -math.pi / 2 - (sweepAngle / 2);
+
+    canvas.drawArc(
+      Rect.fromCircle(center: center, radius: radius - 2),
+      startAngle,
+      sweepAngle,
+      false,
+      ringPaint,
+    );
+  }
+
+  @override
+  bool shouldRepaint(covariant CompassProximityRingPainter oldDelegate) {
+    return oldDelegate.needleAngle != needleAngle || oldDelegate.isAligned != isAligned;
   }
 }
 
@@ -441,7 +490,6 @@ class CompassDialPainter extends CustomPainter {
     final center = Offset(size.width / 2, size.height / 2);
     final radius = size.width / 2;
 
-    // 1. Draw elegant outer geometric background circle
     final outerRingPaint = Paint()
       ..color = goldColor.withValues(alpha: 0.05)
       ..style = PaintingStyle.fill;
@@ -453,15 +501,12 @@ class CompassDialPainter extends CustomPainter {
       ..strokeWidth = 2.5;
     canvas.drawCircle(center, radius, borderPaint);
 
-    // Subtle inner golden thin ring
     canvas.drawCircle(center, radius - 15, Paint()
       ..color = goldColor.withValues(alpha: 0.15)
       ..style = PaintingStyle.stroke
       ..strokeWidth = 1);
 
-    // 2. Draw Qibla Direction Sector (Golden Glow Wedge pointing to Mecca)
-    // A 16-degree gold highlight wedge centered on the qiblaAngle
-    final qiblaRad = (qiblaAngle - 90) * math.pi / 180; // offset by -90 for canvas coordinate system
+    final qiblaRad = (qiblaAngle - 90) * math.pi / 180;
     final sectorSweep = 16 * math.pi / 180;
     final sectorPaint = Paint()
       ..color = goldColor.withValues(alpha: 0.2)
@@ -475,16 +520,15 @@ class CompassDialPainter extends CustomPainter {
       sectorPaint,
     );
 
-    // Draw lines bordering the wedge
     final wedgeBorderPaint = Paint()
       ..color = goldColor.withValues(alpha: 0.4)
       ..style = PaintingStyle.stroke
       ..strokeWidth = 1.5;
-    
+
     final lineLength = radius - 15;
     final startAngle = qiblaRad - (sectorSweep / 2);
     final endAngle = qiblaRad + (sectorSweep / 2);
-    
+
     canvas.drawLine(
       center,
       Offset(center.dx + lineLength * math.cos(startAngle), center.dy + lineLength * math.sin(startAngle)),
@@ -496,7 +540,6 @@ class CompassDialPainter extends CustomPainter {
       wedgeBorderPaint,
     );
 
-    // 3. Draw Degree ticks
     final ticksPaint = Paint()
       ..style = PaintingStyle.stroke;
 
@@ -522,7 +565,6 @@ class CompassDialPainter extends CustomPainter {
       canvas.drawLine(start, end, ticksPaint);
     }
 
-    // 4. Draw Cardinal Letters in Arabic (ش, ق, ج, غ)
     final textPainter = TextPainter(
       textDirection: TextDirection.rtl,
     );
@@ -546,11 +588,54 @@ class CompassDialPainter extends CustomPainter {
       );
       textPainter.layout();
 
-      // Position the letter beautifully inside the ticks
       final x = center.dx + (radius - 28) * math.cos(angle) - (textPainter.width / 2);
       final y = center.dy + (radius - 28) * math.sin(angle) - (textPainter.height / 2);
       textPainter.paint(canvas, Offset(x, y));
     }
+
+    // 5. Draw a small Kaaba at the Qibla Angle on the dial
+    final kaabaCenter = Offset(
+      center.dx + (radius - 20) * math.cos(qiblaRad),
+      center.dy + (radius - 20) * math.sin(qiblaRad),
+    );
+
+    // Draw Kaaba shadow
+    canvas.drawRect(
+      Rect.fromCenter(center: kaabaCenter + const Offset(0, 1.5), width: 22, height: 22),
+      Paint()
+        ..color = Colors.black12
+        ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 1.5),
+    );
+
+    // Draw Kaaba body (Black cube)
+    final kaabaPaint = Paint()..color = const Color(0xFF1E1E1E);
+    canvas.drawRect(
+      Rect.fromCenter(center: kaabaCenter, width: 20, height: 20),
+      kaabaPaint,
+    );
+
+    // Draw Kaaba gold Kiswah belt
+    final beltPaint = Paint()
+      ..color = goldColor
+      ..strokeWidth = 2.0
+      ..style = PaintingStyle.stroke;
+    canvas.drawLine(
+      Offset(kaabaCenter.dx - 10, kaabaCenter.dy - 3),
+      Offset(kaabaCenter.dx + 10, kaabaCenter.dy - 3),
+      beltPaint,
+    );
+
+    // Draw Kaaba white door
+    final doorPaint = Paint()..color = const Color(0xFFE5D3B3); // Warm Kiswah door color
+    canvas.drawRect(
+      Rect.fromLTRB(
+        kaabaCenter.dx - 3,
+        kaabaCenter.dy + 2,
+        kaabaCenter.dx + 3,
+        kaabaCenter.dy + 10,
+      ),
+      doorPaint,
+    );
   }
 
   @override
@@ -573,11 +658,8 @@ class CompassNeedlePainter extends CustomPainter {
     final center = Offset(size.width / 2, size.height / 2);
     final radius = size.width / 2;
 
-    // Use active color based on alignment: green if aligned, gold otherwise
-    final activeColor = isAligned ? primaryColor : goldColor;
+    final activeColor = isAligned ? const Color(0xFF2E7D32) : goldColor;
 
-    // Premium needle: dual-shaded pointer pointing North
-    // Left side (lighter shade)
     final pathLeft = Path()
       ..moveTo(center.dx, center.dy)
       ..lineTo(center.dx - 10, center.dy)
@@ -588,7 +670,6 @@ class CompassNeedlePainter extends CustomPainter {
       ..color = activeColor
       ..style = PaintingStyle.fill;
 
-    // Right side (darker shade for 3D effect)
     final pathRight = Path()
       ..moveTo(center.dx, center.dy)
       ..lineTo(center.dx + 10, center.dy)
@@ -599,7 +680,6 @@ class CompassNeedlePainter extends CustomPainter {
       ..color = activeColor.withValues(alpha: 0.75)
       ..style = PaintingStyle.fill;
 
-    // Southern tail (opposing end) - left side
     final pathSouthLeft = Path()
       ..moveTo(center.dx, center.dy)
       ..lineTo(center.dx - 8, center.dy)
@@ -610,7 +690,6 @@ class CompassNeedlePainter extends CustomPainter {
       ..color = Colors.grey.withValues(alpha: 0.5)
       ..style = PaintingStyle.fill;
 
-    // Southern tail - right side (darker)
     final pathSouthRight = Path()
       ..moveTo(center.dx, center.dy)
       ..lineTo(center.dx + 8, center.dy)
@@ -621,7 +700,6 @@ class CompassNeedlePainter extends CustomPainter {
       ..color = Colors.grey.withValues(alpha: 0.35)
       ..style = PaintingStyle.fill;
 
-    // Draw Shadows under the needle
     final shadowPath = Path()
       ..moveTo(center.dx, center.dy + 3)
       ..lineTo(center.dx - 10, center.dy + 3)
@@ -638,19 +716,17 @@ class CompassNeedlePainter extends CustomPainter {
         ..maskFilter = const MaskFilter.blur(BlurStyle.normal, 3),
     );
 
-    // Draw needle halves
     canvas.drawPath(pathLeft, paintLeft);
     canvas.drawPath(pathRight, paintRight);
     canvas.drawPath(pathSouthLeft, paintSouthLeft);
     canvas.drawPath(pathSouthRight, paintSouthRight);
 
-    // Draw elegant decorative star or circle on the needle shaft
     final centerCirclePaint = Paint()
       ..color = activeColor
       ..style = PaintingStyle.stroke
       ..strokeWidth = 2;
     canvas.drawCircle(Offset(center.dx, center.dy - radius + 75), 6, centerCirclePaint);
-    
+
     final innerCirclePaint = Paint()
       ..color = activeColor
       ..style = PaintingStyle.fill;
@@ -662,133 +738,5 @@ class CompassNeedlePainter extends CustomPainter {
     return oldDelegate.isAligned != isAligned ||
         oldDelegate.primaryColor != primaryColor ||
         oldDelegate.goldColor != goldColor;
-  }
-}
-
-class _CitySelectorBottomSheet extends ConsumerStatefulWidget {
-  const _CitySelectorBottomSheet();
-
-  @override
-  ConsumerState<_CitySelectorBottomSheet> createState() => _CitySelectorBottomSheetState();
-}
-
-class _CitySelectorBottomSheetState extends ConsumerState<_CitySelectorBottomSheet> {
-  final TextEditingController _searchController = TextEditingController();
-  String _query = '';
-
-  @override
-  void dispose() {
-    _searchController.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final filteredCities = fallbackCities.where((city) {
-      return city.name.contains(_query) ||
-          city.latitude.toString().contains(_query) ||
-          city.longitude.toString().contains(_query);
-    }).toList();
-
-    return Container(
-      decoration: BoxDecoration(
-        color: theme.scaffoldBackgroundColor,
-        borderRadius: const BorderRadius.vertical(top: Radius.circular(32.0)),
-      ),
-      padding: const EdgeInsets.all(24.0),
-      constraints: BoxConstraints(
-        maxHeight: MediaQuery.of(context).size.height * 0.7,
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Center(
-            child: Container(
-              width: 40,
-              height: 4,
-              margin: const EdgeInsets.only(bottom: 20),
-              decoration: BoxDecoration(
-                color: theme.dividerColor,
-                borderRadius: BorderRadius.circular(2),
-              ),
-            ),
-          ),
-          Text(
-            'اختر مدينتك يدوياً',
-            style: GoogleFonts.cairo(
-              fontWeight: FontWeight.bold,
-              fontSize: 18,
-              color: theme.colorScheme.primary,
-            ),
-            textAlign: TextAlign.center,
-          ),
-          const SizedBox(height: 16),
-          TextField(
-            controller: _searchController,
-            textAlign: TextAlign.right,
-            onChanged: (val) {
-              setState(() {
-                _query = val;
-              });
-            },
-            decoration: InputDecoration(
-              hintText: 'ابحث عن مدينة...',
-              hintStyle: GoogleFonts.cairo(fontSize: 14),
-              prefixIcon: const Icon(Icons.search),
-              suffixIcon: _query.isNotEmpty
-                  ? IconButton(
-                      icon: const Icon(Icons.clear),
-                      onPressed: () {
-                        _searchController.clear();
-                        setState(() {
-                          _query = '';
-                        });
-                      },
-                    )
-                  : null,
-            ),
-          ),
-          const SizedBox(height: 16),
-          Expanded(
-            child: filteredCities.isEmpty
-                ? Center(
-                    child: Text(
-                      'لا توجد نتائج مطابقة',
-                      style: GoogleFonts.cairo(color: theme.disabledColor),
-                    ),
-                  )
-                : ListView.separated(
-                    itemCount: filteredCities.length,
-                    separatorBuilder: (context, index) => Divider(color: theme.dividerColor.withValues(alpha: 0.5)),
-                    itemBuilder: (context, index) {
-                      final city = filteredCities[index];
-                      return ListTile(
-                        title: Text(
-                          city.name,
-                          style: GoogleFonts.cairo(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 15,
-                          ),
-                        ),
-                        subtitle: Text(
-                          '${city.latitude.toStringAsFixed(2)}° N, ${city.longitude.toStringAsFixed(2)}° E',
-                          style: GoogleFonts.robotoMono(fontSize: 12),
-                        ),
-                        trailing: Icon(
-                          Icons.location_on_outlined,
-                          color: theme.colorScheme.secondary,
-                        ),
-                        onTap: () {
-                          ref.read(qiblaProvider.notifier).selectManualCity(city);
-                          Navigator.pop(context);
-                        },
-                      );
-                    },
-                  ),
-          ),
-        ],
-      ),
-    );
   }
 }

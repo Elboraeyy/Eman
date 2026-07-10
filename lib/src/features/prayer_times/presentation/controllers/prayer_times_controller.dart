@@ -5,7 +5,15 @@ import '../../data/repositories/prayer_repository_provider.dart';
 
 final locationProvider = FutureProvider<UserLocation?>((ref) async {
   final repo = ref.watch(prayerRepositoryProvider);
-  return await repo.getCurrentLocation();
+  final location = await repo.getCurrentLocation();
+  if (location == null) {
+    return const UserLocation(
+      latitude: 30.044420,
+      longitude: 31.235712,
+      cityName: 'القاهرة',
+    );
+  }
+  return location;
 });
 
 final todayPrayerTimesProvider = FutureProvider<PrayerTimes?>((ref) async {
@@ -18,10 +26,10 @@ final todayPrayerTimesProvider = FutureProvider<PrayerTimes?>((ref) async {
   final now = DateTime.now();
   
   if (location == null) {
-    // Fallback to Mecca (coordinates: 21.422487, 39.826206)
+    // Fallback to Cairo (coordinates: 30.044420, 31.235712)
     return await repo.getPrayerTimesForDate(
-      latitude: 21.422487,
-      longitude: 39.826206,
+      latitude: 30.044420,
+      longitude: 31.235712,
       date: now,
       method: method,
     );
@@ -34,4 +42,3 @@ final todayPrayerTimesProvider = FutureProvider<PrayerTimes?>((ref) async {
     method: method,
   );
 });
-

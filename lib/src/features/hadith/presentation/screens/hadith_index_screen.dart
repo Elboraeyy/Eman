@@ -8,6 +8,7 @@ import 'package:lucide_icons/lucide_icons.dart';
 import 'package:flutter/services.dart';
 import '../../data/repositories/hadith_repository_provider.dart';
 import '../../domain/entities/hadith_entities.dart';
+import 'package:zad/src/core/widgets/arabic_text.dart';
 
 // Providers for loading books and categories are imported from hadith_repository_provider.dart
 
@@ -121,7 +122,7 @@ class _HadithIndexScreenState extends ConsumerState<HadithIndexScreen> {
             color: isSelected ? theme.colorScheme.primary : theme.colorScheme.secondary.withValues(alpha: 0.6),
           ),
           const SizedBox(width: 12),
-          Text(
+          ArabicText(
             title,
             style: GoogleFonts.cairo(
               fontSize: 13,
@@ -167,7 +168,7 @@ class _HadithIndexScreenState extends ConsumerState<HadithIndexScreen> {
                 ),
               ),
               const SizedBox(height: 8),
-              Text(
+              ArabicText(
                 book.title,
                 style: GoogleFonts.cairo(
                   fontWeight: FontWeight.bold,
@@ -179,7 +180,7 @@ class _HadithIndexScreenState extends ConsumerState<HadithIndexScreen> {
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 2),
-              Text(
+              ArabicText(
                 book.author,
                 style: GoogleFonts.cairo(
                   fontSize: 9,
@@ -226,7 +227,7 @@ class _HadithIndexScreenState extends ConsumerState<HadithIndexScreen> {
                   }
                 },
               )
-            : Text(
+            : ArabicText(
                 'الأحاديث النبوية',
                 style: GoogleFonts.cairo(fontWeight: FontWeight.bold),
               ),
@@ -335,7 +336,7 @@ class _HadithIndexScreenState extends ConsumerState<HadithIndexScreen> {
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              Text(
+                              ArabicText(
                                 'كتب الأحاديث',
                                 style: GoogleFonts.cairo(
                                   fontWeight: FontWeight.bold,
@@ -355,7 +356,7 @@ class _HadithIndexScreenState extends ConsumerState<HadithIndexScreen> {
                                 child: Row(
                                   mainAxisSize: MainAxisSize.min,
                                   children: [
-                                    Text(
+                                    ArabicText(
                                       'المزيد',
                                       style: GoogleFonts.cairo(
                                         fontSize: 12,
@@ -408,7 +409,7 @@ class _HadithIndexScreenState extends ConsumerState<HadithIndexScreen> {
                         const SizedBox(height: 12),
                         Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
-                          child: Text(
+                          child: ArabicText(
                             'التصنيفات',
                             style: GoogleFonts.cairo(
                               fontWeight: FontWeight.bold,
@@ -461,7 +462,7 @@ class _HadithIndexScreenState extends ConsumerState<HadithIndexScreen> {
                                         width: 0.8,
                                       ),
                                     ),
-                                    child: Text(
+                                    child: ArabicText(
                                       cat.title,
                                       style: GoogleFonts.cairo(
                                         fontSize: 12,
@@ -487,7 +488,7 @@ class _HadithIndexScreenState extends ConsumerState<HadithIndexScreen> {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text(
+                      ArabicText(
                         'الأحاديث النبوية',
                         style: GoogleFonts.cairo(
                           fontWeight: FontWeight.bold,
@@ -505,7 +506,7 @@ class _HadithIndexScreenState extends ConsumerState<HadithIndexScreen> {
                       return Center(
                         child: Padding(
                           padding: const EdgeInsets.symmetric(vertical: 40.0),
-                          child: Text(
+                          child: ArabicText(
                             'لا توجد أحاديث مطابقة للتصفية الحالية.',
                             style: GoogleFonts.cairo(color: theme.disabledColor),
                           ),
@@ -524,7 +525,7 @@ class _HadithIndexScreenState extends ConsumerState<HadithIndexScreen> {
                     );
                   },
                   loading: () => const Center(child: Padding(padding: EdgeInsets.all(40.0), child: CircularProgressIndicator())),
-                  error: (err, _) => Center(child: Padding(padding: const EdgeInsets.all(40.0), child: Text('خطأ أثناء تحميل الأحاديث: $err'))),
+                  error: (err, _) => Center(child: Padding(padding: const EdgeInsets.all(40.0), child: ArabicText('خطأ أثناء تحميل الأحاديث: $err'))),
                 ),
               ],
             ),
@@ -539,7 +540,7 @@ class _HadithIndexScreenState extends ConsumerState<HadithIndexScreen> {
           children: [
             Icon(LucideIcons.search, size: 64, color: theme.disabledColor.withValues(alpha: 0.5)),
             const SizedBox(height: 16),
-            Text(
+            ArabicText(
               'ابحث بالكلمة، الراوي، الكتاب...',
               style: GoogleFonts.cairo(fontSize: 16, color: theme.disabledColor),
             ),
@@ -557,7 +558,7 @@ class _HadithIndexScreenState extends ConsumerState<HadithIndexScreen> {
               children: [
                 Icon(Icons.search_off_rounded, size: 64, color: theme.disabledColor.withValues(alpha: 0.5)),
                 const SizedBox(height: 16),
-                Text(
+                ArabicText(
                   'لم يتم العثور على أي نتائج لـ "$_searchQuery"',
                   style: GoogleFonts.cairo(fontSize: 16, color: theme.disabledColor),
                 ),
@@ -579,7 +580,7 @@ class _HadithIndexScreenState extends ConsumerState<HadithIndexScreen> {
       error: (err, _) => Center(
         child: Padding(
           padding: const EdgeInsets.all(40.0),
-          child: Text(
+          child: ArabicText(
             'خطأ أثناء تحميل نتائج البحث: $err',
             style: GoogleFonts.cairo(color: theme.colorScheme.error),
           ),
@@ -604,7 +605,7 @@ class _HadithIndexScreenState extends ConsumerState<HadithIndexScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              Text(
+              ArabicText(
                 hadith.text,
                 textAlign: TextAlign.center,
                 style: GoogleFonts.amiri(
@@ -621,7 +622,7 @@ class _HadithIndexScreenState extends ConsumerState<HadithIndexScreen> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Expanded(
-                    child: Text(
+                    child: ArabicText(
                       'الراوي: ${hadith.narrator.isNotEmpty ? hadith.narrator : "غير متوفر"}',
                       style: GoogleFonts.cairo(
                         fontSize: 12,

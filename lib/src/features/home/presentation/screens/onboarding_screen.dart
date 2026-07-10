@@ -4,6 +4,7 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../../core/database/shared_preferences_provider.dart';
+import 'package:zad/src/core/widgets/arabic_text.dart';
 
 class OnboardingScreen extends ConsumerStatefulWidget {
   const OnboardingScreen({super.key});
@@ -60,7 +61,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
         actions: [
           TextButton(
             onPressed: _completeOnboarding,
-            child: Text(
+            child: ArabicText(
               'تخطي',
               style: GoogleFonts.cairo(
                 fontSize: 15,
@@ -109,7 +110,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                       
                       const SizedBox(height: 48),
                       
-                      Text(
+                      ArabicText(
                         page.title,
                         textAlign: TextAlign.center,
                         style: GoogleFonts.cairo(
@@ -121,7 +122,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                       
                       const SizedBox(height: 16),
                       
-                      Text(
+                      ArabicText(
                         page.description,
                         textAlign: TextAlign.center,
                         style: GoogleFonts.cairo(
@@ -184,7 +185,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                         borderRadius: BorderRadius.circular(16),
                       ),
                     ),
-                    child: Text(
+                    child: ArabicText(
                       isLastPage ? 'استكشف الآن' : 'التالي',
                       style: GoogleFonts.cairo(
                         fontSize: 16,

@@ -7,6 +7,7 @@ import 'package:flutter_animate/flutter_animate.dart';
 import '../../data/repositories/hadith_repository_provider.dart';
 import '../../domain/entities/hadith_entities.dart';
 import 'hadith_index_screen.dart'; // To reuse HadithSearchFilter
+import 'package:zad/src/core/widgets/arabic_text.dart';
 
 final bookHadithsProvider = FutureProvider.family<List<Hadith>, int>((ref, bookId) async {
   final repo = ref.watch(hadithRepositoryProvider);
@@ -62,7 +63,7 @@ class _HadithBookDetailScreenState extends ConsumerState<HadithBookDetailScreen>
             color: isSelected ? theme.colorScheme.primary : theme.colorScheme.secondary.withValues(alpha: 0.6),
           ),
           const SizedBox(width: 12),
-          Text(
+          ArabicText(
             title,
             style: GoogleFonts.cairo(
               fontSize: 13,
@@ -104,12 +105,12 @@ class _HadithBookDetailScreenState extends ConsumerState<HadithBookDetailScreen>
             : Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Text(
+                  ArabicText(
                     currentBook?.title ?? 'الكتاب',
                     style: GoogleFonts.cairo(fontWeight: FontWeight.bold, fontSize: 16),
                   ),
                   if (currentBook != null && currentBook.author.isNotEmpty)
-                    Text(
+                    ArabicText(
                       currentBook.author,
                       style: GoogleFonts.cairo(fontSize: 10, color: theme.colorScheme.secondary),
                     ),
@@ -232,7 +233,7 @@ class _HadithBookDetailScreenState extends ConsumerState<HadithBookDetailScreen>
             return Center(
               child: Padding(
                 padding: const EdgeInsets.symmetric(vertical: 40.0, horizontal: 20.0),
-                child: Text(
+                child: ArabicText(
                   _isSearching
                       ? (_searchQuery.isEmpty
                           ? '' // Blank page
@@ -278,7 +279,7 @@ class _HadithBookDetailScreenState extends ConsumerState<HadithBookDetailScreen>
                               ),
                               const SizedBox(width: 8),
                               Expanded(
-                                child: Text(
+                                child: ArabicText(
                                   hadith.narrator.isNotEmpty ? hadith.narrator : 'راوي غير معروف',
                                   style: GoogleFonts.cairo(
                                     fontWeight: FontWeight.bold,
@@ -293,7 +294,7 @@ class _HadithBookDetailScreenState extends ConsumerState<HadithBookDetailScreen>
                                   color: theme.colorScheme.primary.withValues(alpha: 0.08),
                                   borderRadius: BorderRadius.circular(12),
                                 ),
-                                child: Text(
+                                child: ArabicText(
                                   'حديث رقم ${idx + 1}',
                                   style: GoogleFonts.cairo(
                                     fontSize: 10,
@@ -305,7 +306,7 @@ class _HadithBookDetailScreenState extends ConsumerState<HadithBookDetailScreen>
                             ],
                           ),
                           const SizedBox(height: 12),
-                          Text(
+                          ArabicText(
                             hadith.text,
                             style: GoogleFonts.amiri(
                               fontSize: 16,
@@ -322,7 +323,7 @@ class _HadithBookDetailScreenState extends ConsumerState<HadithBookDetailScreen>
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              Text(
+                              ArabicText(
                                 'تخريج وشرح الحديث...',
                                 style: GoogleFonts.cairo(
                                   fontSize: 11,
@@ -348,7 +349,7 @@ class _HadithBookDetailScreenState extends ConsumerState<HadithBookDetailScreen>
         },
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (err, _) => Center(
-          child: Text(
+          child: ArabicText(
             'حدث خطأ أثناء تحميل الأحاديث: $err',
             style: GoogleFonts.cairo(color: theme.colorScheme.error),
           ),

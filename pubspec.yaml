@@ -57,6 +57,8 @@ dependencies:
   share_plus: ^13.1.0
   intl: ^0.20.2
   lucide_icons: ^0.257.0
+  just_audio_background: ^0.0.1-beta.17
+  hijri: ^3.0.1
 
 dev_dependencies:
   flutter_test:

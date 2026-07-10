@@ -8,6 +8,7 @@ import 'package:lucide_icons/lucide_icons.dart';
 import '../../data/repositories/hadith_repository_provider.dart';
 import '../../domain/entities/hadith_entities.dart';
 import 'hadith_index_screen.dart';
+import 'package:zad/src/core/widgets/arabic_text.dart';
 
 final hadithDetailProvider = FutureProvider.family<Hadith?, int>((ref, hadithId) async {
   final repo = ref.watch(hadithRepositoryProvider);
@@ -34,7 +35,7 @@ class _HadithDetailScreenState extends ConsumerState<HadithDetailScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(
+        title: ArabicText(
           'شرح الحديث',
           style: GoogleFonts.cairo(fontWeight: FontWeight.bold),
         ),
@@ -85,7 +86,7 @@ class _HadithDetailScreenState extends ConsumerState<HadithDetailScreen> {
         data: (hadith) {
           if (hadith == null) {
             return Center(
-              child: Text(
+              child: ArabicText(
                 'الحديث غير موجود.',
                 style: GoogleFonts.cairo(fontSize: 16),
               ),
@@ -109,7 +110,7 @@ class _HadithDetailScreenState extends ConsumerState<HadithDetailScreen> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
-                        Text(
+                        ArabicText(
                           hadith.text,
                           textAlign: TextAlign.center,
                           style: GoogleFonts.amiri(
@@ -129,7 +130,7 @@ class _HadithDetailScreenState extends ConsumerState<HadithDetailScreen> {
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 Expanded(
-                                  child: Text(
+                                  child: ArabicText(
                                     'عن: ${hadith.narrator.isNotEmpty ? hadith.narrator : "غير متوفر"}',
                                     style: GoogleFonts.cairo(
                                       fontSize: 13,
@@ -151,7 +152,7 @@ class _HadithDetailScreenState extends ConsumerState<HadithDetailScreen> {
                                     padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
                                     child: Row(
                                       children: [
-                                        Text(
+                                        ArabicText(
                                           'المصادر',
                                           style: GoogleFonts.cairo(
                                             fontSize: 12,
@@ -175,7 +176,7 @@ class _HadithDetailScreenState extends ConsumerState<HadithDetailScreen> {
                             ),
                             if (_isSourceExpanded) ...[
                               const SizedBox(height: 12),
-                              Text(
+                              ArabicText(
                                 hadith.source,
                                 style: GoogleFonts.cairo(
                                   fontSize: 12,
@@ -197,7 +198,7 @@ class _HadithDetailScreenState extends ConsumerState<HadithDetailScreen> {
                 DetailSection(
                   title: 'شرح وتفسير الحديث',
                   icon: LucideIcons.bookOpen,
-                  content: Text(
+                  content: ArabicText(
                     hadith.explanation.isNotEmpty ? hadith.explanation : 'لا يتوفر شرح حالياً للحديث.',
                     style: GoogleFonts.cairo(
                       fontSize: 14, 
@@ -232,7 +233,7 @@ class _HadithDetailScreenState extends ConsumerState<HadithDetailScreen> {
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              Text(
+                              ArabicText(
                                 vocab.word,
                                 style: GoogleFonts.cairo(
                                   fontSize: 14,
@@ -242,7 +243,7 @@ class _HadithDetailScreenState extends ConsumerState<HadithDetailScreen> {
                               ),
                               const SizedBox(width: 16),
                               Expanded(
-                                child: Text(
+                                child: ArabicText(
                                   vocab.translation,
                                   style: GoogleFonts.cairo(
                                     fontSize: 13, 
@@ -282,7 +283,7 @@ class _HadithDetailScreenState extends ConsumerState<HadithDetailScreen> {
                                   color: theme.colorScheme.primary.withValues(alpha: 0.08),
                                 ),
                                 alignment: Alignment.center,
-                                child: Text(
+                                child: ArabicText(
                                   '${index + 1}',
                                   style: GoogleFonts.cairo(
                                     fontSize: 11,
@@ -293,7 +294,7 @@ class _HadithDetailScreenState extends ConsumerState<HadithDetailScreen> {
                               ),
                               const SizedBox(width: 12),
                               Expanded(
-                                child: Text(
+                                child: ArabicText(
                                   app,
                                   style: GoogleFonts.cairo(
                                     fontSize: 13, 
@@ -315,7 +316,7 @@ class _HadithDetailScreenState extends ConsumerState<HadithDetailScreen> {
           );
         },
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (err, _) => Center(child: Text('حدث خطأ أثناء تحميل الحديث: $err')),
+        error: (err, _) => Center(child: ArabicText('حدث خطأ أثناء تحميل الحديث: $err')),
       ),
     );
   }
@@ -362,7 +363,7 @@ class DetailSection extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(width: 12),
-                Text(
+                ArabicText(
                   title,
                   style: GoogleFonts.cairo(
                     fontWeight: FontWeight.bold,

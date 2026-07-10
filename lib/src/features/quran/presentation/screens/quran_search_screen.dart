@@ -7,6 +7,7 @@ import 'package:google_fonts/google_fonts.dart';
 import '../../domain/entities/quran_entities.dart' as quran;
 import '../../data/repositories/quran_repository_provider.dart';
 import 'quran_index_screen.dart';
+import 'package:zad/src/core/widgets/arabic_text.dart';
 
 final quranSearchQueryProvider = StateProvider<String>((ref) => '');
 
@@ -113,7 +114,7 @@ class _QuranSearchScreenState extends ConsumerState<QuranSearchScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(
+        title: ArabicText(
           'البحث في المصحف',
           style: GoogleFonts.cairo(fontWeight: FontWeight.bold),
         ),
@@ -170,7 +171,7 @@ class _QuranSearchScreenState extends ConsumerState<QuranSearchScreen> {
                                 ),
                                 child: Icon(Icons.menu_book, color: theme.colorScheme.primary),
                               ),
-                              title: Text(
+                              title: ArabicText(
                                 'الانتقال إلى صفحة $parsedPage في المصحف',
                                 style: GoogleFonts.cairo(fontWeight: FontWeight.bold),
                               ),
@@ -265,7 +266,7 @@ class _QuranSearchScreenState extends ConsumerState<QuranSearchScreen> {
   Widget _buildSectionHeader(ThemeData theme, String title) {
     return Padding(
       padding: const EdgeInsets.only(top: 8.0, bottom: 4.0),
-      child: Text(
+      child: ArabicText(
         title,
         style: GoogleFonts.cairo(
           fontSize: 15,
@@ -299,9 +300,9 @@ class _QuranSearchScreenState extends ConsumerState<QuranSearchScreen> {
                 color: theme.colorScheme.secondary.withValues(alpha: 0.15),
               ),
               child: Center(
-                child: Text(
+                child: ArabicText(
                   s.number.toString(),
-                  style: GoogleFonts.robotoMono(
+                  style: GoogleFonts.cairo(
                     fontWeight: FontWeight.bold,
                     fontSize: 12,
                     color: theme.colorScheme.onSurface,
@@ -309,11 +310,11 @@ class _QuranSearchScreenState extends ConsumerState<QuranSearchScreen> {
                 ),
               ),
             ),
-            title: Text(
+            title: ArabicText(
               'سورة ${s.nameArabic}',
               style: GoogleFonts.amiri(fontWeight: FontWeight.bold, fontSize: 16, color: theme.colorScheme.primary),
             ),
-            subtitle: Text(
+            subtitle: ArabicText(
               'صفحة $startPage • ${s.numberOfAyahs} آية • ${s.revelationType == 'Meccan' ? 'مكية' : 'مدنية'}',
               style: GoogleFonts.cairo(fontSize: 11, color: theme.textTheme.bodyMedium?.color),
             ),
@@ -355,7 +356,7 @@ class _QuranSearchScreenState extends ConsumerState<QuranSearchScreen> {
                         future: ref.read(quranRepositoryProvider).getSurahByNumber(a.surahNumber),
                         builder: (context, snapshot) {
                           final name = snapshot.data?.nameArabic ?? '';
-                          return Text(
+                          return ArabicText(
                             'سورة $name - آية ${a.numberInSurah}',
                             style: GoogleFonts.cairo(
                               fontWeight: FontWeight.bold,
@@ -371,9 +372,9 @@ class _QuranSearchScreenState extends ConsumerState<QuranSearchScreen> {
                           color: theme.colorScheme.primary.withValues(alpha: 0.08),
                           borderRadius: BorderRadius.circular(12),
                         ),
-                        child: Text(
+                        child: ArabicText(
                           'صفحة ${a.page}',
-                          style: GoogleFonts.robotoMono(
+                          style: GoogleFonts.cairo(
                             fontSize: 10,
                             fontWeight: FontWeight.bold,
                             color: theme.colorScheme.primary,
@@ -383,7 +384,7 @@ class _QuranSearchScreenState extends ConsumerState<QuranSearchScreen> {
                     ],
                   ),
                   const SizedBox(height: 12),
-                  Text(
+                  ArabicText(
                     a.textUthmani.isNotEmpty ? a.textUthmani : a.text,
                     style: GoogleFonts.amiri(
                       fontSize: 18,
@@ -414,7 +415,7 @@ class _QuranSearchScreenState extends ConsumerState<QuranSearchScreen> {
           children: [
             Icon(Icons.search_off, size: 60, color: theme.disabledColor),
             const SizedBox(height: 12),
-            Text(
+            ArabicText(
               'لا توجد نتائج بحث مطابقة',
               style: GoogleFonts.cairo(fontSize: 15, color: theme.textTheme.bodyMedium?.color),
             ),
@@ -432,14 +433,14 @@ class _QuranSearchScreenState extends ConsumerState<QuranSearchScreen> {
         children: [
           Icon(Icons.search, size: 80, color: theme.colorScheme.primary.withValues(alpha: 0.15)),
           const SizedBox(height: 16),
-          Text(
+          ArabicText(
             'البحث المباشر في المصحف',
             style: GoogleFonts.cairo(fontSize: 16, fontWeight: FontWeight.bold, color: theme.colorScheme.primary),
           ),
           const SizedBox(height: 6),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 40.0),
-            child: Text(
+            child: ArabicText(
               'اكتب كلمة، اسم سورة، رقم صفحة (1-604)، أو مرجع للآية (مثل: 2:255 أو البقرة 255) للبحث الفوري.',
               textAlign: TextAlign.center,
               style: GoogleFonts.cairo(fontSize: 13, color: theme.textTheme.bodyMedium?.color),

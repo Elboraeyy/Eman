@@ -14,43 +14,124 @@ class PrayerRepositoryImpl implements PrayerRepository {
     required this.sharedPreferences,
   });
 
+  UserLocation? _getCachedLocation() {
+    try {
+      final double? lat = sharedPreferences.getDouble('cached_latitude');
+      final double? lng = sharedPreferences.getDouble('cached_longitude');
+      final String? cityName = sharedPreferences.getString('cached_city_name');
+      if (lat != null && lng != null && cityName != null) {
+        return UserLocation(
+          latitude: lat,
+          longitude: lng,
+          cityName: cityName,
+        );
+      }
+    } catch (e) {
+      print('Failed to get cached location: $e');
+    }
+    return null;
+  }
+
+  Future<void> _cacheLocation(UserLocation userLoc) async {
+    try {
+      await sharedPreferences.setDouble('cached_latitude', userLoc.latitude);
+      await sharedPreferences.setDouble('cached_longitude', userLoc.longitude);
+      await sharedPreferences.setString('cached_city_name', userLoc.cityName);
+    } catch (e) {
+      print('Failed to cache location: $e');
+    }
+  }
+
   @override
   Future<UserLocation?> getCurrentLocation() async {
     try {
       bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
       if (!serviceEnabled) {
-        return null;
+        return _getCachedLocation();
       }
 
       LocationPermission permission = await Geolocator.checkPermission();
-      if (permission == LocationPermission.denied) {
-        permission = await Geolocator.requestPermission();
-        if (permission == LocationPermission.denied) {
-          return null;
+      if (permission == LocationPermission.denied || permission == LocationPermission.deniedForever) {
+        return _getCachedLocation();
+      }
+
+      // Try to get last known position first (fast & offline cached)
+      Position? position = await Geolocator.getLastKnownPosition();
+
+      if (position == null) {
+        // Fallback to active position query with a safe timeout
+        position = await Geolocator.getCurrentPosition(
+          locationSettings: const LocationSettings(
+            accuracy: LocationAccuracy.low,
+            timeLimit: Duration(seconds: 8),
+          ),
+        );
+      }
+
+      // Reverse geocode to get Arabic city name
+      String cityName = 'موقعي الحالي';
+      try {
+        final response = await dio.get(
+          'https://nominatim.openstreetmap.org/reverse',
+          queryParameters: {
+            'format': 'json',
+            'lat': position.latitude,
+            'lon': position.longitude,
+            'zoom': 10,
+            'accept-language': 'ar',
+          },
+          options: Options(
+            headers: {
+              'User-Agent': 'ZadMuslimAppGeocodingClient',
+            },
+            receiveTimeout: const Duration(seconds: 3),
+            sendTimeout: const Duration(seconds: 3),
+          ),
+        );
+        
+        if (response.statusCode == 200 && response.data != null) {
+          final data = response.data;
+          if (data is Map<String, dynamic>) {
+            final address = data['address'] as Map<String, dynamic>?;
+            if (address != null) {
+              final String? rawCity = address['city'] ??
+                  address['town'] ??
+                  address['suburb'] ??
+                  address['village'] ??
+                  address['state'] ??
+                  address['governorate'] ??
+                  address['county'];
+              if (rawCity != null && rawCity.isNotEmpty) {
+                cityName = rawCity.replaceAll('محافظة ', '').trim();
+              }
+            }
+          }
+        }
+      } catch (e) {
+        print('Reverse geocoding failed: $e');
+        // Fallback to last cached city name if coordinates are close
+        final cached = _getCachedLocation();
+        if (cached != null) {
+          final double distance = Geolocator.distanceBetween(position.latitude, position.longitude, cached.latitude, cached.longitude);
+          if (distance < 10000) { // < 10km
+            cityName = cached.cityName;
+          }
         }
       }
 
-      if (permission == LocationPermission.deniedForever) {
-        return null;
-      }
-
-      final position = await Geolocator.getCurrentPosition(
-        locationSettings: const LocationSettings(
-          accuracy: LocationAccuracy.low,
-          timeLimit: Duration(seconds: 5),
-        ),
-      );
-
-      // Default city name to coords as reverse-geocoding requires a paid service or extra package.
-      // We will write a readable string like "موقعي الحالي" (My Current Location).
-      return UserLocation(
+      final userLoc = UserLocation(
         latitude: position.latitude,
         longitude: position.longitude,
-        cityName: 'موقعي الحالي',
+        cityName: cityName,
       );
+
+      // Cache the successfully resolved location
+      await _cacheLocation(userLoc);
+
+      return userLoc;
     } catch (e) {
       print('PrayerRepositoryImpl: Location check failed: $e');
-      return null;
+      return _getCachedLocation();
     }
   }
 

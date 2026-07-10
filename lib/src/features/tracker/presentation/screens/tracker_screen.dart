@@ -7,6 +7,7 @@ import 'package:intl/intl.dart' hide TextDirection;
 import 'package:fl_chart/fl_chart.dart';
 import '../../../../core/database/app_database.dart';
 import 'package:zad/src/features/tracker/data/repositories/tracker_repository_provider.dart';
+import 'package:zad/src/core/widgets/arabic_text.dart';
 
 // Providers to load tasks, daily completions, and weekly stats
 final tasksListProvider = FutureProvider<List<ReligiousTaskData>>((ref) async {
@@ -83,7 +84,7 @@ class _TrackerScreenState extends ConsumerState<TrackerScreen> {
                   ),
                 ),
               ),
-              Text(
+              ArabicText(
                 'إضافة عبادة جديدة',
                 style: GoogleFonts.cairo(
                   fontWeight: FontWeight.bold,
@@ -112,7 +113,7 @@ class _TrackerScreenState extends ConsumerState<TrackerScreen> {
                     if (context.mounted) Navigator.pop(context);
                   }
                 },
-                child: const Text('حفظ العبادة'),
+                child: const ArabicText('حفظ العبادة'),
               ),
             ],
           ),
@@ -132,7 +133,7 @@ class _TrackerScreenState extends ConsumerState<TrackerScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(
+        title: ArabicText(
           isStatsMode ? 'إحصائيات العبادات' : 'جدول اليوم',
           style: GoogleFonts.cairo(fontWeight: FontWeight.bold),
         ),
@@ -151,7 +152,7 @@ class _TrackerScreenState extends ConsumerState<TrackerScreen> {
             ? Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
+                  ArabicText(
                     'مؤشر الالتزام الأسبوعي',
                     style: GoogleFonts.cairo(fontSize: 18, fontWeight: FontWeight.bold),
                   ),
@@ -163,7 +164,7 @@ class _TrackerScreenState extends ConsumerState<TrackerScreen> {
                           child: Padding(
                             padding: const EdgeInsets.all(24.0),
                             child: Center(
-                              child: Text(
+                              child: ArabicText(
                                 'لا توجد إحصائيات كافية حالياً.',
                                 style: GoogleFonts.cairo(),
                               ),
@@ -174,7 +175,7 @@ class _TrackerScreenState extends ConsumerState<TrackerScreen> {
                       return _buildWeeklyChartCard(stats, theme);
                     },
                     loading: () => const Center(child: CircularProgressIndicator()),
-                    error: (err, _) => Center(child: Text('خطأ في تحميل الإحصائيات: $err')),
+                    error: (err, _) => Center(child: ArabicText('خطأ في تحميل الإحصائيات: $err')),
                   ),
                   const SizedBox(height: 24),
                   _buildTrackerActionCard(
@@ -207,7 +208,7 @@ class _TrackerScreenState extends ConsumerState<TrackerScreen> {
                             children: [
                               Icon(Icons.insights, color: theme.colorScheme.primary),
                               const SizedBox(width: 8),
-                              Text(
+                              ArabicText(
                                 'همّة نحو العبادة',
                                 style: GoogleFonts.cairo(
                                   fontWeight: FontWeight.bold,
@@ -218,7 +219,7 @@ class _TrackerScreenState extends ConsumerState<TrackerScreen> {
                             ],
                           ),
                           const SizedBox(height: 10),
-                          Text(
+                          ArabicText(
                             'متابعة أدائك الأسبوعي يساعدك على ترسيخ عاداتك الدينية والالتزام بالطاعات اليومية والسنن الرواتب.',
                             style: GoogleFonts.cairo(
                               fontSize: 13,
@@ -234,7 +235,7 @@ class _TrackerScreenState extends ConsumerState<TrackerScreen> {
             : Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
+                  ArabicText(
                     'عباداتي اليومية',
                     style: GoogleFonts.cairo(fontSize: 18, fontWeight: FontWeight.bold),
                   ),
@@ -248,7 +249,7 @@ class _TrackerScreenState extends ConsumerState<TrackerScreen> {
                         return Center(
                           child: Padding(
                             padding: const EdgeInsets.all(40.0),
-                            child: Text(
+                            child: ArabicText(
                               'لا توجد عبادات مضافة حالياً.',
                               style: GoogleFonts.cairo(color: theme.textTheme.bodyMedium?.color),
                             ),
@@ -294,7 +295,7 @@ class _TrackerScreenState extends ConsumerState<TrackerScreen> {
                               ),
                               child: CheckboxListTile(
                                 contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-                                title: Text(
+                                title: ArabicText(
                                   task.title,
                                   style: GoogleFonts.cairo(
                                     fontWeight: FontWeight.w600,
@@ -320,7 +321,7 @@ class _TrackerScreenState extends ConsumerState<TrackerScreen> {
                       );
                     },
                     loading: () => const Center(child: CircularProgressIndicator()),
-                    error: (err, _) => Center(child: Text('خطأ في تحميل المهام: $err')),
+                    error: (err, _) => Center(child: ArabicText('خطأ في تحميل المهام: $err')),
                   ),
                 ],
               ),
@@ -360,7 +361,7 @@ class _TrackerScreenState extends ConsumerState<TrackerScreen> {
                 showTitles: true,
                 interval: 25,
                 getTitlesWidget: (value, meta) {
-                  return Text(
+                  return ArabicText(
                     '${value.toInt()}%',
                     style: const TextStyle(
                       color: Color(0xFF7D5852), // Medium Brown Text
@@ -381,7 +382,7 @@ class _TrackerScreenState extends ConsumerState<TrackerScreen> {
                     final dayFormat = DateFormat('EEE', 'ar'); // Arabic short day name
                     return Padding(
                       padding: const EdgeInsets.only(top: 8.0),
-                      child: Text(
+                      child: ArabicText(
                         dayFormat.format(date),
                         style: GoogleFonts.cairo(
                           fontSize: 10,
@@ -476,14 +477,14 @@ class _TrackerScreenState extends ConsumerState<TrackerScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
+                    ArabicText(
                       title,
                       style: GoogleFonts.cairo(
                         fontWeight: FontWeight.bold,
                         fontSize: 14,
                       ),
                     ),
-                    Text(
+                    ArabicText(
                       subtitle,
                       style: GoogleFonts.cairo(
                         fontSize: 11,

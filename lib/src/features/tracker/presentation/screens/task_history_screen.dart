@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:zad/src/core/widgets/arabic_text.dart';
 
 class TaskHistoryScreen extends ConsumerWidget {
   const TaskHistoryScreen({super.key});
@@ -12,7 +13,7 @@ class TaskHistoryScreen extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(
+        title: ArabicText(
           'إرث الإنجازات',
           style: GoogleFonts.cairo(fontWeight: FontWeight.bold),
         ),
@@ -28,7 +29,7 @@ class TaskHistoryScreen extends ConsumerWidget {
             const SizedBox(height: 32),
             
             // 2. Weekly Progress Chart Section
-            Text(
+            ArabicText(
               'إحصائيات الأسبوع',
               style: GoogleFonts.cairo(
                 fontSize: 18,
@@ -42,7 +43,7 @@ class TaskHistoryScreen extends ConsumerWidget {
             const SizedBox(height: 32),
             
             // 3. Badges Section
-            Text(
+            ArabicText(
               'أوسمة الفخر والالتزام',
               style: GoogleFonts.cairo(
                 fontSize: 18,
@@ -56,7 +57,7 @@ class TaskHistoryScreen extends ConsumerWidget {
             const SizedBox(height: 32),
             
             // 4. Legacy Timeline
-            Text(
+            ArabicText(
               'سجل الخلود والعبادات',
               style: GoogleFonts.cairo(
                 fontSize: 18,
@@ -90,12 +91,12 @@ class TaskHistoryScreen extends ConsumerWidget {
               size: 64,
             ),
             const SizedBox(height: 8),
-            Text(
+            ArabicText(
               'رصيد الحسنات والالتزام المقدر',
               style: GoogleFonts.cairo(fontSize: 13, color: theme.disabledColor),
             ),
             const SizedBox(height: 4),
-            Text(
+            ArabicText(
               '1,450 نقطة',
               style: GoogleFonts.cairo(
                 fontSize: 28,
@@ -121,7 +122,7 @@ class TaskHistoryScreen extends ConsumerWidget {
   Widget _buildStatItem(String value, String label, ThemeData theme) {
     return Column(
       children: [
-        Text(
+        ArabicText(
           value,
           style: GoogleFonts.cairo(
             fontWeight: FontWeight.bold,
@@ -129,7 +130,7 @@ class TaskHistoryScreen extends ConsumerWidget {
             color: theme.colorScheme.primary,
           ),
         ),
-        Text(
+        ArabicText(
           label,
           style: GoogleFonts.cairo(fontSize: 11, color: theme.disabledColor),
         ),
@@ -167,7 +168,7 @@ class TaskHistoryScreen extends ConsumerWidget {
                   ),
                 ),
                 const SizedBox(height: 8),
-                Text(
+                ArabicText(
                   days[index],
                   style: GoogleFonts.cairo(fontSize: 11, fontWeight: FontWeight.bold),
                 ),
@@ -211,7 +212,7 @@ class TaskHistoryScreen extends ConsumerWidget {
               ),
             ),
             const SizedBox(height: 6),
-            Text(
+            ArabicText(
               badge.name,
               style: GoogleFonts.cairo(
                 fontSize: 12,
@@ -259,7 +260,7 @@ class TaskHistoryScreen extends ConsumerWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
-                  Text(
+                  ArabicText(
                     item.time,
                     style: GoogleFonts.cairo(
                       fontSize: 12,
@@ -267,7 +268,7 @@ class TaskHistoryScreen extends ConsumerWidget {
                       color: theme.colorScheme.secondary,
                     ),
                   ),
-                  Text(
+                  ArabicText(
                     item.title,
                     style: GoogleFonts.cairo(fontSize: 13),
                     textAlign: TextAlign.right,

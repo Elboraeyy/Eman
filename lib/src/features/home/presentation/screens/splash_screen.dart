@@ -5,6 +5,7 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../../core/database/shared_preferences_provider.dart';
+import 'package:zad/src/core/widgets/arabic_text.dart';
 
 class SplashScreen extends ConsumerStatefulWidget {
   const SplashScreen({super.key});
@@ -89,7 +90,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
                 const SizedBox(height: 32),
                 
                 // App Title
-                Text(
+                ArabicText(
                   'زاد مسلم',
                   style: GoogleFonts.amiri(
                     fontSize: 48,
@@ -103,7 +104,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
                 const SizedBox(height: 8),
                 
                 // Tagline
-                Text(
+                ArabicText(
                   'الدليل الإسلامي الشامل',
                   style: GoogleFonts.cairo(
                     fontSize: 16,

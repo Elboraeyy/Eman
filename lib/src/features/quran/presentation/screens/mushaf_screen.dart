@@ -15,6 +15,7 @@ import '../../data/repositories/quran_repository_provider.dart';
 import '../../domain/entities/quran_entities.dart';
 import '../controllers/audio_player_controller.dart';
 import '../controllers/quran_progress_controller.dart';
+import 'package:zad/src/core/widgets/arabic_text.dart';
 
 // Providers for page fetching and dynamic font loading
 final qcfPageProvider = FutureProvider.family<QcfPage, int>((ref, pageNumber) async {
@@ -248,7 +249,7 @@ class _MushafScreenState extends ConsumerState<MushafScreen> {
                 ),
               ),
               const SizedBox(height: 16),
-              Text(
+              ArabicText(
                 pageBookmark != null ? 'إدارة العلامة الحالية' : 'خيارات حفظ العلامة',
                 style: GoogleFonts.cairo(
                   fontSize: 16,
@@ -264,11 +265,11 @@ class _MushafScreenState extends ConsumerState<MushafScreen> {
                     backgroundColor: Color(pageBookmark.colorValue).withValues(alpha: 0.1),
                     child: Icon(Icons.bookmark, color: Color(pageBookmark.colorValue)),
                   ),
-                  title: Text(
+                  title: ArabicText(
                     pageBookmark.name,
                     style: GoogleFonts.cairo(fontWeight: FontWeight.bold),
                   ),
-                  subtitle: Text(
+                  subtitle: ArabicText(
                     'صفحة ${pageBookmark.page}',
                     style: GoogleFonts.cairo(fontSize: 11),
                   ),
@@ -289,7 +290,7 @@ class _MushafScreenState extends ConsumerState<MushafScreen> {
                   _showNewBookmarkDialog(pageNum);
                 },
                 icon: const Icon(Icons.bookmark_add),
-                label: Text('وضع علامة جديدة', style: GoogleFonts.cairo(fontWeight: FontWeight.bold)),
+                label: ArabicText('وضع علامة جديدة', style: GoogleFonts.cairo(fontWeight: FontWeight.bold)),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: theme.colorScheme.primary,
                   foregroundColor: theme.colorScheme.onPrimary,
@@ -306,7 +307,7 @@ class _MushafScreenState extends ConsumerState<MushafScreen> {
                     _showMoveBookmarkBottomSheet(pageNum);
                   },
                   icon: const Icon(Icons.drive_file_move_outlined),
-                  label: Text('نقل علامة قديمة', style: GoogleFonts.cairo(fontWeight: FontWeight.bold)),
+                  label: ArabicText('نقل علامة قديمة', style: GoogleFonts.cairo(fontWeight: FontWeight.bold)),
                   style: OutlinedButton.styleFrom(
                     foregroundColor: theme.colorScheme.primary,
                     side: BorderSide(color: theme.colorScheme.primary),
@@ -341,7 +342,7 @@ class _MushafScreenState extends ConsumerState<MushafScreen> {
           builder: (context, setDialogState) {
             return AlertDialog(
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
-              title: Text(
+              title: ArabicText(
                 'علامة قراءة جديدة',
                 style: GoogleFonts.cairo(fontWeight: FontWeight.bold),
                 textAlign: TextAlign.center,
@@ -362,7 +363,7 @@ class _MushafScreenState extends ConsumerState<MushafScreen> {
                       ),
                     ),
                     const SizedBox(height: 20),
-                    Text(
+                    ArabicText(
                       'اختر لون العلامة:',
                       style: GoogleFonts.cairo(fontSize: 13, fontWeight: FontWeight.bold),
                     ),
@@ -401,7 +402,7 @@ class _MushafScreenState extends ConsumerState<MushafScreen> {
               actions: [
                 TextButton(
                   onPressed: () => Navigator.pop(context),
-                  child: Text('إلغاء', style: GoogleFonts.cairo(color: Colors.grey)),
+                  child: ArabicText('إلغاء', style: GoogleFonts.cairo(color: Colors.grey)),
                 ),
                 ElevatedButton(
                   onPressed: () {
@@ -422,7 +423,7 @@ class _MushafScreenState extends ConsumerState<MushafScreen> {
                     backgroundColor: theme.colorScheme.primary,
                     foregroundColor: theme.colorScheme.onPrimary,
                   ),
-                  child: Text('حفظ', style: GoogleFonts.cairo(fontWeight: FontWeight.bold)),
+                  child: ArabicText('حفظ', style: GoogleFonts.cairo(fontWeight: FontWeight.bold)),
                 ),
               ],
             );
@@ -461,7 +462,7 @@ class _MushafScreenState extends ConsumerState<MushafScreen> {
                 ),
               ),
               const SizedBox(height: 16),
-              Text(
+              ArabicText(
                 'اختر العلامة لنقلها هنا',
                 style: GoogleFonts.cairo(
                   fontSize: 16,
@@ -469,7 +470,7 @@ class _MushafScreenState extends ConsumerState<MushafScreen> {
                   color: theme.colorScheme.primary,
                 ),
               ),
-              Text(
+              ArabicText(
                 'سيتم نقل العلامة المحددة إلى صفحة $pageNum',
                 style: GoogleFonts.cairo(fontSize: 11, color: theme.textTheme.bodyMedium?.color),
               ),
@@ -477,7 +478,7 @@ class _MushafScreenState extends ConsumerState<MushafScreen> {
               Expanded(
                 child: bookmarks.isEmpty
                     ? Center(
-                        child: Text(
+                        child: ArabicText(
                           'لا توجد علامات حالياً',
                           style: GoogleFonts.cairo(),
                         ),
@@ -495,11 +496,11 @@ class _MushafScreenState extends ConsumerState<MushafScreen> {
                               backgroundColor: Color(bookmark.colorValue).withValues(alpha: 0.1),
                               child: Icon(Icons.bookmark, color: Color(bookmark.colorValue)),
                             ),
-                            title: Text(
+                            title: ArabicText(
                               bookmark.name,
                               style: GoogleFonts.cairo(fontWeight: FontWeight.bold),
                             ),
-                            subtitle: Text(
+                            subtitle: ArabicText(
                               'كانت في صفحة ${bookmark.page}',
                               style: GoogleFonts.cairo(fontSize: 11),
                             ),
@@ -693,7 +694,7 @@ class _MushafScreenState extends ConsumerState<MushafScreen> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             const BackButton(),
-            Text(
+            ArabicText(
               'خيارات التلاوة والاستماع',
               style: GoogleFonts.cairo(fontWeight: FontWeight.bold, fontSize: 16, color: theme.colorScheme.primary),
             ),
@@ -711,8 +712,8 @@ class _MushafScreenState extends ConsumerState<MushafScreen> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text('طريقة القراءة والتفاعل', style: GoogleFonts.cairo(fontWeight: FontWeight.bold)),
-        content: Text(
+        title: ArabicText('طريقة القراءة والتفاعل', style: GoogleFonts.cairo(fontWeight: FontWeight.bold)),
+        content: ArabicText(
           '• اسحب لليمين واليسار للتنقل بين الصفحات.\n'
           '• اضغط ضغطة واحدة في منتصف الصفحة لإظهار أو إخفاء أزرار التحكم.\n'
           '• اضغط على أي آية (كلمات الآية) لعرض تفسيرها، ترجمتها، حفظها، أو تلاوتها.\n'
@@ -723,7 +724,7 @@ class _MushafScreenState extends ConsumerState<MushafScreen> {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: Text('حسناً', style: GoogleFonts.cairo(fontWeight: FontWeight.bold)),
+            child: ArabicText('حسناً', style: GoogleFonts.cairo(fontWeight: FontWeight.bold)),
           )
         ],
       ),
@@ -775,7 +776,7 @@ class _MushafScreenState extends ConsumerState<MushafScreen> {
                       ),
                     ),
                     const SizedBox(height: 16),
-                    Text(
+                    ArabicText(
                       'اختر السورة',
                       style: GoogleFonts.cairo(fontSize: 16, fontWeight: FontWeight.bold, color: theme.colorScheme.primary),
                     ),
@@ -822,7 +823,7 @@ class _MushafScreenState extends ConsumerState<MushafScreen> {
                     Expanded(
                       child: filteredSurahs.isEmpty
                           ? Center(
-                              child: Text(
+                              child: ArabicText(
                                 'لا توجد نتائج بحث مطابقة',
                                 style: GoogleFonts.cairo(color: Colors.grey),
                               ),
@@ -844,9 +845,9 @@ class _MushafScreenState extends ConsumerState<MushafScreen> {
                                         ? theme.colorScheme.primary 
                                         : theme.colorScheme.primary.withValues(alpha: 0.08),
                                     foregroundColor: isCurrent ? Colors.white : theme.colorScheme.primary,
-                                    child: Text(surah.number.toString(), style: GoogleFonts.robotoMono(fontSize: 12, fontWeight: FontWeight.bold)),
+                                    child: ArabicText(surah.number.toString(), style: GoogleFonts.cairo(fontSize: 12, fontWeight: FontWeight.bold)),
                                   ),
-                                  title: Text(
+                                  title: ArabicText(
                                     'سورة ${surah.nameArabic}',
                                     style: GoogleFonts.amiri(
                                       fontSize: 18,
@@ -854,7 +855,7 @@ class _MushafScreenState extends ConsumerState<MushafScreen> {
                                       color: isCurrent ? theme.colorScheme.secondary : theme.colorScheme.primary,
                                     ),
                                   ),
-                                  subtitle: Text(
+                                  subtitle: ArabicText(
                                     'صفحة $startPage • ${surah.numberOfAyahs} آية',
                                     style: GoogleFonts.cairo(fontSize: 11, color: theme.textTheme.bodyMedium?.color),
                                   ),
@@ -903,7 +904,7 @@ class _MushafScreenState extends ConsumerState<MushafScreen> {
                 ),
               ),
               const SizedBox(height: 16),
-              Text(
+              ArabicText(
                 'اختر الجزء',
                 style: GoogleFonts.cairo(fontSize: 16, fontWeight: FontWeight.bold, color: theme.colorScheme.primary),
               ),
@@ -943,7 +944,7 @@ class _MushafScreenState extends ConsumerState<MushafScreen> {
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Text(
+                            ArabicText(
                               'الجزء $juzNum',
                               style: GoogleFonts.cairo(
                                 fontSize: 13,
@@ -951,7 +952,7 @@ class _MushafScreenState extends ConsumerState<MushafScreen> {
                                 color: isCurrent ? Colors.white : theme.colorScheme.primary,
                               ),
                             ),
-                            Text(
+                            ArabicText(
                               'صفحة $startPage',
                               style: GoogleFonts.cairo(
                                 fontSize: 9,
@@ -1004,7 +1005,7 @@ class _MushafScreenState extends ConsumerState<MushafScreen> {
                   ),
                 ),
                 const SizedBox(height: 16),
-                Text(
+                ArabicText(
                   'انتقال إلى صفحة',
                   style: GoogleFonts.cairo(
                     fontSize: 16,
@@ -1055,7 +1056,7 @@ class _MushafScreenState extends ConsumerState<MushafScreen> {
                           borderRadius: BorderRadius.circular(16),
                         ),
                       ),
-                      child: Text(
+                      child: ArabicText(
                         'اذهب',
                         style: GoogleFonts.cairo(fontWeight: FontWeight.bold),
                       ),
@@ -1070,7 +1071,7 @@ class _MushafScreenState extends ConsumerState<MushafScreen> {
                       return Padding(
                         padding: const EdgeInsets.only(left: 8.0),
                         child: ActionChip(
-                          label: Text('صفحة $quickPage', style: GoogleFonts.cairo(fontSize: 11)),
+                          label: ArabicText('صفحة $quickPage', style: GoogleFonts.cairo(fontSize: 11)),
                           onPressed: () {
                             Navigator.pop(context);
                             _pageController.jumpToPage(quickPage - 1);
@@ -1133,8 +1134,11 @@ class _MushafScreenState extends ConsumerState<MushafScreen> {
                       children: [
                         Icon(Icons.person_outline, size: 16, color: theme.colorScheme.primary),
                         const SizedBox(width: 6),
-                        Text(
-                          staticReciters.firstWhere((r) => r.id == playbackState.activeReciterId).nameArabic,
+                        ArabicText(
+                          (staticReciters.firstWhere(
+                            (r) => r.id == playbackState.activeReciterId,
+                            orElse: () => staticReciters.first,
+                          )).nameArabic,
                           style: GoogleFonts.cairo(
                             fontSize: 12,
                             fontWeight: FontWeight.bold,
@@ -1248,7 +1252,7 @@ class _MushafScreenState extends ConsumerState<MushafScreen> {
                 ),
               ),
               const SizedBox(height: 16),
-              Text(
+              ArabicText(
                 'اختر القارئ',
                 style: GoogleFonts.cairo(
                   fontSize: 16,
@@ -1274,7 +1278,7 @@ class _MushafScreenState extends ConsumerState<MushafScreen> {
                           foregroundColor: isCurrent ? Colors.white : theme.colorScheme.primary,
                           child: const Icon(Icons.mic, size: 20),
                         ),
-                        title: Text(
+                        title: ArabicText(
                           reciter.nameArabic,
                           style: GoogleFonts.cairo(
                             fontWeight: FontWeight.bold,
@@ -1293,7 +1297,7 @@ class _MushafScreenState extends ConsumerState<MushafScreen> {
                         Navigator.pop(context);
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
-                            content: Text(
+                            content: ArabicText(
                               'سيتم فتح صفحة جميع القراء قريباً',
                               style: GoogleFonts.cairo(fontWeight: FontWeight.bold),
                               textAlign: TextAlign.center,
@@ -1306,7 +1310,7 @@ class _MushafScreenState extends ConsumerState<MushafScreen> {
                         foregroundColor: theme.colorScheme.secondary,
                         child: const Icon(Icons.search, size: 20),
                       ),
-                      title: Text(
+                      title: ArabicText(
                         'البحث عن قراء آخرين...',
                         style: GoogleFonts.cairo(
                           fontWeight: FontWeight.bold,
@@ -1370,7 +1374,7 @@ class _MushafScreenState extends ConsumerState<MushafScreen> {
                             ),
                           ],
                         ),
-                        child: Text(
+                        child: ArabicText(
                           currentSurah != null ? currentSurah.nameArabic : '...',
                           style: GoogleFonts.cairo(
                             fontSize: 12,
@@ -1405,7 +1409,7 @@ class _MushafScreenState extends ConsumerState<MushafScreen> {
                             ),
                           ],
                         ),
-                        child: Text(
+                        child: ArabicText(
                           'الجزء $currentJuz',
                           style: GoogleFonts.cairo(
                             fontSize: 12,
@@ -1461,9 +1465,9 @@ class _MushafScreenState extends ConsumerState<MushafScreen> {
                               ),
                             ],
                           ),
-                          child: Text(
+                          child: ArabicText(
                             pageNum.toString(),
-                            style: GoogleFonts.robotoMono(
+                            style: GoogleFonts.cairo(
                               fontSize: 12,
                               fontWeight: FontWeight.bold,
                               color: theme.colorScheme.primary, // عنابي
@@ -1495,7 +1499,7 @@ class _MushafScreenState extends ConsumerState<MushafScreen> {
                                 return Center(
                                   child: Padding(
                                     padding: const EdgeInsets.symmetric(vertical: 4.0),
-                                    child: Text(
+                                    child: ArabicText(
                                       'بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ',
                                       style: GoogleFonts.amiri(
                                         fontSize: fontSize * 0.9,
@@ -1520,7 +1524,7 @@ class _MushafScreenState extends ConsumerState<MushafScreen> {
                                         color: theme.colorScheme.primary.withValues(alpha: 0.05),
                                       ),
                                       child: Center(
-                                        child: Text(
+                                        child: ArabicText(
                                           'سُورَةُ $name',
                                           style: GoogleFonts.amiri(
                                             fontSize: fontSize * 0.85,
@@ -1556,11 +1560,11 @@ class _MushafScreenState extends ConsumerState<MushafScreen> {
               );
             },
             loading: () => const Center(child: CircularProgressIndicator()),
-            error: (err, _) => Center(child: Text('خطأ في تحميل الخط: $err')),
+            error: (err, _) => Center(child: ArabicText('خطأ في تحميل الخط: $err')),
           );
         },
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (err, _) => Center(child: Text('خطأ في تحميل الصفحة: $err')),
+        error: (err, _) => Center(child: ArabicText('خطأ في تحميل الصفحة: $err')),
       ),
     );
   }
@@ -1749,7 +1753,7 @@ class _VerseQuickViewSheet extends ConsumerWidget {
                 future: ref.read(quranRepositoryProvider).getSurahByNumber(verse.surahNumber),
                 builder: (context, snapshot) {
                   final surahName = snapshot.data?.nameArabic ?? '';
-                  return Text(
+                  return ArabicText(
                     'سورة $surahName - آية ${verse.ayahNumber}',
                     style: GoogleFonts.cairo(
                       fontSize: 18,
@@ -1796,7 +1800,7 @@ class _VerseQuickViewSheet extends ConsumerWidget {
                           borderRadius: BorderRadius.circular(24),
                           border: Border.all(color: theme.colorScheme.primary.withValues(alpha: 0.08)),
                         ),
-                        child: Text(
+                        child: ArabicText(
                           text,
                           style: GoogleFonts.amiri(
                             fontSize: 20,
@@ -1822,7 +1826,7 @@ class _VerseQuickViewSheet extends ConsumerWidget {
                       Navigator.pop(context);
                     },
                     icon: const Icon(Icons.volume_up),
-                    label: Text('تلاوة الآية الكريمة', style: GoogleFonts.cairo(fontWeight: FontWeight.bold)),
+                    label: ArabicText('تلاوة الآية الكريمة', style: GoogleFonts.cairo(fontWeight: FontWeight.bold)),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: theme.colorScheme.primary,
                       foregroundColor: theme.colorScheme.onPrimary,
@@ -1833,51 +1837,51 @@ class _VerseQuickViewSheet extends ConsumerWidget {
                   const SizedBox(height: 24),
 
                   // Tafsir sections
-                  Text(
+                  ArabicText(
                     'التفسير الميسر',
                     style: GoogleFonts.cairo(fontWeight: FontWeight.bold, color: theme.colorScheme.secondary),
                   ),
                   const SizedBox(height: 8),
                   muyassarAsync.when(
-                    data: (text) => Text(
+                    data: (text) => ArabicText(
                       text,
                       style: GoogleFonts.cairo(fontSize: 14, height: 1.6),
                       textAlign: TextAlign.right,
                     ),
                     loading: () => _buildSkeletonParagraph(context, isRtl: true),
-                    error: (err, _) => Text('خطأ في التحميل: $err'),
+                    error: (err, _) => ArabicText('خطأ في التحميل: $err'),
                   ),
                   const SizedBox(height: 16),
 
-                  Text(
+                  ArabicText(
                     'تفسير الجلالين',
                     style: GoogleFonts.cairo(fontWeight: FontWeight.bold, color: theme.colorScheme.secondary),
                   ),
                   const SizedBox(height: 8),
                   jalalaynAsync.when(
-                    data: (text) => Text(
+                    data: (text) => ArabicText(
                       text,
                       style: GoogleFonts.cairo(fontSize: 14, height: 1.6),
                       textAlign: TextAlign.right,
                     ),
                     loading: () => _buildSkeletonParagraph(context, isRtl: true),
-                    error: (err, _) => Text('خطأ في التحميل: $err'),
+                    error: (err, _) => ArabicText('خطأ في التحميل: $err'),
                   ),
                   const SizedBox(height: 16),
 
-                  Text(
+                  ArabicText(
                     'English Translation (Asad)',
                     style: GoogleFonts.inter(fontWeight: FontWeight.bold),
                   ),
                   const SizedBox(height: 8),
                   translationAsync.when(
-                    data: (text) => Text(
+                    data: (text) => ArabicText(
                       text,
                       style: GoogleFonts.inter(fontSize: 13, height: 1.5, color: theme.textTheme.bodyMedium?.color),
                       textAlign: TextAlign.left,
                     ),
                     loading: () => _buildSkeletonParagraph(context, isRtl: false),
-                    error: (err, _) => Text('Error loading translation: $err'),
+                    error: (err, _) => ArabicText('Error loading translation: $err'),
                   ),
                   const SizedBox(height: 32),
                 ],

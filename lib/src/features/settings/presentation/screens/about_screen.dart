@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:zad/src/core/widgets/arabic_text.dart';
 
 class AboutScreen extends StatelessWidget {
   const AboutScreen({super.key});
@@ -11,7 +12,7 @@ class AboutScreen extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(
+        title: ArabicText(
           'عن التطبيق',
           style: GoogleFonts.cairo(fontWeight: FontWeight.bold),
         ),
@@ -52,7 +53,7 @@ class AboutScreen extends StatelessWidget {
                       
                       const SizedBox(height: 24),
                       
-                      Text(
+                      ArabicText(
                         'زاد مسلم',
                         style: GoogleFonts.cairo(
                           fontSize: 24,
@@ -63,9 +64,9 @@ class AboutScreen extends StatelessWidget {
                       
                       const SizedBox(height: 6),
                       
-                      Text(
+                      ArabicText(
                         'الإصدار 1.0.0',
-                        style: GoogleFonts.robotoMono(
+                        style: GoogleFonts.cairo(
                           fontSize: 14,
                           color: theme.disabledColor,
                           fontWeight: FontWeight.w600,
@@ -77,7 +78,7 @@ class AboutScreen extends StatelessWidget {
                         child: Divider(),
                       ),
                       
-                      Text(
+                      ArabicText(
                         'تطبيق إسلامي شامل صُمم خصيصاً لمرافقة المسلم في عباداته اليومية من خلال واجهة مستخدم حديثة ومتميزة، وأدوات متكاملة تدعم العمل بالكامل دون اتصال بالإنترنت.',
                         textAlign: TextAlign.center,
                         style: GoogleFonts.cairo(
@@ -93,7 +94,7 @@ class AboutScreen extends StatelessWidget {
               
               const SizedBox(height: 48),
               
-              Text(
+              ArabicText(
                 'تقبل الله منا ومنكم صالح الأعمال',
                 style: GoogleFonts.amiri(
                   fontSize: 18,

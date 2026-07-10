@@ -7,6 +7,7 @@ import 'package:intl/intl.dart' hide TextDirection;
 import '../../data/repositories/adhkar_repository_provider.dart';
 import '../../domain/entities/adhkar_entities.dart';
 import 'package:lucide_icons/lucide_icons.dart';
+import 'package:zad/src/core/widgets/arabic_text.dart';
 
 enum AdhkarSearchFilter {
   all,
@@ -408,14 +409,14 @@ class _AdhkarIndexScreenState extends ConsumerState<AdhkarIndexScreen> {
   }
 
   Widget _buildHighlightedText(String text, String query, TextStyle baseStyle, TextStyle highlightStyle) {
-    if (query.isEmpty) return Text(text, style: baseStyle, textAlign: TextAlign.right, textDirection: TextDirection.rtl);
+    if (query.isEmpty) return ArabicText(text, style: baseStyle, textAlign: TextAlign.right, textDirection: TextDirection.rtl);
     
     final normalizedText = _normalizeArabic(text);
     final normalizedQuery = _normalizeArabic(query);
     
     final matchIndex = normalizedText.indexOf(normalizedQuery);
     if (matchIndex == -1) {
-      return Text(text, style: baseStyle, textAlign: TextAlign.right, textDirection: TextDirection.rtl);
+      return ArabicText(text, style: baseStyle, textAlign: TextAlign.right, textDirection: TextDirection.rtl);
     }
     
     final originalIndices = _mapNormalizedToOriginalIndices(text, normalizedText, matchIndex, normalizedQuery.length);
@@ -449,7 +450,7 @@ class _AdhkarIndexScreenState extends ConsumerState<AdhkarIndexScreen> {
           children: [
             Icon(Icons.search_rounded, size: 64, color: theme.disabledColor.withValues(alpha: 0.5)),
             const SizedBox(height: 16),
-            Text(
+            ArabicText(
               'ابحث عن الأذكار أو التصنيفات...',
               style: GoogleFonts.cairo(fontSize: 16, color: theme.disabledColor),
             ),
@@ -482,7 +483,7 @@ class _AdhkarIndexScreenState extends ConsumerState<AdhkarIndexScreen> {
           children: [
             Icon(Icons.search_off_rounded, size: 64, color: theme.disabledColor.withValues(alpha: 0.5)),
             const SizedBox(height: 16),
-            Text(
+            ArabicText(
               'لم يتم العثور على أي نتائج لـ "$query"',
               style: GoogleFonts.cairo(fontSize: 16, color: theme.disabledColor),
             ),
@@ -497,7 +498,7 @@ class _AdhkarIndexScreenState extends ConsumerState<AdhkarIndexScreen> {
         if (filteredCategories.isNotEmpty) ...[
           Padding(
             padding: const EdgeInsets.only(bottom: 12.0, top: 4.0),
-            child: Text(
+            child: ArabicText(
               'الأقسام المطابقة (${filteredCategories.length})',
               style: GoogleFonts.cairo(
                 fontWeight: FontWeight.bold,
@@ -566,7 +567,7 @@ class _AdhkarIndexScreenState extends ConsumerState<AdhkarIndexScreen> {
         if (filteredItems.isNotEmpty) ...[
           Padding(
             padding: const EdgeInsets.only(bottom: 12.0),
-            child: Text(
+            child: ArabicText(
               'الأذكار المطابقة (${filteredItems.length})',
               style: GoogleFonts.cairo(
                 fontWeight: FontWeight.bold,
@@ -612,7 +613,7 @@ class _AdhkarIndexScreenState extends ConsumerState<AdhkarIndexScreen> {
                                 color: catColor.withValues(alpha: 0.1),
                                 borderRadius: BorderRadius.circular(12),
                               ),
-                              child: Text(
+                              child: ArabicText(
                                 cat.title,
                                 style: GoogleFonts.cairo(
                                   fontSize: 11,
@@ -698,7 +699,7 @@ class _AdhkarIndexScreenState extends ConsumerState<AdhkarIndexScreen> {
                   });
                 },
               )
-            : Text(
+            : ArabicText(
                 'الأذكار اليومية',
                 style: GoogleFonts.cairo(fontWeight: FontWeight.bold),
               ),
@@ -757,7 +758,7 @@ class _AdhkarIndexScreenState extends ConsumerState<AdhkarIndexScreen> {
                         color: _selectedFilter == AdhkarSearchFilter.all ? theme.colorScheme.primary : theme.disabledColor,
                       ),
                       const SizedBox(width: 12),
-                      Text(
+                      ArabicText(
                         'البحث في الكل', 
                         style: GoogleFonts.cairo(
                           fontSize: 13,
@@ -778,7 +779,7 @@ class _AdhkarIndexScreenState extends ConsumerState<AdhkarIndexScreen> {
                         color: _selectedFilter == AdhkarSearchFilter.categories ? theme.colorScheme.primary : theme.disabledColor,
                       ),
                       const SizedBox(width: 12),
-                      Text(
+                      ArabicText(
                         'الأقسام فقط', 
                         style: GoogleFonts.cairo(
                           fontSize: 13,
@@ -799,7 +800,7 @@ class _AdhkarIndexScreenState extends ConsumerState<AdhkarIndexScreen> {
                         color: _selectedFilter == AdhkarSearchFilter.items ? theme.colorScheme.primary : theme.disabledColor,
                       ),
                       const SizedBox(width: 12),
-                      Text(
+                      ArabicText(
                         'الأذكار والأدعية فقط', 
                         style: GoogleFonts.cairo(
                           fontSize: 13,
@@ -829,10 +830,10 @@ class _AdhkarIndexScreenState extends ConsumerState<AdhkarIndexScreen> {
               data: (categories) => allItemsAsync.when(
                 data: (allItems) => _buildSearchResults(categories, allItems, theme),
                 loading: () => const Center(child: CircularProgressIndicator()),
-                error: (err, _) => Center(child: Text('خطأ في تحميل البيانات للبحث: $err')),
+                error: (err, _) => Center(child: ArabicText('خطأ في تحميل البيانات للبحث: $err')),
               ),
               loading: () => const Center(child: CircularProgressIndicator()),
-              error: (err, _) => Center(child: Text('خطأ في تحميل الأذكار: $err')),
+              error: (err, _) => Center(child: ArabicText('خطأ في تحميل الأذكار: $err')),
             )
           : categoriesAsync.when(
               data: (categories) => ListView.builder(
@@ -891,7 +892,7 @@ class _AdhkarIndexScreenState extends ConsumerState<AdhkarIndexScreen> {
                             size: 20,
                           ),
                         ),
-                        title: Text(
+                        title: ArabicText(
                           group.title,
                           style: GoogleFonts.cairo(
                             fontWeight: FontWeight.bold,
@@ -925,7 +926,7 @@ class _AdhkarIndexScreenState extends ConsumerState<AdhkarIndexScreen> {
                                     size: 18,
                                   ),
                                 ),
-                                title: Text(
+                                title: ArabicText(
                                   cat.title,
                                   style: GoogleFonts.cairo(
                                     fontSize: 13.5,
@@ -934,7 +935,7 @@ class _AdhkarIndexScreenState extends ConsumerState<AdhkarIndexScreen> {
                                   ),
                                 ),
                                 subtitle: cat.description.isNotEmpty
-                                    ? Text(
+                                    ? ArabicText(
                                         cat.description,
                                         style: GoogleFonts.cairo(
                                           fontSize: 11,
@@ -960,7 +961,7 @@ class _AdhkarIndexScreenState extends ConsumerState<AdhkarIndexScreen> {
                 },
               ),
               loading: () => const Center(child: CircularProgressIndicator()),
-              error: (err, _) => Center(child: Text('خطأ في تحميل الأذكار: $err')),
+              error: (err, _) => Center(child: ArabicText('خطأ في تحميل الأذكار: $err')),
             ),
     );
   }
@@ -997,7 +998,7 @@ class _AdhkarIndexScreenState extends ConsumerState<AdhkarIndexScreen> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(
+                ArabicText(
                   'تقدمك اليومي',
                   style: GoogleFonts.cairo(
                     fontSize: 16,
@@ -1011,9 +1012,9 @@ class _AdhkarIndexScreenState extends ConsumerState<AdhkarIndexScreen> {
                     color: Colors.white.withValues(alpha: 0.2),
                     borderRadius: BorderRadius.circular(20),
                   ),
-                  child: Text(
+                  child: ArabicText(
                     '$percentage%',
-                    style: GoogleFonts.robotoMono(
+                    style: GoogleFonts.cairo(
                       fontWeight: FontWeight.bold,
                       fontSize: 14,
                       color: Colors.white,
@@ -1031,7 +1032,7 @@ class _AdhkarIndexScreenState extends ConsumerState<AdhkarIndexScreen> {
               borderRadius: BorderRadius.circular(3),
             ),
             const SizedBox(height: 12),
-            Text(
+            ArabicText(
               'أتممت قراءة $completed من أصل $total من الأذكار في هذه المجموعة.',
               style: GoogleFonts.cairo(
                 fontSize: 12,
@@ -1048,7 +1049,7 @@ class _AdhkarIndexScreenState extends ConsumerState<AdhkarIndexScreen> {
   Widget _buildAdhkarItemsView(ThemeData theme) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(
+        title: ArabicText(
           _selectedCategory!.title,
           style: GoogleFonts.cairo(fontWeight: FontWeight.bold),
         ),
@@ -1075,19 +1076,19 @@ class _AdhkarIndexScreenState extends ConsumerState<AdhkarIndexScreen> {
               showDialog(
                 context: context,
                 builder: (context) => AlertDialog(
-                  title: Text('إعادة ضبط العدادات؟', style: GoogleFonts.cairo(fontWeight: FontWeight.bold)),
-                  content: Text('سيتم تصفير جميع عدادات هذه المجموعة ليومك الحالي.', style: GoogleFonts.cairo()),
+                  title: ArabicText('إعادة ضبط العدادات؟', style: GoogleFonts.cairo(fontWeight: FontWeight.bold)),
+                  content: ArabicText('سيتم تصفير جميع عدادات هذه المجموعة ليومك الحالي.', style: GoogleFonts.cairo()),
                   actions: [
                     TextButton(
                       onPressed: () => Navigator.pop(context),
-                      child: Text('إلغاء', style: GoogleFonts.cairo()),
+                      child: ArabicText('إلغاء', style: GoogleFonts.cairo()),
                     ),
                     TextButton(
                       onPressed: () {
                         _resetCategoryProgress();
                         Navigator.pop(context);
                       },
-                      child: Text('تصفير', style: GoogleFonts.cairo(fontWeight: FontWeight.bold, color: theme.colorScheme.error)),
+                      child: ArabicText('تصفير', style: GoogleFonts.cairo(fontWeight: FontWeight.bold, color: theme.colorScheme.error)),
                     ),
                   ],
                 ),
@@ -1127,7 +1128,7 @@ class _AdhkarIndexScreenState extends ConsumerState<AdhkarIndexScreen> {
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Text(
+                                ArabicText(
                                   item.text,
                                   style: GoogleFonts.cairo(
                                     fontSize: 16,
@@ -1138,7 +1139,7 @@ class _AdhkarIndexScreenState extends ConsumerState<AdhkarIndexScreen> {
                                 ),
                                 if (item.reference.isNotEmpty) ...[
                                   const SizedBox(height: 8),
-                                  Text(
+                                  ArabicText(
                                     'المصدر: ${item.reference}',
                                     style: GoogleFonts.cairo(
                                       fontSize: 11,
@@ -1158,7 +1159,7 @@ class _AdhkarIndexScreenState extends ConsumerState<AdhkarIndexScreen> {
                                         else
                                           Icon(Icons.touch_app, color: theme.colorScheme.secondary, size: 20),
                                         const SizedBox(width: 8),
-                                        Text(
+                                        ArabicText(
                                           isCompleted ? 'اكتمل الذكر' : 'اضغط للتكرار',
                                           style: GoogleFonts.cairo(
                                             fontSize: 12,
@@ -1180,7 +1181,7 @@ class _AdhkarIndexScreenState extends ConsumerState<AdhkarIndexScreen> {
                                             Clipboard.setData(ClipboardData(text: item.text));
                                             ScaffoldMessenger.of(context).showSnackBar(
                                               SnackBar(
-                                                content: Text(
+                                                content: ArabicText(
                                                   'تم نسخ الذكر',
                                                   style: GoogleFonts.cairo(fontSize: 12, fontWeight: FontWeight.bold),
                                                   textAlign: TextAlign.center,
@@ -1202,9 +1203,9 @@ class _AdhkarIndexScreenState extends ConsumerState<AdhkarIndexScreen> {
                                             color: isCompleted ? theme.colorScheme.primary : theme.colorScheme.secondary.withValues(alpha: 0.1),
                                             borderRadius: BorderRadius.circular(30),
                                           ),
-                                          child: Text(
+                                          child: ArabicText(
                                             '$progress / ${item.targetCount}',
-                                            style: GoogleFonts.robotoMono(
+                                            style: GoogleFonts.cairo(
                                               fontWeight: FontWeight.bold,
                                               fontSize: 13,
                                               color: isCompleted ? Colors.white : theme.colorScheme.secondary,

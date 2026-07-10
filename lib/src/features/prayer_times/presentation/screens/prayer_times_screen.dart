@@ -9,6 +9,7 @@ import 'package:zad/src/core/database/shared_preferences_provider.dart';
 import 'package:zad/src/features/prayer_times/data/repositories/prayer_repository_provider.dart';
 import '../../domain/entities/prayer_entities.dart';
 import '../controllers/prayer_times_controller.dart';
+import 'package:zad/src/core/widgets/arabic_text.dart';
 
 // NotifierProvider to manage the active selected date for prayer times
 class SelectedPrayerDateNotifier extends Notifier<DateTime> {
@@ -30,8 +31,8 @@ final selectedDatePrayerTimesProvider = FutureProvider<PrayerTimes?>((ref) async
   final prefs = ref.watch(sharedPreferencesProvider);
   final method = prefs.getInt('prayer_calculation_method') ?? 5;
 
-  final double lat = location?.latitude ?? 21.422487;
-  final double lng = location?.longitude ?? 39.826206;
+  final double lat = location?.latitude ?? 30.044420;
+  final double lng = location?.longitude ?? 31.235712;
 
   return await repo.getPrayerTimesForDate(
     latitude: lat,
@@ -130,7 +131,7 @@ class _PrayerTimesScreenState extends ConsumerState<PrayerTimesScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(
+        title: ArabicText(
           'مواقيت الصلاة',
           style: GoogleFonts.cairo(fontWeight: FontWeight.bold),
         ),
@@ -166,19 +167,19 @@ class _PrayerTimesScreenState extends ConsumerState<PrayerTimesScreen> {
                     padding: const EdgeInsets.all(24.0),
                     child: Column(
                       children: [
-                        Text(
-                          locationAsync.value?.cityName ?? 'مكة المكرمة',
+                        ArabicText(
+                          locationAsync.value?.cityName ?? 'القاهرة',
                           style: GoogleFonts.cairo(fontSize: 14, color: Colors.white70),
                         ),
                         const SizedBox(height: 8),
-                        Text(
+                        ArabicText(
                           'صلاة $_nextPrayerName القادمة خلال',
                           style: GoogleFonts.cairo(fontSize: 16, color: Colors.white),
                         ),
                         const SizedBox(height: 12),
-                        Text(
+                        ArabicText(
                           _formatDuration(_timeUntilNext),
-                          style: GoogleFonts.robotoMono(
+                          style: GoogleFonts.cairo(
                             fontSize: 36,
                             fontWeight: FontWeight.bold,
                             color: theme.colorScheme.secondary,
@@ -207,7 +208,7 @@ class _PrayerTimesScreenState extends ConsumerState<PrayerTimesScreen> {
                   ),
                   Column(
                     children: [
-                      Text(
+                      ArabicText(
                         DateFormat('EEEE، d MMMM yyyy', 'ar').format(selectedDate),
                         style: GoogleFonts.cairo(fontWeight: FontWeight.bold, fontSize: 16),
                       ),
@@ -216,7 +217,7 @@ class _PrayerTimesScreenState extends ConsumerState<PrayerTimesScreen> {
                           onTap: () {
                             ref.read(selectedPrayerDateProvider.notifier).state = DateTime.now();
                           },
-                          child: Text(
+                          child: ArabicText(
                             'العودة لليوم',
                             style: GoogleFonts.cairo(
                               fontSize: 12,
@@ -247,7 +248,7 @@ class _PrayerTimesScreenState extends ConsumerState<PrayerTimesScreen> {
                 data: (times) {
                   if (times == null) {
                     return Center(
-                      child: Text(
+                      child: ArabicText(
                         'تعذر تحميل مواقيت الصلاة لهذه الإحداثيات.',
                         style: GoogleFonts.cairo(),
                       ),
@@ -278,7 +279,7 @@ class _PrayerTimesScreenState extends ConsumerState<PrayerTimesScreen> {
                   );
                 },
                 loading: () => const Center(child: CircularProgressIndicator()),
-                error: (err, _) => Center(child: Text('خطأ في تحميل الأوقات: $err')),
+                error: (err, _) => Center(child: ArabicText('خطأ في تحميل الأوقات: $err')),
               ),
             ),
             const SizedBox(height: 32),
@@ -326,9 +327,9 @@ class _PrayerTimesScreenState extends ConsumerState<PrayerTimesScreen> {
                   size: 20,
                 ),
                 const SizedBox(width: 14),
-                Text(
+                ArabicText(
                   DateFormat('hh:mm a', 'ar').format(item.time),
-                  style: GoogleFonts.robotoMono(
+                  style: GoogleFonts.cairo(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
                     color: isCurrent ? theme.colorScheme.primary : theme.textTheme.bodyLarge?.color,
@@ -341,7 +342,7 @@ class _PrayerTimesScreenState extends ConsumerState<PrayerTimesScreen> {
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
-                    Text(
+                    ArabicText(
                       item.name,
                       style: GoogleFonts.cairo(
                         fontSize: 16,
@@ -350,7 +351,7 @@ class _PrayerTimesScreenState extends ConsumerState<PrayerTimesScreen> {
                       ),
                     ),
                     if (isCurrent)
-                      Text(
+                      ArabicText(
                         'الصلاة القادمة',
                         style: GoogleFonts.cairo(
                           fontSize: 11,
@@ -401,7 +402,7 @@ class _PrayerTimesScreenState extends ConsumerState<PrayerTimesScreen> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text(
+        title: ArabicText(
           'طريقة حساب مواقيت الصلاة',
           style: GoogleFonts.cairo(fontWeight: FontWeight.bold),
           textAlign: TextAlign.center,
@@ -412,7 +413,7 @@ class _PrayerTimesScreenState extends ConsumerState<PrayerTimesScreen> {
             shrinkWrap: true,
             children: methods.entries.map((entry) {
               return RadioListTile<int>(
-                title: Text(
+                title: ArabicText(
                   entry.value,
                   style: GoogleFonts.cairo(fontSize: 13),
                   textAlign: TextAlign.right,

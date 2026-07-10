@@ -6,6 +6,7 @@ import 'package:lucide_icons/lucide_icons.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:share_plus/share_plus.dart';
+import 'package:zad/src/core/widgets/arabic_text.dart';
 
 class StoriesScreen extends StatefulWidget {
   const StoriesScreen({super.key});
@@ -104,13 +105,11 @@ class _StoriesScreenState extends State<StoriesScreen> {
     return Scaffold(
       backgroundColor: theme.scaffoldBackgroundColor,
       appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
         leading: IconButton(
-          icon: Icon(Icons.arrow_back_ios, color: theme.colorScheme.primary),
+          icon: Icon(LucideIcons.arrowRight, color: theme.colorScheme.primary),
           onPressed: () => Navigator.of(context).pop(),
         ),
-        title: Text(
+        title: ArabicText(
           'قصص وعبر إسلامية',
           style: GoogleFonts.cairo(
             fontWeight: FontWeight.bold,
@@ -168,7 +167,7 @@ class _StoriesScreenState extends State<StoriesScreen> {
                       return Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 4.0),
                         child: ChoiceChip(
-                          label: Text(cat),
+                          label: ArabicText(cat),
                           selected: isSelected,
                           onSelected: (_) {
                             setState(() {
@@ -207,7 +206,7 @@ class _StoriesScreenState extends State<StoriesScreen> {
                             children: [
                               Icon(LucideIcons.bookOpen, size: 48, color: Colors.grey.shade400),
                               const SizedBox(height: 16),
-                              Text(
+                              ArabicText(
                                 'لم يتم العثور على قصص تطابق البحث.',
                                 style: GoogleFonts.cairo(fontSize: 14, color: Colors.grey),
                               ),
@@ -264,7 +263,7 @@ class _StoriesScreenState extends State<StoriesScreen> {
                                               color: theme.colorScheme.primary.withValues(alpha: 0.08),
                                               borderRadius: BorderRadius.circular(10),
                                             ),
-                                            child: Text(
+                                            child: ArabicText(
                                               story['category'],
                                               style: GoogleFonts.cairo(
                                                 fontSize: 11,
@@ -286,7 +285,7 @@ class _StoriesScreenState extends State<StoriesScreen> {
                                       const SizedBox(height: 10),
 
                                       // Title
-                                      Text(
+                                      ArabicText(
                                         story['title'],
                                         style: GoogleFonts.cairo(
                                           fontSize: 17,
@@ -297,7 +296,7 @@ class _StoriesScreenState extends State<StoriesScreen> {
                                       const SizedBox(height: 8),
 
                                       // Content Preview
-                                      Text(
+                                      ArabicText(
                                         story['content'],
                                         maxLines: 2,
                                         overflow: TextOverflow.ellipsis,
@@ -317,7 +316,7 @@ class _StoriesScreenState extends State<StoriesScreen> {
                                             children: [
                                               const Icon(LucideIcons.clock, size: 13, color: Colors.grey),
                                               const SizedBox(width: 5),
-                                              Text(
+                                              ArabicText(
                                                 '$readTime دقائق للقراءة',
                                                 style: GoogleFonts.cairo(fontSize: 11, color: Colors.grey),
                                               ),
@@ -325,7 +324,7 @@ class _StoriesScreenState extends State<StoriesScreen> {
                                           ),
                                           Row(
                                             children: [
-                                              Text(
+                                              ArabicText(
                                                 'اقرأ القصة',
                                                 style: GoogleFonts.cairo(
                                                   fontSize: 12,
@@ -401,7 +400,7 @@ class _StoryDetailScreenState extends State<StoryDetailScreen> {
     Clipboard.setData(ClipboardData(text: copyText));
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text(
+        content: ArabicText(
           'تم نسخ نص القصة والعبر المستفادة',
           textAlign: TextAlign.center,
           style: GoogleFonts.cairo(fontWeight: FontWeight.bold),
@@ -420,13 +419,11 @@ class _StoryDetailScreenState extends State<StoryDetailScreen> {
     return Scaffold(
       backgroundColor: const Color(0xFFFAF9F6), // Warm cream background for comfortable reading
       appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
         leading: IconButton(
-          icon: Icon(Icons.arrow_back_ios, color: theme.colorScheme.primary),
+          icon: Icon(LucideIcons.arrowRight, color: theme.colorScheme.primary),
           onPressed: () => Navigator.of(context).pop(),
         ),
-        title: Text(
+        title: ArabicText(
           widget.story['title'],
           style: GoogleFonts.cairo(
             fontWeight: FontWeight.bold,
@@ -468,7 +465,7 @@ class _StoryDetailScreenState extends State<StoryDetailScreen> {
               children: [
                 Icon(LucideIcons.type, size: 16, color: theme.colorScheme.primary),
                 const SizedBox(width: 8),
-                Text(
+                ArabicText(
                   'حجم الخط',
                   style: GoogleFonts.cairo(fontSize: 12, fontWeight: FontWeight.bold, color: theme.colorScheme.primary),
                 ),
@@ -487,9 +484,9 @@ class _StoryDetailScreenState extends State<StoryDetailScreen> {
                     },
                   ),
                 ),
-                Text(
+                ArabicText(
                   _fontSize.toInt().toString(),
-                  style: GoogleFonts.robotoMono(fontSize: 12, fontWeight: FontWeight.bold),
+                  style: GoogleFonts.cairo(fontSize: 12, fontWeight: FontWeight.bold),
                 ),
               ],
             ),
@@ -511,7 +508,7 @@ class _StoryDetailScreenState extends State<StoryDetailScreen> {
                         color: theme.colorScheme.primary.withValues(alpha: 0.08),
                         borderRadius: BorderRadius.circular(15),
                       ),
-                      child: Text(
+                      child: ArabicText(
                         widget.story['category'],
                         style: GoogleFonts.cairo(
                           fontSize: 12,
@@ -524,7 +521,7 @@ class _StoryDetailScreenState extends State<StoryDetailScreen> {
                   const SizedBox(height: 20),
 
                   // Core Content
-                  Text(
+                  ArabicText(
                     widget.story['content'],
                     style: GoogleFonts.cairo(
                       fontSize: _fontSize,
@@ -550,7 +547,7 @@ class _StoryDetailScreenState extends State<StoryDetailScreen> {
                             children: [
                               Icon(LucideIcons.bookOpen, size: 16, color: theme.colorScheme.secondary),
                               const SizedBox(width: 8),
-                              Text(
+                              ArabicText(
                                 'موضع الآيات في القرآن الكريم',
                                 style: GoogleFonts.cairo(
                                   fontSize: 13,
@@ -561,7 +558,7 @@ class _StoryDetailScreenState extends State<StoryDetailScreen> {
                             ],
                           ),
                           const SizedBox(height: 8),
-                          Text(
+                          ArabicText(
                             widget.story['quranVerses'],
                             style: GoogleFonts.cairo(
                               fontSize: 13,
@@ -576,7 +573,7 @@ class _StoryDetailScreenState extends State<StoryDetailScreen> {
                   ],
 
                   // Lessons and morals
-                  Text(
+                  ArabicText(
                     'الدروس والعبر المستفادة',
                     style: GoogleFonts.cairo(
                       fontSize: 17,
@@ -605,7 +602,7 @@ class _StoryDetailScreenState extends State<StoryDetailScreen> {
                             ),
                             const SizedBox(width: 12),
                             Expanded(
-                              child: Text(
+                              child: ArabicText(
                                 lesson,
                                 style: GoogleFonts.cairo(
                                   fontSize: _fontSize - 2,

@@ -6,6 +6,7 @@ import '../../../../core/database/shared_preferences_provider.dart';
 
 import '../../../quran/presentation/controllers/audio_player_controller.dart';
 import '../../../prayer_times/presentation/controllers/prayer_times_controller.dart';
+import 'package:zad/src/core/widgets/arabic_text.dart';
 
 // Prayer Calculation Method Model
 class CalculationMethod {
@@ -39,7 +40,7 @@ class SettingsScreen extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(
+        title: ArabicText(
           'الإعدادات',
           style: GoogleFonts.cairo(fontWeight: FontWeight.bold),
         ),
@@ -101,7 +102,7 @@ class SettingsScreen extends ConsumerWidget {
             Center(
               child: Column(
                 children: [
-                  Text(
+                  ArabicText(
                     'تطبيق زاد المسلم',
                     style: GoogleFonts.cairo(
                       fontSize: 14,
@@ -110,9 +111,9 @@ class SettingsScreen extends ConsumerWidget {
                     ),
                   ),
                   const SizedBox(height: 4),
-                  Text(
+                  ArabicText(
                     'الإصدار 1.0.0',
-                    style: GoogleFonts.robotoMono(
+                    style: GoogleFonts.cairo(
                       fontSize: 12,
                       color: theme.textTheme.bodyMedium?.color,
                     ),
@@ -127,7 +128,7 @@ class SettingsScreen extends ConsumerWidget {
   }
 
   Widget _buildSectionHeader(String title, ThemeData theme) {
-    return Text(
+    return ArabicText(
       title,
       style: GoogleFonts.cairo(
         fontSize: 16,
@@ -140,6 +141,10 @@ class SettingsScreen extends ConsumerWidget {
 
 
   Widget _buildReciterCard(AudioPlaybackState playbackState, WidgetRef ref, ThemeData theme) {
+    final activeReciterId = staticReciters.any((r) => r.id == playbackState.activeReciterId)
+        ? playbackState.activeReciterId
+        : 'mishary_alfasy';
+
     return Card(
       elevation: 0,
       shape: RoundedRectangleBorder(
@@ -155,11 +160,11 @@ class SettingsScreen extends ConsumerWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
+                  ArabicText(
                     'القارئ الافتراضي',
                     style: GoogleFonts.cairo(fontWeight: FontWeight.bold, fontSize: 14),
                   ),
-                  Text(
+                  ArabicText(
                     'سيتم استخدامه في تلاوة الآيات والسور',
                     style: GoogleFonts.cairo(fontSize: 11, color: theme.textTheme.bodyMedium?.color),
                   ),
@@ -167,7 +172,7 @@ class SettingsScreen extends ConsumerWidget {
               ),
             ),
             DropdownButton<String>(
-              value: playbackState.activeReciterId,
+              value: activeReciterId,
               dropdownColor: theme.colorScheme.surface,
               underline: const SizedBox(),
               icon: Icon(Icons.arrow_drop_down, color: theme.colorScheme.primary),
@@ -179,7 +184,7 @@ class SettingsScreen extends ConsumerWidget {
               items: staticReciters.map((reciter) {
                 return DropdownMenuItem<String>(
                   value: reciter.id,
-                  child: Text(
+                  child: ArabicText(
                     reciter.nameArabic,
                     style: GoogleFonts.cairo(fontSize: 13, fontWeight: FontWeight.bold),
                   ),
@@ -213,11 +218,11 @@ class SettingsScreen extends ConsumerWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
+                      ArabicText(
                         'طريقة الحساب',
                         style: GoogleFonts.cairo(fontWeight: FontWeight.bold, fontSize: 14),
                       ),
-                      Text(
+                      ArabicText(
                         'المعادلة المستخدمة لحساب مواقيت الصلاة',
                         style: GoogleFonts.cairo(fontSize: 11, color: theme.textTheme.bodyMedium?.color),
                       ),
@@ -241,7 +246,7 @@ class SettingsScreen extends ConsumerWidget {
                   items: calculationMethods.map((method) {
                     return DropdownMenuItem<CalculationMethod>(
                       value: method,
-                      child: Text(
+                      child: ArabicText(
                         method.name,
                         style: GoogleFonts.cairo(fontSize: 13, fontWeight: FontWeight.bold),
                       ),
@@ -294,14 +299,14 @@ class SettingsScreen extends ConsumerWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
+                    ArabicText(
                       title,
                       style: GoogleFonts.cairo(
                         fontWeight: FontWeight.bold,
                         fontSize: 14,
                       ),
                     ),
-                    Text(
+                    ArabicText(
                       subtitle,
                       style: GoogleFonts.cairo(
                         fontSize: 11,

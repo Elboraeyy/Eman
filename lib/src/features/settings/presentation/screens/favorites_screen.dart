@@ -8,6 +8,7 @@ import 'package:zad/src/features/quran/domain/entities/quran_entities.dart' as q
 import 'package:zad/src/features/quran/data/repositories/quran_repository_provider.dart';
 import 'package:zad/src/features/hadith/domain/entities/hadith_entities.dart' as hadith;
 import 'package:zad/src/features/hadith/data/repositories/hadith_repository_provider.dart';
+import 'package:zad/src/core/widgets/arabic_text.dart';
 
 class FavoritesScreen extends ConsumerStatefulWidget {
   const FavoritesScreen({super.key});
@@ -39,7 +40,7 @@ class _FavoritesScreenState extends ConsumerState<FavoritesScreen> with SingleTi
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(
+        title: ArabicText(
           'المفضلة والمحفوظات',
           style: GoogleFonts.cairo(fontWeight: FontWeight.bold),
         ),
@@ -79,7 +80,7 @@ class _FavoritesScreenState extends ConsumerState<FavoritesScreen> with SingleTi
               );
             },
             loading: () => const Center(child: CircularProgressIndicator()),
-            error: (err, _) => Center(child: Text('حدث خطأ: $err')),
+            error: (err, _) => Center(child: ArabicText('حدث خطأ: $err')),
           ),
 
           // Tab 2: Bookmarked Hadiths
@@ -103,7 +104,7 @@ class _FavoritesScreenState extends ConsumerState<FavoritesScreen> with SingleTi
               );
             },
             loading: () => const Center(child: CircularProgressIndicator()),
-            error: (err, _) => Center(child: Text('حدث خطأ: $err')),
+            error: (err, _) => Center(child: ArabicText('حدث خطأ: $err')),
           ),
         ],
       ),
@@ -121,7 +122,7 @@ class _FavoritesScreenState extends ConsumerState<FavoritesScreen> with SingleTi
             color: theme.colorScheme.secondary.withValues(alpha: 0.4),
           ),
           const SizedBox(height: 16),
-          Text(
+          ArabicText(
             title,
             style: GoogleFonts.cairo(
               fontSize: 18,
@@ -132,7 +133,7 @@ class _FavoritesScreenState extends ConsumerState<FavoritesScreen> with SingleTi
           const SizedBox(height: 8),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 40.0),
-            child: Text(
+            child: ArabicText(
               subtitle,
               textAlign: TextAlign.center,
               style: GoogleFonts.cairo(
@@ -169,7 +170,7 @@ class _FavoritesScreenState extends ConsumerState<FavoritesScreen> with SingleTi
                     future: ref.read(quranRepositoryProvider).getSurahByNumber(verse.surahNumber),
                     builder: (context, snapshot) {
                       final name = snapshot.data?.nameArabic ?? '';
-                      return Text(
+                      return ArabicText(
                         'سورة $name - آية ${verse.numberInSurah}',
                         style: GoogleFonts.cairo(
                           fontWeight: FontWeight.bold,
@@ -191,7 +192,7 @@ class _FavoritesScreenState extends ConsumerState<FavoritesScreen> with SingleTi
                 ],
               ),
               const SizedBox(height: 8),
-              Text(
+              ArabicText(
                 verse.textUthmani.isNotEmpty ? verse.textUthmani : verse.text,
                 style: GoogleFonts.amiri(
                   fontSize: 18,
@@ -227,7 +228,7 @@ class _FavoritesScreenState extends ConsumerState<FavoritesScreen> with SingleTi
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text(
+                  ArabicText(
                     'حديث ${had.id}',
                     style: GoogleFonts.cairo(
                       fontWeight: FontWeight.bold,
@@ -247,7 +248,7 @@ class _FavoritesScreenState extends ConsumerState<FavoritesScreen> with SingleTi
                 ],
               ),
               const SizedBox(height: 4),
-              Text(
+              ArabicText(
                 had.narrator,
                 style: GoogleFonts.cairo(
                   fontSize: 12,
@@ -256,7 +257,7 @@ class _FavoritesScreenState extends ConsumerState<FavoritesScreen> with SingleTi
                 ),
               ),
               const SizedBox(height: 8),
-              Text(
+              ArabicText(
                 had.text,
                 maxLines: 3,
                 overflow: TextOverflow.ellipsis,

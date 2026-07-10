@@ -7,6 +7,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:intl/intl.dart';
+import 'package:zad/src/core/widgets/arabic_text.dart';
 
 class SunanScreen extends StatefulWidget {
   const SunanScreen({super.key});
@@ -170,7 +171,7 @@ class _SunanScreenState extends State<SunanScreen> {
                             color: theme.colorScheme.primary.withValues(alpha: 0.1),
                             borderRadius: BorderRadius.circular(20),
                           ),
-                          child: Text(
+                          child: ArabicText(
                             sunnah['category'],
                             style: GoogleFonts.cairo(
                               fontSize: 12,
@@ -187,7 +188,7 @@ class _SunanScreenState extends State<SunanScreen> {
                     ),
                     const SizedBox(height: 12),
                     
-                    Text(
+                    ArabicText(
                       sunnah['title'],
                       style: GoogleFonts.cairo(
                         fontSize: 20,
@@ -197,7 +198,7 @@ class _SunanScreenState extends State<SunanScreen> {
                     ),
                     const SizedBox(height: 8),
                     
-                    Text(
+                    ArabicText(
                       sunnah['description'],
                       style: GoogleFonts.cairo(
                         fontSize: 14,
@@ -232,7 +233,7 @@ class _SunanScreenState extends State<SunanScreen> {
                             children: [
                               Icon(LucideIcons.quote, color: theme.colorScheme.secondary, size: 18),
                               const SizedBox(width: 8),
-                              Text(
+                              ArabicText(
                                 'الدليل الشرعي',
                                 style: GoogleFonts.cairo(
                                   fontSize: 13,
@@ -243,7 +244,7 @@ class _SunanScreenState extends State<SunanScreen> {
                             ],
                           ),
                           const SizedBox(height: 12),
-                          Text(
+                          ArabicText(
                             '« ${sunnah['hadith']} »',
                             textAlign: TextAlign.center,
                             style: GoogleFonts.amiri(
@@ -254,7 +255,7 @@ class _SunanScreenState extends State<SunanScreen> {
                             ),
                           ),
                           const SizedBox(height: 12),
-                          Text(
+                          ArabicText(
                             sunnah['reference'],
                             textAlign: TextAlign.left,
                             style: GoogleFonts.cairo(
@@ -287,7 +288,7 @@ class _SunanScreenState extends State<SunanScreen> {
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Text(
+                                ArabicText(
                                   'الفضل والأجر',
                                   style: GoogleFonts.cairo(
                                     fontSize: 13,
@@ -296,7 +297,7 @@ class _SunanScreenState extends State<SunanScreen> {
                                   ),
                                 ),
                                 const SizedBox(height: 4),
-                                Text(
+                                ArabicText(
                                   sunnah['benefit'],
                                   style: GoogleFonts.cairo(
                                     fontSize: 12,
@@ -335,7 +336,7 @@ class _SunanScreenState extends State<SunanScreen> {
                             color: Colors.white,
                           ),
                           const SizedBox(width: 10),
-                          Text(
+                          ArabicText(
                             isCompleted ? 'تم تطبيق السنة اليوم' : 'طبقتها اليوم',
                             style: GoogleFonts.cairo(
                               fontSize: 16,
@@ -366,13 +367,11 @@ class _SunanScreenState extends State<SunanScreen> {
     return Scaffold(
       backgroundColor: theme.scaffoldBackgroundColor,
       appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
         leading: IconButton(
-          icon: Icon(Icons.arrow_back_ios, color: theme.colorScheme.primary),
+          icon: Icon(LucideIcons.arrowRight, color: theme.colorScheme.primary),
           onPressed: () => Navigator.of(context).pop(),
         ),
-        title: Text(
+        title: ArabicText(
           'السنن النبوية اليومية',
           style: GoogleFonts.cairo(
             fontWeight: FontWeight.bold,
@@ -410,7 +409,7 @@ class _SunanScreenState extends State<SunanScreen> {
                             Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Text(
+                                ArabicText(
                                   'إحياء السنّة النبوية',
                                   style: GoogleFonts.cairo(
                                     fontSize: 18,
@@ -419,7 +418,7 @@ class _SunanScreenState extends State<SunanScreen> {
                                   ),
                                 ),
                                 const SizedBox(height: 4),
-                                Text(
+                                ArabicText(
                                   _getEncouragingMessage(),
                                   style: GoogleFonts.cairo(
                                     fontSize: 12,
@@ -434,9 +433,9 @@ class _SunanScreenState extends State<SunanScreen> {
                                 color: Colors.white.withValues(alpha: 0.15),
                                 borderRadius: BorderRadius.circular(20),
                               ),
-                              child: Text(
+                              child: ArabicText(
                                 '$completedCount / $totalSunan',
-                                style: GoogleFonts.robotoMono(
+                                style: GoogleFonts.cairo(
                                   fontSize: 14,
                                   fontWeight: FontWeight.bold,
                                   color: theme.colorScheme.secondary, // Gold
@@ -474,7 +473,7 @@ class _SunanScreenState extends State<SunanScreen> {
                       return Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 4.0),
                         child: ChoiceChip(
-                          label: Text(cat),
+                          label: ArabicText(cat),
                           selected: isSelected,
                           onSelected: (_) => _filterByCategory(cat),
                           labelStyle: GoogleFonts.cairo(
@@ -503,7 +502,7 @@ class _SunanScreenState extends State<SunanScreen> {
                 Expanded(
                   child: _filteredSunan.isEmpty
                       ? Center(
-                          child: Text(
+                          child: ArabicText(
                             'لا توجد سنن متوفرة في هذا التصنيف.',
                             style: GoogleFonts.cairo(fontSize: 14),
                           ),
@@ -578,7 +577,7 @@ class _SunanScreenState extends State<SunanScreen> {
                                                     color: theme.colorScheme.primary.withValues(alpha: 0.08),
                                                     borderRadius: BorderRadius.circular(10),
                                                   ),
-                                                  child: Text(
+                                                  child: ArabicText(
                                                     sunnah['category'],
                                                     style: GoogleFonts.cairo(
                                                       fontSize: 10,
@@ -590,7 +589,7 @@ class _SunanScreenState extends State<SunanScreen> {
                                               ],
                                             ),
                                             const SizedBox(height: 6),
-                                            Text(
+                                            ArabicText(
                                               sunnah['title'],
                                               style: GoogleFonts.cairo(
                                                 fontSize: 15,
@@ -602,7 +601,7 @@ class _SunanScreenState extends State<SunanScreen> {
                                               ),
                                             ),
                                             const SizedBox(height: 4),
-                                            Text(
+                                            ArabicText(
                                               sunnah['description'],
                                               maxLines: 1,
                                               overflow: TextOverflow.ellipsis,

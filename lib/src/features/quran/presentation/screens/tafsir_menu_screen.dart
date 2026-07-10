@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:zad/src/core/widgets/arabic_text.dart';
 
 class TafsirMenuScreen extends StatelessWidget {
   const TafsirMenuScreen({super.key});
@@ -33,7 +34,7 @@ class TafsirMenuScreen extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(
+        title: ArabicText(
           'التفسير والمعاني',
           style: GoogleFonts.cairo(fontWeight: FontWeight.bold),
         ),
@@ -43,7 +44,7 @@ class TafsirMenuScreen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Text(
+            ArabicText(
               'فهم وتدبر الآيات والأذكار يقرب معانيها إلى قلبك، لتعبد الله بطمأنينة ويقين.',
               style: GoogleFonts.cairo(
                 fontSize: 15,
@@ -88,7 +89,7 @@ class TafsirMenuScreen extends StatelessWidget {
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.end,
                               children: [
-                                Text(
+                                ArabicText(
                                   item.title,
                                   style: GoogleFonts.cairo(
                                     fontSize: 16,
@@ -98,7 +99,7 @@ class TafsirMenuScreen extends StatelessWidget {
                                   textAlign: TextAlign.right,
                                 ),
                                 const SizedBox(height: 6),
-                                Text(
+                                ArabicText(
                                   item.description,
                                   style: GoogleFonts.cairo(
                                     fontSize: 12,

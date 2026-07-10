@@ -6,6 +6,7 @@ import 'package:flutter_animate/flutter_animate.dart';
 import '../../domain/entities/quran_entities.dart';
 import '../../data/repositories/quran_repository_provider.dart';
 import '../controllers/quran_progress_controller.dart';
+import 'package:zad/src/core/widgets/arabic_text.dart';
 
 final surahsListProvider = FutureProvider<List<Surah>>((ref) async {
   final repo = ref.watch(quranRepositoryProvider);
@@ -164,8 +165,9 @@ class _QuranIndexScreenState extends ConsumerState<QuranIndexScreen> with Single
     final favoritesCount = customBookmarks.length;
 
     return Scaffold(
+      floatingActionButtonLocation: FloatingActionButtonLocation.startFloat,
       appBar: AppBar(
-        title: Text(
+        title: ArabicText(
           'القرآن الكريم',
           style: GoogleFonts.cairo(fontWeight: FontWeight.bold),
         ),
@@ -222,7 +224,7 @@ class _QuranIndexScreenState extends ConsumerState<QuranIndexScreen> with Single
                     );
                   },
                   loading: () => const Center(child: CircularProgressIndicator()),
-                  error: (err, _) => Center(child: Text('خطأ في تحميل الفهرس: $err')),
+                  error: (err, _) => Center(child: ArabicText('خطأ في تحميل الفهرس: $err')),
                 ),
 
                 juzsAsync.when(
@@ -245,7 +247,7 @@ class _QuranIndexScreenState extends ConsumerState<QuranIndexScreen> with Single
                     );
                   },
                   loading: () => const Center(child: CircularProgressIndicator()),
-                  error: (err, _) => Center(child: Text('خطأ في تحميل الأجزاء: $err')),
+                  error: (err, _) => Center(child: ArabicText('خطأ في تحميل الأجزاء: $err')),
                 ),
 
                 customBookmarks.isEmpty
@@ -267,14 +269,21 @@ class _QuranIndexScreenState extends ConsumerState<QuranIndexScreen> with Single
           ? null
           : Padding(
               padding: const EdgeInsets.only(bottom: 95.0),
-              child: FloatingActionButton.extended(
-                onPressed: () => context.push('/quran/mushaf/$lastReadPage'),
-                backgroundColor: theme.colorScheme.primary,
-                foregroundColor: theme.colorScheme.onPrimary,
-                icon: const Icon(Icons.play_arrow),
-                label: Text(
-                  'واصل القراءة (صفحة $lastReadPage)',
-                  style: GoogleFonts.cairo(fontWeight: FontWeight.bold),
+              child: SizedBox(
+                height: 40.0,
+                child: FloatingActionButton.extended(
+                  onPressed: () => context.push('/quran/mushaf/$lastReadPage'),
+                  backgroundColor: theme.colorScheme.primary,
+                  foregroundColor: theme.colorScheme.onPrimary,
+                  shape: const StadiumBorder(),
+                  icon: const Icon(Icons.play_arrow, size: 20),
+                  label: ArabicText(
+                    'واصل القراءة (صفحة $lastReadPage)',
+                    style: GoogleFonts.cairo(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 13,
+                    ),
+                  ),
                 ),
               ),
             ),
@@ -294,9 +303,9 @@ class _QuranIndexScreenState extends ConsumerState<QuranIndexScreen> with Single
                   : theme.dividerColor.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(12),
             ),
-            child: Text(
+            child: ArabicText(
               count,
-              style: GoogleFonts.robotoMono(
+              style: GoogleFonts.cairo(
                 fontSize: 11,
                 fontWeight: FontWeight.bold,
                 color: isSelected ? theme.colorScheme.primary : theme.textTheme.bodyMedium?.color,
@@ -304,7 +313,7 @@ class _QuranIndexScreenState extends ConsumerState<QuranIndexScreen> with Single
             ),
           ),
           const SizedBox(width: 8),
-          Text(
+          ArabicText(
             label,
             style: GoogleFonts.cairo(
               fontSize: 14,
@@ -353,9 +362,9 @@ class _QuranIndexScreenState extends ConsumerState<QuranIndexScreen> with Single
                         borderRadius: BorderRadius.circular(6),
                       ),
                     ),
-                    Text(
+                    ArabicText(
                       surah.number.toString(),
-                      style: GoogleFonts.robotoMono(
+                      style: GoogleFonts.cairo(
                         fontWeight: FontWeight.bold,
                         fontSize: 13,
                         color: theme.colorScheme.onSurface,
@@ -369,7 +378,7 @@ class _QuranIndexScreenState extends ConsumerState<QuranIndexScreen> with Single
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
+                    ArabicText(
                       'سورة ${surah.nameArabic}',
                       style: GoogleFonts.amiri(
                         fontSize: 18,
@@ -380,7 +389,7 @@ class _QuranIndexScreenState extends ConsumerState<QuranIndexScreen> with Single
                     const SizedBox(height: 4),
                     Row(
                       children: [
-                        Text(
+                        ArabicText(
                           surah.revelationType == 'Meccan' ? 'مكية' : 'مدنية',
                           style: GoogleFonts.cairo(
                             fontSize: 11,
@@ -395,7 +404,7 @@ class _QuranIndexScreenState extends ConsumerState<QuranIndexScreen> with Single
                           color: theme.colorScheme.secondary.withValues(alpha: 0.5),
                         ),
                         const SizedBox(width: 8),
-                        Text(
+                        ArabicText(
                           '${surah.numberOfAyahs} آية',
                           style: GoogleFonts.cairo(
                             fontSize: 11,
@@ -410,15 +419,15 @@ class _QuranIndexScreenState extends ConsumerState<QuranIndexScreen> with Single
               Column(
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
-                  Text(
+                  ArabicText(
                     surah.nameEnglish,
-                    style: GoogleFonts.robotoMono(
+                    style: GoogleFonts.cairo(
                       fontWeight: FontWeight.bold,
                       fontSize: 12,
                       color: theme.colorScheme.primary.withValues(alpha: 0.7),
                     ),
                   ),
-                  Text(
+                  ArabicText(
                     'صفحة $startPage',
                     style: GoogleFonts.cairo(
                       fontSize: 11,
@@ -464,7 +473,7 @@ class _QuranIndexScreenState extends ConsumerState<QuranIndexScreen> with Single
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
+                    ArabicText(
                       bookmark.name,
                       style: GoogleFonts.cairo(
                         fontWeight: FontWeight.bold,
@@ -473,7 +482,7 @@ class _QuranIndexScreenState extends ConsumerState<QuranIndexScreen> with Single
                       ),
                     ),
                     const SizedBox(height: 4),
-                    Text(
+                    ArabicText(
                       'صفحة ${bookmark.page}',
                       style: GoogleFonts.cairo(
                         fontSize: 12,
@@ -514,7 +523,7 @@ class _QuranIndexScreenState extends ConsumerState<QuranIndexScreen> with Single
             ),
           ),
           const SizedBox(height: 24),
-          Text(
+          ArabicText(
             'لا توجد علامات حتى الآن',
             style: GoogleFonts.cairo(
               fontSize: 16,
@@ -525,7 +534,7 @@ class _QuranIndexScreenState extends ConsumerState<QuranIndexScreen> with Single
           const SizedBox(height: 8),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 40.0),
-            child: Text(
+            child: ArabicText(
               'أضف علامة أثناء القراءة لتسهيل العودة إليها لاحقاً',
               textAlign: TextAlign.center,
               style: GoogleFonts.cairo(
@@ -576,9 +585,9 @@ class QuranJuzAccordion extends StatelessWidget {
                 color: theme.colorScheme.primary.withValues(alpha: 0.08),
               ),
               child: Center(
-                child: Text(
+                child: ArabicText(
                   juz.id.toString(),
-                  style: GoogleFonts.robotoMono(
+                  style: GoogleFonts.cairo(
                     fontWeight: FontWeight.bold,
                     fontSize: 13,
                     color: theme.colorScheme.primary,
@@ -586,7 +595,7 @@ class QuranJuzAccordion extends StatelessWidget {
                 ),
               ),
             ),
-            title: Text(
+            title: ArabicText(
               juz.name,
               style: GoogleFonts.cairo(
                 fontWeight: FontWeight.bold,
@@ -605,7 +614,7 @@ class QuranJuzAccordion extends StatelessWidget {
                 return ListTile(
                   onTap: () => context.push('/quran/mushaf/${verse.startPage}'),
                   contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 4),
-                  title: Text(
+                  title: ArabicText(
                     verse.details,
                     style: GoogleFonts.amiri(
                       fontWeight: FontWeight.bold,
@@ -613,7 +622,7 @@ class QuranJuzAccordion extends StatelessWidget {
                       color: theme.colorScheme.primary,
                     ),
                   ),
-                  subtitle: Text(
+                  subtitle: ArabicText(
                     verse.text,
                     style: GoogleFonts.cairo(
                       fontSize: 12,
@@ -627,7 +636,7 @@ class QuranJuzAccordion extends StatelessWidget {
                       borderRadius: BorderRadius.circular(12),
                       border: Border.all(color: theme.colorScheme.secondary.withValues(alpha: 0.3)),
                     ),
-                    child: Text(
+                    child: ArabicText(
                       'صفحة ${verse.startPage}',
                       style: GoogleFonts.cairo(
                         fontSize: 10,

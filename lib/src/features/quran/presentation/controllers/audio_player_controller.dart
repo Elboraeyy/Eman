@@ -2,6 +2,8 @@ import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:just_audio/just_audio.dart';
+import 'package:just_audio_background/just_audio_background.dart';
+import 'package:zad/src/core/database/shared_preferences_provider.dart';
 import '../../domain/entities/quran_entities.dart';
 
 class Reciter {
@@ -65,6 +67,21 @@ const List<Reciter> staticReciters = [
   ),
 ];
 
+const List<String> surahNamesArabic = [
+  "الفاتحة", "البقرة", "آل عمران", "النساء", "المائدة", "الأنعام", "الأعراف", "الأنفال", "التوبة", "يونس",
+  "هود", "يوسف", "الرعد", "إبراهيم", "الحجر", "النحل", "الإسراء", "الكهف", "مريم", "طه",
+  "الأنبياء", "الحج", "المؤمنون", "النور", "الفرقان", "الشعراء", "النمل", "القصص", "العنكبوت", "الروم",
+  "لقمان", "السجدة", "الأحزاب", "سبأ", "فاطر", "يس", "الصافات", "ص", "الزمر", "غافر",
+  "فصلت", "الشورى", "الزخرف", "الدخان", "الجاثية", "الأحقاف", "محمد", "الفتح", "الحجرات", "ق",
+  "الذاريات", "الطور", "النجم", "القمر", "الرحمن", "الواقعة", "الحديد", "المجادلة", "الحشر", "الممتحنة",
+  "الصف", "الجمعة", "المنافقون", "التغابن", "الطلاق", "التحريم", "الملك", "القلم", "الحاقة", "المعارج",
+  "نوح", "الجن", "المزمل", "المدثر", "القيامة", "الإنسان", "المرسلات", "النبأ", "النازعات", "عبس",
+  "التكوير", "الانفطار", "المطففين", "الانشقاق", "البروج", "الطارق", "الأعلى", "الغاشية", "الفجر", "البلد",
+  "الشمس", "الليل", "الضحى", "الشرح", "التين", "العلق", "القدر", "البينة", "الزلزلة", "العاديات",
+  "القارعة", "التكاثر", "العصر", "الهمزة", "الفيل", "قريش", "الماعون", "الكوثر", "الكافرون", "النصر",
+  "المسد", "الإخلاص", "الفلق", "الناس"
+];
+
 class AudioPlaybackState {
   final bool isPlaying;
   final int currentSurah;
@@ -80,6 +97,8 @@ class AudioPlaybackState {
   final String? customTitle;
   final String? customSubtitle;
   final bool isLiveStream;
+  final bool isRepeatOne;
+  final Duration? sleepTimeRemaining;
 
   AudioPlaybackState({
     required this.isPlaying,
@@ -96,6 +115,8 @@ class AudioPlaybackState {
     this.customTitle,
     this.customSubtitle,
     this.isLiveStream = false,
+    this.isRepeatOne = false,
+    this.sleepTimeRemaining,
   });
 
   AudioPlaybackState copyWith({
@@ -113,6 +134,9 @@ class AudioPlaybackState {
     String? customTitle,
     String? customSubtitle,
     bool? isLiveStream,
+    bool? isRepeatOne,
+    bool clearSleepTimer = false,
+    Duration? sleepTimeRemaining,
   }) {
     return AudioPlaybackState(
       isPlaying: isPlaying ?? this.isPlaying,
@@ -129,6 +153,8 @@ class AudioPlaybackState {
       customTitle: customTitle ?? this.customTitle,
       customSubtitle: customSubtitle ?? this.customSubtitle,
       isLiveStream: isLiveStream ?? this.isLiveStream,
+      isRepeatOne: isRepeatOne ?? this.isRepeatOne,
+      sleepTimeRemaining: clearSleepTimer ? null : (sleepTimeRemaining ?? this.sleepTimeRemaining),
     );
   }
 }
@@ -136,6 +162,7 @@ class AudioPlaybackState {
 class AudioPlayerNotifier extends Notifier<AudioPlaybackState> {
   late final AudioPlayer _player;
   late final StreamController<void> _pageCompletedController;
+  Timer? _sleepTimer;
 
   Stream<void> get pageCompletedStream => _pageCompletedController.stream;
 
@@ -147,26 +174,69 @@ class AudioPlayerNotifier extends Notifier<AudioPlaybackState> {
     _initListeners();
 
     ref.onDispose(() {
+      _sleepTimer?.cancel();
       _player.dispose();
       _pageCompletedController.close();
     });
 
-    return AudioPlaybackState(
-      isPlaying: false,
-      currentSurah: 1,
-      currentAyahIndex: -1,
-      position: Duration.zero,
-      duration: Duration.zero,
-      activeReciterId: 'mishary_alfasy',
-      isPageMode: false,
-      pageVerses: [],
-      playbackSpeed: 1.0,
-      isSingleAyahPlay: false,
-      isLoading: false,
-      customTitle: null,
-      customSubtitle: null,
-      isLiveStream: false,
-    );
+    // Restore last played state globally
+    final prefs = ref.read(sharedPreferencesProvider);
+    final lastGlobalType = prefs.getString('last_global_type') ?? 'quran';
+
+    if (lastGlobalType == 'quran') {
+      final reciterId = prefs.getString('last_quran_reciter') ?? 'mishary_alfasy';
+      final surah = prefs.getInt('last_quran_surah') ?? 1;
+      return AudioPlaybackState(
+        isPlaying: false,
+        currentSurah: surah,
+        currentAyahIndex: -1,
+        position: Duration.zero,
+        duration: Duration.zero,
+        activeReciterId: reciterId,
+        isPageMode: false,
+        pageVerses: [],
+        playbackSpeed: 1.0,
+        isSingleAyahPlay: false,
+        isLoading: false,
+      );
+    } else if (lastGlobalType == 'radio') {
+      final name = prefs.getString('last_radio_name') ?? 'إذاعة القرآن الكريم من القاهرة';
+      return AudioPlaybackState(
+        isPlaying: false,
+        currentSurah: -1,
+        currentAyahIndex: -1,
+        position: Duration.zero,
+        duration: Duration.zero,
+        activeReciterId: 'custom',
+        isPageMode: false,
+        pageVerses: [],
+        playbackSpeed: 1.0,
+        isSingleAyahPlay: false,
+        isLoading: false,
+        customTitle: name,
+        customSubtitle: 'إذاعة القرآن الكريم (بث حي)',
+        isLiveStream: true,
+      );
+    } else {
+      final title = prefs.getString('last_podcast_title') ?? 'حلقة البودكاست';
+      final publisher = prefs.getString('last_podcast_publisher') ?? 'بودكاست ديني';
+      return AudioPlaybackState(
+        isPlaying: false,
+        currentSurah: -1,
+        currentAyahIndex: -1,
+        position: Duration.zero,
+        duration: Duration.zero,
+        activeReciterId: 'custom',
+        isPageMode: false,
+        pageVerses: [],
+        playbackSpeed: 1.0,
+        isSingleAyahPlay: false,
+        isLoading: false,
+        customTitle: title,
+        customSubtitle: publisher,
+        isLiveStream: false,
+      );
+    }
   }
 
   void _initListeners() {
@@ -213,6 +283,8 @@ class AudioPlayerNotifier extends Notifier<AudioPlaybackState> {
             playbackSpeed: state.playbackSpeed,
             isSingleAyahPlay: false,
             isLoading: false,
+            isRepeatOne: state.isRepeatOne,
+            sleepTimeRemaining: state.sleepTimeRemaining,
           );
           _pageCompletedController.add(null);
         } else if (state.currentSurah > 0) {
@@ -248,6 +320,9 @@ class AudioPlayerNotifier extends Notifier<AudioPlaybackState> {
     try {
       final reciter = _getReciter(reciterId);
       final url = _getSurahAudioUrl(reciter, surahNumber);
+      final surahName = surahNamesArabic[surahNumber - 1];
+
+      await _player.stop();
 
       state = AudioPlaybackState(
         isPlaying: false,
@@ -264,13 +339,32 @@ class AudioPlayerNotifier extends Notifier<AudioPlaybackState> {
         customTitle: null,
         customSubtitle: null,
         isLiveStream: false,
+        isRepeatOne: state.isRepeatOne,
+        sleepTimeRemaining: state.sleepTimeRemaining,
       );
 
-      await _player.setUrl(url);
+      final prefs = ref.read(sharedPreferencesProvider);
+      prefs.setString('last_type', 'quran');
+      prefs.setString('last_quran_reciter', reciterId);
+      prefs.setInt('last_quran_surah', surahNumber);
+      prefs.setString('last_global_type', 'quran');
+
+      final source = AudioSource.uri(
+        Uri.parse(url),
+        tag: MediaItem(
+          id: 'surah_${reciterId}_$surahNumber',
+          album: 'القرآن الكريم',
+          title: 'سورة $surahName',
+          artist: reciter.nameArabic,
+        ),
+      );
+
+      await _player.setAudioSource(source);
       _player.play();
+      state = state.copyWith(isPlaying: true, isLoading: false);
     } catch (e) {
       debugPrint('AudioPlayerNotifier Error: Failed to play surah: $e');
-      state = state.copyWith(isLoading: false);
+      state = state.copyWith(isPlaying: false, isLoading: false);
     }
   }
 
@@ -280,10 +374,20 @@ class AudioPlayerNotifier extends Notifier<AudioPlaybackState> {
     try {
       final reciter = _getReciter(reciterId);
       
-      // Load URLs as AudioSources
       final sources = verses.map((v) {
-        return AudioSource.uri(Uri.parse(_getAyahAudioUrl(reciter, v.surahNumber, v.ayahNumber)));
+        final surahName = surahNamesArabic[v.surahNumber - 1];
+        return AudioSource.uri(
+          Uri.parse(_getAyahAudioUrl(reciter, v.surahNumber, v.ayahNumber)),
+          tag: MediaItem(
+            id: 'ayah_${reciterId}_${v.surahNumber}_${v.ayahNumber}',
+            album: 'تلاوة الصفحة (آية ${v.ayahNumber})',
+            title: 'سورة $surahName',
+            artist: reciter.nameArabic,
+          ),
+        );
       }).toList();
+
+      await _player.stop();
 
       state = AudioPlaybackState(
         isPlaying: false,
@@ -300,13 +404,17 @@ class AudioPlayerNotifier extends Notifier<AudioPlaybackState> {
         customTitle: null,
         customSubtitle: null,
         isLiveStream: false,
+        isRepeatOne: state.isRepeatOne,
+        sleepTimeRemaining: state.sleepTimeRemaining,
       );
 
-      await _player.setAudioSources(sources);
+      final playlist = ConcatenatingAudioSource(children: sources);
+      await _player.setAudioSource(playlist);
       _player.play();
+      state = state.copyWith(isPlaying: true, isLoading: false);
     } catch (e) {
       debugPrint('AudioPlayerNotifier Error: Failed to play page: $e');
-      state = state.copyWith(isLoading: false);
+      state = state.copyWith(isPlaying: false, isLoading: false);
     }
   }
 
@@ -314,6 +422,9 @@ class AudioPlayerNotifier extends Notifier<AudioPlaybackState> {
     try {
       final reciter = _getReciter(reciterId);
       final url = _getAyahAudioUrl(reciter, surahNumber, ayahNumber);
+      final surahName = surahNamesArabic[surahNumber - 1];
+
+      await _player.stop();
 
       state = AudioPlaybackState(
         isPlaying: false,
@@ -330,13 +441,26 @@ class AudioPlayerNotifier extends Notifier<AudioPlaybackState> {
         customTitle: null,
         customSubtitle: null,
         isLiveStream: false,
+        isRepeatOne: state.isRepeatOne,
+        sleepTimeRemaining: state.sleepTimeRemaining,
       );
 
-      await _player.setUrl(url);
+      final source = AudioSource.uri(
+        Uri.parse(url),
+        tag: MediaItem(
+          id: 'ayah_${reciterId}_${surahNumber}_$ayahNumber',
+          album: 'آية $ayahNumber',
+          title: 'سورة $surahName',
+          artist: reciter.nameArabic,
+        ),
+      );
+
+      await _player.setAudioSource(source);
       _player.play();
+      state = state.copyWith(isPlaying: true, isLoading: false);
     } catch (e) {
       debugPrint('AudioPlayerNotifier Error: Failed to play single ayah: $e');
-      state = state.copyWith(isLoading: false);
+      state = state.copyWith(isPlaying: false, isLoading: false);
     }
   }
 
@@ -344,6 +468,9 @@ class AudioPlayerNotifier extends Notifier<AudioPlaybackState> {
     try {
       final reciter = _getReciter(reciterId);
       final url = _getAyahAudioUrl(reciter, verse.surahNumber, verse.ayahNumber);
+      final surahName = surahNamesArabic[verse.surahNumber - 1];
+
+      await _player.stop();
 
       state = AudioPlaybackState(
         isPlaying: false,
@@ -360,18 +487,47 @@ class AudioPlayerNotifier extends Notifier<AudioPlaybackState> {
         customTitle: null,
         customSubtitle: null,
         isLiveStream: false,
+        isRepeatOne: state.isRepeatOne,
+        sleepTimeRemaining: state.sleepTimeRemaining,
       );
 
-      await _player.setUrl(url);
+      final source = AudioSource.uri(
+        Uri.parse(url),
+        tag: MediaItem(
+          id: 'single_ayah_${reciterId}_${verse.surahNumber}_${verse.ayahNumber}',
+          album: 'آية ${verse.ayahNumber}',
+          title: 'سورة $surahName',
+          artist: reciter.nameArabic,
+        ),
+      );
+
+      await _player.setAudioSource(source);
       _player.play();
+      state = state.copyWith(isPlaying: true, isLoading: false);
     } catch (e) {
       debugPrint('AudioPlayerNotifier Error: Failed to play single ayah: $e');
-      state = state.copyWith(isLoading: false);
+      state = state.copyWith(isPlaying: false, isLoading: false);
     }
   }
 
   Future<void> playUrl(String url, {required String title, required String subtitle, bool isLiveStream = false}) async {
     try {
+      final prefs = ref.read(sharedPreferencesProvider);
+      if (isLiveStream) {
+        prefs.setString('last_type', 'radio');
+        prefs.setString('last_radio_name', title);
+        prefs.setString('last_radio_url', url);
+        prefs.setString('last_global_type', 'radio');
+      } else {
+        prefs.setString('last_type', 'podcast');
+        prefs.setString('last_podcast_title', title);
+        prefs.setString('last_podcast_publisher', subtitle);
+        prefs.setString('last_podcast_url', url);
+        prefs.setString('last_global_type', 'podcast');
+      }
+
+      await _player.stop();
+
       state = AudioPlaybackState(
         isPlaying: false,
         currentSurah: -1, // Custom URL indicator
@@ -387,22 +543,54 @@ class AudioPlayerNotifier extends Notifier<AudioPlaybackState> {
         customTitle: title,
         customSubtitle: subtitle,
         isLiveStream: isLiveStream,
+        isRepeatOne: state.isRepeatOne,
+        sleepTimeRemaining: state.sleepTimeRemaining,
       );
 
-      await _player.setUrl(url);
+      final source = AudioSource.uri(
+        Uri.parse(url),
+        tag: MediaItem(
+          id: url,
+          album: isLiveStream ? 'البث الحي' : 'صوتيات زاد',
+          title: title,
+          artist: subtitle,
+        ),
+      );
+
+      await _player.setAudioSource(source);
       _player.play();
+      state = state.copyWith(isPlaying: true, isLoading: false);
     } catch (e) {
       debugPrint('AudioPlayerNotifier Error: Failed to play custom URL: $e');
-      state = state.copyWith(isLoading: false);
+      state = state.copyWith(isPlaying: false, isLoading: false);
     }
   }
 
   void pause() {
     _player.pause();
+    state = state.copyWith(isPlaying: false);
   }
 
   void resume() {
-    _player.play();
+    if (_player.audioSource == null) {
+      if (state.currentSurah > 0) {
+        playSurah(state.activeReciterId, state.currentSurah);
+      } else if (state.customTitle != null) {
+        final prefs = ref.read(sharedPreferencesProvider);
+        if (state.isLiveStream) {
+          final url = prefs.getString('last_radio_url') ?? 'https://stream.radiojar.com/8s5u55z47v8uv';
+          playUrl(url, title: state.customTitle!, subtitle: state.customSubtitle!, isLiveStream: true);
+        } else {
+          final url = prefs.getString('last_podcast_url');
+          if (url != null) {
+            playUrl(url, title: state.customTitle!, subtitle: state.customSubtitle!);
+          }
+        }
+      }
+    } else {
+      _player.play();
+      state = state.copyWith(isPlaying: true);
+    }
   }
 
   void stop() {
@@ -422,11 +610,31 @@ class AudioPlayerNotifier extends Notifier<AudioPlaybackState> {
       customTitle: null,
       customSubtitle: null,
       isLiveStream: false,
+      isRepeatOne: state.isRepeatOne,
+      sleepTimeRemaining: state.sleepTimeRemaining,
     );
   }
 
   void seek(Duration pos) {
     _player.seek(pos);
+  }
+
+  void seekForward15s() {
+    final newPos = state.position + const Duration(seconds: 15);
+    if (newPos < state.duration) {
+      _player.seek(newPos);
+    } else {
+      _player.seek(state.duration);
+    }
+  }
+
+  void seekBackward15s() {
+    final newPos = state.position - const Duration(seconds: 15);
+    if (newPos > Duration.zero) {
+      _player.seek(newPos);
+    } else {
+      _player.seek(Duration.zero);
+    }
   }
 
   Future<void> next() async {
@@ -459,7 +667,6 @@ class AudioPlayerNotifier extends Notifier<AudioPlaybackState> {
   void changeReciter(String reciterId) {
     state = state.copyWith(activeReciterId: reciterId);
     
-    // If playing, restart with new reciter
     if (state.isPlaying && state.currentSurah > 0) {
       if (state.isPageMode) {
         playPageAyahs(reciterId, state.pageVerses);
@@ -467,6 +674,49 @@ class AudioPlayerNotifier extends Notifier<AudioPlaybackState> {
         playSurah(reciterId, state.currentSurah);
       }
     }
+  }
+
+  void toggleRepeat() {
+    final newRepeat = !state.isRepeatOne;
+    _player.setLoopMode(newRepeat ? LoopMode.one : LoopMode.off);
+    state = state.copyWith(isRepeatOne: newRepeat);
+  }
+
+  void setSleepTimer(Duration? duration) {
+    _sleepTimer?.cancel();
+    if (duration == null) {
+      state = state.copyWith(clearSleepTimer: true);
+      return;
+    }
+
+    state = state.copyWith(sleepTimeRemaining: duration);
+    _sleepTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      if (state.sleepTimeRemaining == null || state.sleepTimeRemaining! <= Duration.zero) {
+        timer.cancel();
+        stop();
+      } else {
+        state = state.copyWith(sleepTimeRemaining: state.sleepTimeRemaining! - const Duration(seconds: 1));
+      }
+    });
+  }
+
+  void setLastPlayedState({
+    required int surah,
+    required String reciterId,
+    String? title,
+    String? subtitle,
+    bool isLiveStream = false,
+  }) {
+    if (state.isPlaying || state.isLoading) return;
+    state = state.copyWith(
+      currentSurah: surah,
+      activeReciterId: reciterId,
+      customTitle: title,
+      customSubtitle: subtitle,
+      isLiveStream: isLiveStream,
+      position: Duration.zero,
+      duration: Duration.zero,
+    );
   }
 }
 

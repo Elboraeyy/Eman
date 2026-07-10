@@ -6,6 +6,7 @@ import 'package:google_fonts/google_fonts.dart';
 import '../../domain/entities/quran_entities.dart';
 import '../../data/repositories/quran_repository_provider.dart';
 import 'quran_index_screen.dart'; // Reuses surahsListProvider, juzListProvider
+import 'package:zad/src/core/widgets/arabic_text.dart';
 
 class TafsirSurahListScreen extends ConsumerStatefulWidget {
   const TafsirSurahListScreen({super.key});
@@ -45,7 +46,7 @@ class _TafsirSurahListScreenState extends ConsumerState<TafsirSurahListScreen> w
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(
+        title: ArabicText(
           'تفسير القرآن الكريم',
           style: GoogleFonts.cairo(fontWeight: FontWeight.bold),
         ),
@@ -97,7 +98,7 @@ class _TafsirSurahListScreenState extends ConsumerState<TafsirSurahListScreen> w
 
                     if (filteredSurahs.isEmpty) {
                       return Center(
-                        child: Text(
+                        child: ArabicText(
                           'لا توجد نتائج مطابقة للتفسير',
                           style: GoogleFonts.cairo(fontSize: 16),
                         ),
@@ -120,20 +121,20 @@ class _TafsirSurahListScreenState extends ConsumerState<TafsirSurahListScreen> w
                               color: theme.colorScheme.primary.withValues(alpha: 0.08),
                             ),
                             child: Center(
-                              child: Text(
+                              child: ArabicText(
                                 surah.number.toString(),
-                                style: GoogleFonts.robotoMono(
+                                style: GoogleFonts.cairo(
                                   fontWeight: FontWeight.bold,
                                   color: theme.colorScheme.primary,
                                 ),
                               ),
                             ),
                           ),
-                          title: Text(
+                          title: ArabicText(
                             surah.nameArabic,
                             style: GoogleFonts.cairo(fontWeight: FontWeight.bold, fontSize: 16),
                           ),
-                          subtitle: Text(
+                          subtitle: ArabicText(
                             '${surah.numberOfAyahs} آية - ${surah.revelationType == 'Meccan' ? 'مكية' : 'مدنية'}',
                             style: GoogleFonts.cairo(fontSize: 12),
                           ),
@@ -152,7 +153,7 @@ class _TafsirSurahListScreenState extends ConsumerState<TafsirSurahListScreen> w
                     );
                   },
                   loading: () => const Center(child: CircularProgressIndicator()),
-                  error: (err, _) => Center(child: Text('خطأ في تحميل الفهرس: $err')),
+                  error: (err, _) => Center(child: ArabicText('خطأ في تحميل الفهرس: $err')),
                 ),
               ),
             ],
@@ -200,7 +201,7 @@ class _TafsirSurahListScreenState extends ConsumerState<TafsirSurahListScreen> w
                               Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Text(
+                                  ArabicText(
                                     'الجزء $juzNum',
                                     style: GoogleFonts.cairo(
                                       fontSize: 16,
@@ -211,7 +212,7 @@ class _TafsirSurahListScreenState extends ConsumerState<TafsirSurahListScreen> w
                                     future: ref.read(quranRepositoryProvider).getSurahByNumber(boundary.surahNumber),
                                     builder: (context, snapshot) {
                                       final surahName = snapshot.data?.nameArabic ?? '';
-                                      return Text(
+                                      return ArabicText(
                                         'يبدأ من سورة: $surahName',
                                         style: GoogleFonts.cairo(
                                           fontSize: 12,
@@ -239,7 +240,7 @@ class _TafsirSurahListScreenState extends ConsumerState<TafsirSurahListScreen> w
               );
             },
             loading: () => const Center(child: CircularProgressIndicator()),
-            error: (err, _) => Center(child: Text('خطأ في تحميل الأجزاء: $err')),
+            error: (err, _) => Center(child: ArabicText('خطأ في تحميل الأجزاء: $err')),
           ),
         ],
       ),

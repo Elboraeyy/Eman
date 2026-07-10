@@ -5,6 +5,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter/services.dart';
 import '../../data/repositories/tracker_repository_provider.dart';
 import 'tracker_screen.dart'; // Reuses providers like tasksListProvider, completionsForDateProvider
+import 'package:zad/src/core/widgets/arabic_text.dart';
 
 class TaskCustomizationScreen extends ConsumerWidget {
   const TaskCustomizationScreen({super.key});
@@ -16,7 +17,7 @@ class TaskCustomizationScreen extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(
+        title: ArabicText(
           'تخصيص المهام والعبادات',
           style: GoogleFonts.cairo(fontWeight: FontWeight.bold),
         ),
@@ -26,7 +27,7 @@ class TaskCustomizationScreen extends ConsumerWidget {
         backgroundColor: theme.colorScheme.primary,
         foregroundColor: theme.colorScheme.onPrimary,
         icon: const Icon(Icons.add),
-        label: Text(
+        label: ArabicText(
           'إضافة عبادة جديدة',
           style: GoogleFonts.cairo(fontWeight: FontWeight.bold),
         ),
@@ -38,7 +39,7 @@ class TaskCustomizationScreen extends ConsumerWidget {
 
           if (tasks.isEmpty) {
             return Center(
-              child: Text(
+              child: ArabicText(
                 'لا توجد عبادات مضافة.',
                 style: GoogleFonts.cairo(fontSize: 16),
               ),
@@ -51,7 +52,7 @@ class TaskCustomizationScreen extends ConsumerWidget {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 if (customTasks.isNotEmpty) ...[
-                  Text(
+                  ArabicText(
                     'العبادات والمهام المخصصة',
                     style: GoogleFonts.cairo(
                       fontSize: 16,
@@ -74,11 +75,11 @@ class TaskCustomizationScreen extends ConsumerWidget {
                           side: BorderSide(color: theme.dividerColor, width: 0.8),
                         ),
                         child: ListTile(
-                          title: Text(
+                          title: ArabicText(
                             task.title,
                             style: GoogleFonts.cairo(fontWeight: FontWeight.bold),
                           ),
-                          subtitle: Text(
+                          subtitle: ArabicText(
                             task.frequency == 'daily' ? 'تكرار يومي' : 'تكرار أسبوعي',
                             style: GoogleFonts.cairo(fontSize: 12, color: theme.colorScheme.secondary),
                           ),
@@ -99,7 +100,7 @@ class TaskCustomizationScreen extends ConsumerWidget {
                   const SizedBox(height: 24),
                 ],
                 
-                Text(
+                ArabicText(
                   'العبادات اليومية الأساسية (غير قابلة للحذف)',
                   style: GoogleFonts.cairo(
                     fontSize: 16,
@@ -122,11 +123,11 @@ class TaskCustomizationScreen extends ConsumerWidget {
                         side: BorderSide(color: theme.dividerColor, width: 0.8),
                       ),
                       child: ListTile(
-                        title: Text(
+                        title: ArabicText(
                           task.title,
                           style: GoogleFonts.cairo(fontWeight: FontWeight.bold, color: theme.disabledColor),
                         ),
-                        subtitle: Text(
+                        subtitle: ArabicText(
                           'عبادة أساسية للتطبيق',
                           style: GoogleFonts.cairo(fontSize: 11, color: theme.disabledColor),
                         ),
@@ -140,7 +141,7 @@ class TaskCustomizationScreen extends ConsumerWidget {
           );
         },
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (err, _) => Center(child: Text('خطأ في تحميل العبادات: $err')),
+        error: (err, _) => Center(child: ArabicText('خطأ في تحميل العبادات: $err')),
       ),
     );
   }
@@ -178,7 +179,7 @@ class TaskCustomizationScreen extends ConsumerWidget {
                       ),
                     ),
                   ),
-                  Text(
+                  ArabicText(
                     'إضافة عبادة جديدة',
                     style: GoogleFonts.cairo(
                       fontWeight: FontWeight.bold,
@@ -202,7 +203,7 @@ class TaskCustomizationScreen extends ConsumerWidget {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       ChoiceChip(
-                        label: Text('أسبوعي', style: GoogleFonts.cairo()),
+                        label: ArabicText('أسبوعي', style: GoogleFonts.cairo()),
                         selected: frequency == 'weekly',
                         onSelected: (selected) {
                           if (selected) setState(() => frequency = 'weekly');
@@ -210,7 +211,7 @@ class TaskCustomizationScreen extends ConsumerWidget {
                       ),
                       const SizedBox(width: 16),
                       ChoiceChip(
-                        label: Text('يومي', style: GoogleFonts.cairo()),
+                        label: ArabicText('يومي', style: GoogleFonts.cairo()),
                         selected: frequency == 'daily',
                         onSelected: (selected) {
                           if (selected) setState(() => frequency = 'daily');
@@ -231,7 +232,7 @@ class TaskCustomizationScreen extends ConsumerWidget {
                         if (context.mounted) Navigator.pop(context);
                       }
                     },
-                    child: Text('حفظ العبادة', style: GoogleFonts.cairo(fontWeight: FontWeight.bold)),
+                    child: ArabicText('حفظ العبادة', style: GoogleFonts.cairo(fontWeight: FontWeight.bold)),
                   ),
                 ],
               ),

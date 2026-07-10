@@ -7,6 +7,7 @@ import 'package:flutter/services.dart';
 import '../../data/repositories/adhkar_repository_provider.dart';
 import '../../domain/entities/adhkar_entities.dart';
 import 'tasbih_list_screen.dart';
+import 'package:zad/src/core/widgets/arabic_text.dart';
 
 final singleTasbihProvider = FutureProvider.family<Tasbih?, int>((ref, id) async {
   final repo = ref.watch(adhkarRepositoryProvider);
@@ -46,7 +47,7 @@ class _TasbihCountingScreenState extends ConsumerState<TasbihCountingScreen> wit
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(
+        title: ArabicText(
           'المسبحة الإلكترونية',
           style: GoogleFonts.cairo(fontWeight: FontWeight.bold),
         ),
@@ -59,7 +60,7 @@ class _TasbihCountingScreenState extends ConsumerState<TasbihCountingScreen> wit
       ),
       body: tasbihAsync.when(
         data: (tasbih) {
-          if (tasbih == null) return const Center(child: Text('الذكر غير موجود.'));
+          if (tasbih == null) return const Center(child: ArabicText('الذكر غير موجود.'));
 
           final progress = (tasbih.count / tasbih.target).clamp(0.0, 1.0);
           final isCompleted = tasbih.count >= tasbih.target;
@@ -96,7 +97,7 @@ class _TasbihCountingScreenState extends ConsumerState<TasbihCountingScreen> wit
                         ),
                       ],
                     ),
-                    child: Text(
+                    child: ArabicText(
                       tasbih.phrase,
                       textAlign: TextAlign.center,
                       style: GoogleFonts.cairo(
@@ -125,7 +126,7 @@ class _TasbihCountingScreenState extends ConsumerState<TasbihCountingScreen> wit
                         child: OutlinedButton.icon(
                           onPressed: () => _resetCount(tasbih.id),
                           icon: const Icon(Icons.refresh),
-                          label: Text('تصفير', style: GoogleFonts.cairo(fontWeight: FontWeight.bold)),
+                          label: ArabicText('تصفير', style: GoogleFonts.cairo(fontWeight: FontWeight.bold)),
                           style: OutlinedButton.styleFrom(
                             minimumSize: const Size(0, 56),
                             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
@@ -155,7 +156,7 @@ class _TasbihCountingScreenState extends ConsumerState<TasbihCountingScreen> wit
           );
         },
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (err, _) => Center(child: Text('خطأ: $err')),
+        error: (err, _) => Center(child: ArabicText('خطأ: $err')),
       ),
     );
   }
@@ -212,9 +213,9 @@ class _TasbihCountingScreenState extends ConsumerState<TasbihCountingScreen> wit
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Text(
+                ArabicText(
                   tasbih.count.toString(),
-                  style: GoogleFonts.robotoMono(
+                  style: GoogleFonts.cairo(
                     fontSize: 72,
                     fontWeight: FontWeight.w900,
                     color: isCompleted ? Colors.white : theme.colorScheme.onSurface,
@@ -229,7 +230,7 @@ class _TasbihCountingScreenState extends ConsumerState<TasbihCountingScreen> wit
                       duration: 150.ms,
                       curve: Curves.elasticOut,
                     ),
-                Text(
+                ArabicText(
                   '${((progress) * 100).toInt()}%',
                   style: GoogleFonts.cairo(
                     fontSize: 16,
@@ -289,8 +290,8 @@ class _TasbihCountingScreenState extends ConsumerState<TasbihCountingScreen> wit
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text('دليل المسبحة', style: GoogleFonts.cairo(fontWeight: FontWeight.bold)),
-        content: Text(
+        title: ArabicText('دليل المسبحة', style: GoogleFonts.cairo(fontWeight: FontWeight.bold)),
+        content: ArabicText(
           '• اضغط في أي مكان داخل الدائرة للتسبيح.\n'
           '• ستشعر باهتزاز عند كل تسبيحة، واهتزاز أقوى عند إتمام العدد المطلوب.\n'
           '• اللون يتغير تدريجياً ويملأ الدائرة كلما اقتربت من هدفك.',
@@ -300,7 +301,7 @@ class _TasbihCountingScreenState extends ConsumerState<TasbihCountingScreen> wit
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('حسناً'),
+            child: const ArabicText('حسناً'),
           )
         ],
       ),

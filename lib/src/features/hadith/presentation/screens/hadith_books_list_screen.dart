@@ -6,6 +6,7 @@ import 'package:lucide_icons/lucide_icons.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import '../../data/repositories/hadith_repository_provider.dart';
 import '../../domain/entities/hadith_entities.dart';
+import 'package:zad/src/core/widgets/arabic_text.dart';
 
 enum HadithBookSearchFilter {
   all,
@@ -61,7 +62,7 @@ class _HadithBooksListScreenState extends ConsumerState<HadithBooksListScreen> {
             color: isSelected ? theme.colorScheme.primary : theme.colorScheme.secondary.withValues(alpha: 0.6),
           ),
           const SizedBox(width: 12),
-          Text(
+          ArabicText(
             title,
             style: GoogleFonts.cairo(
               fontSize: 13,
@@ -93,7 +94,7 @@ class _HadithBooksListScreenState extends ConsumerState<HadithBooksListScreen> {
                   border: InputBorder.none,
                 ),
               )
-            : Text(
+            : ArabicText(
                 'كتب الأحاديث',
                 style: GoogleFonts.cairo(fontWeight: FontWeight.bold),
               ),
@@ -204,7 +205,7 @@ class _HadithBooksListScreenState extends ConsumerState<HadithBooksListScreen> {
             return Center(
               child: Padding(
                 padding: const EdgeInsets.all(20.0),
-                child: Text(
+                child: ArabicText(
                   _isSearching
                       ? (_searchQuery.isEmpty 
                           ? '' // Blank page as requested when search is clicked but nothing typed yet
@@ -258,7 +259,7 @@ class _HadithBooksListScreenState extends ConsumerState<HadithBooksListScreen> {
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Text(
+                                ArabicText(
                                   book.title,
                                   style: GoogleFonts.cairo(
                                     fontWeight: FontWeight.bold,
@@ -268,7 +269,7 @@ class _HadithBooksListScreenState extends ConsumerState<HadithBooksListScreen> {
                                 ),
                                 if (book.author.isNotEmpty) ...[
                                   const SizedBox(height: 2),
-                                  Text(
+                                  ArabicText(
                                     book.author,
                                     style: GoogleFonts.cairo(
                                       fontSize: 11,
@@ -279,7 +280,7 @@ class _HadithBooksListScreenState extends ConsumerState<HadithBooksListScreen> {
                                 ],
                                 if (book.description.isNotEmpty) ...[
                                   const SizedBox(height: 8),
-                                  Text(
+                                  ArabicText(
                                     book.description,
                                     style: GoogleFonts.cairo(
                                       fontSize: 12,
@@ -310,7 +311,7 @@ class _HadithBooksListScreenState extends ConsumerState<HadithBooksListScreen> {
         },
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (err, _) => Center(
-          child: Text(
+          child: ArabicText(
             'حدث خطأ أثناء تحميل الكتب: $err',
             style: GoogleFonts.cairo(color: theme.colorScheme.error),
           ),

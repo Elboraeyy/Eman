@@ -8,6 +8,7 @@ import '../../data/repositories/quran_repository_provider.dart';
 import '../../domain/entities/quran_entities.dart';
 import 'mushaf_screen.dart'; // Reuses verseTafsirProvider
 import 'surah_detail_screen.dart'; // Reuses singleSurahProvider, surahDetailsProvider
+import 'package:zad/src/core/widgets/arabic_text.dart';
 
 class TafsirDetailScreen extends ConsumerStatefulWidget {
   final int surahNumber;
@@ -43,12 +44,12 @@ class _TafsirDetailScreenState extends ConsumerState<TafsirDetailScreen> with Si
     return Scaffold(
       appBar: AppBar(
         title: surahAsync.when(
-          data: (surah) => Text(
+          data: (surah) => ArabicText(
             'تفسير سورة ${surah?.nameArabic ?? ""}',
             style: GoogleFonts.cairo(fontWeight: FontWeight.bold),
           ),
           loading: () => const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2)),
-          error: (err, _) => const Text('التفسير'),
+          error: (err, _) => const ArabicText('التفسير'),
         ),
         actions: [
           IconButton(
@@ -77,7 +78,7 @@ class _TafsirDetailScreenState extends ConsumerState<TafsirDetailScreen> with Si
         data: (ayahs) {
           if (ayahs.isEmpty) {
             return Center(
-              child: Text(
+              child: ArabicText(
                 'لا توجد بيانات متوفرة حالياً.',
                 style: GoogleFonts.cairo(fontSize: 16),
               ),
@@ -92,7 +93,7 @@ class _TafsirDetailScreenState extends ConsumerState<TafsirDetailScreen> with Si
           );
         },
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (err, _) => Center(child: Text('حدث خطأ أثناء تحميل التفسير: $err')),
+        error: (err, _) => Center(child: ArabicText('حدث خطأ أثناء تحميل التفسير: $err')),
       ),
     );
   }
@@ -131,7 +132,7 @@ class _TafsirDetailScreenState extends ConsumerState<TafsirDetailScreen> with Si
                         color: theme.colorScheme.primary.withValues(alpha: 0.1),
                         borderRadius: BorderRadius.circular(12),
                       ),
-                      child: Text(
+                      child: ArabicText(
                         'الآية ${ayah.numberInSurah}',
                         style: GoogleFonts.cairo(
                           fontWeight: FontWeight.bold,
@@ -148,7 +149,7 @@ class _TafsirDetailScreenState extends ConsumerState<TafsirDetailScreen> with Si
                         Clipboard.setData(ClipboardData(text: textToCopy));
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
-                            content: Text(
+                            content: ArabicText(
                               'تم نسخ نص الآية والتفسير',
                               style: GoogleFonts.cairo(),
                               textAlign: TextAlign.center,
@@ -164,7 +165,7 @@ class _TafsirDetailScreenState extends ConsumerState<TafsirDetailScreen> with Si
                 const SizedBox(height: 16),
                 
                 // Arabic text of the verse
-                Text(
+                ArabicText(
                   ayah.textUthmani.isNotEmpty ? ayah.textUthmani : ayah.text,
                   style: GoogleFonts.amiri(
                     fontSize: 20,
@@ -181,7 +182,7 @@ class _TafsirDetailScreenState extends ConsumerState<TafsirDetailScreen> with Si
                 
                 // Tafsir Text
                 tafsirAsync.when(
-                  data: (text) => Text(
+                  data: (text) => ArabicText(
                     text,
                     style: GoogleFonts.cairo(
                       fontSize: 14,
@@ -191,7 +192,7 @@ class _TafsirDetailScreenState extends ConsumerState<TafsirDetailScreen> with Si
                     textAlign: TextAlign.right,
                   ),
                   loading: () => const LinearProgressIndicator(),
-                  error: (err, _) => Text(
+                  error: (err, _) => ArabicText(
                     'حدث خطأ في تحميل التفسير: $err',
                     style: GoogleFonts.cairo(color: theme.colorScheme.error),
                   ),

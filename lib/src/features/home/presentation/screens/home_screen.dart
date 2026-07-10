@@ -13,6 +13,10 @@ import '../../../quran/presentation/controllers/quran_progress_controller.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter/services.dart';
+import 'package:zad/src/core/widgets/arabic_text.dart';
+import 'package:geolocator/geolocator.dart';
+import 'package:zad/src/core/database/shared_preferences_provider.dart';
+import 'package:hijri/hijri_calendar.dart';
 
 // Hadith of the day provider
 final hadithOfTheDayProvider = FutureProvider<Hadith?>((ref) async {
@@ -25,8 +29,140 @@ final hadithOfTheDayProvider = FutureProvider<Hadith?>((ref) async {
   return hadiths[dayIndex];
 });
 
-class HomeScreen extends ConsumerWidget {
+class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
+
+  @override
+  ConsumerState<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends ConsumerState<HomeScreen> {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _checkAndRequestLocationPermission();
+    });
+  }
+
+  Future<void> _checkAndRequestLocationPermission() async {
+    final prefs = ref.read(sharedPreferencesProvider);
+    final prompted = prefs.getBool('location_permission_prompted') ?? false;
+    
+    if (!prompted) {
+      final permission = await Geolocator.checkPermission();
+      if (permission == LocationPermission.denied) {
+        if (mounted) {
+          _showLocationPermissionBottomSheet(context);
+        }
+      } else {
+        await prefs.setBool('location_permission_prompted', true);
+      }
+    }
+  }
+
+  void _showLocationPermissionBottomSheet(BuildContext context) {
+    final theme = Theme.of(context);
+    showModalBottomSheet(
+      context: context,
+      isDismissible: false,
+      enableDrag: false,
+      useRootNavigator: true,
+      backgroundColor: Colors.transparent,
+      builder: (context) {
+        return Container(
+          decoration: BoxDecoration(
+            color: theme.scaffoldBackgroundColor,
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(32)),
+          ),
+          padding: const EdgeInsets.fromLTRB(24, 28, 24, 40),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                width: 72,
+                height: 72,
+                decoration: BoxDecoration(
+                  color: theme.colorScheme.primary.withValues(alpha: 0.1),
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(
+                  Icons.gps_fixed,
+                  size: 36,
+                  color: theme.colorScheme.primary,
+                ),
+              ),
+              const SizedBox(height: 24),
+              ArabicText(
+                'تفعيل تحديد الموقع',
+                style: GoogleFonts.cairo(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: theme.colorScheme.primary,
+                ),
+              ),
+              const SizedBox(height: 12),
+              ArabicText(
+                'يحتاج تطبيق زاد إلى صلاحية الوصول للموقع لكي يتمكن من تحديد مواقيت الصلاة واتجاه القبلة بدقة متناهية بناءً على مكانك الحالي.',
+                textAlign: TextAlign.center,
+                style: GoogleFonts.cairo(
+                  fontSize: 14,
+                  height: 1.6,
+                  color: theme.textTheme.bodyMedium?.color?.withValues(alpha: 0.8),
+                ),
+              ),
+              const SizedBox(height: 32),
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  minimumSize: const Size(double.infinity, 54),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(24),
+                  ),
+                ),
+                onPressed: () async {
+                  Navigator.pop(context);
+                  final permission = await Geolocator.requestPermission();
+                  final prefs = ref.read(sharedPreferencesProvider);
+                  await prefs.setBool('location_permission_prompted', true);
+                  
+                  if (permission == LocationPermission.whileInUse ||
+                      permission == LocationPermission.always) {
+                    ref.invalidate(locationProvider);
+                  }
+                },
+                child: ArabicText(
+                  'السماح بالوصول للموقع',
+                  style: GoogleFonts.cairo(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16,
+                  ),
+                ),
+              ),
+              const SizedBox(height: 12),
+              TextButton(
+                style: TextButton.styleFrom(
+                  minimumSize: const Size(double.infinity, 44),
+                ),
+                onPressed: () async {
+                  Navigator.pop(context);
+                  final prefs = ref.read(sharedPreferencesProvider);
+                  await prefs.setBool('location_permission_prompted', true);
+                },
+                child: ArabicText(
+                  'استخدام الموقع الافتراضي (القاهرة)',
+                  style: GoogleFonts.cairo(
+                    color: theme.colorScheme.secondary,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 14,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
 
   String _getArabicGreeting() {
     final hour = DateTime.now().hour;
@@ -42,11 +178,18 @@ class HomeScreen extends ConsumerWidget {
   String _getIslamicDateArabic() {
     final date = DateTime.now();
     final formatter = DateFormat('EEEE، d MMMM yyyy', 'ar');
-    return formatter.format(date);
+    final gregDate = formatter.format(date);
+    
+    // Calculate Hijri date
+    HijriCalendar.setLocal('ar');
+    final hijri = HijriCalendar.now();
+    final hijriDate = hijri.toFormat('dd MMMM yyyy');
+    
+    return '$gregDate | $hijriDate هـ';
   }
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     final locationAsync = ref.watch(locationProvider);
     final prayerTimesAsync = ref.watch(todayPrayerTimesProvider);
     final hadithAsync = ref.watch(hadithOfTheDayProvider);
@@ -93,7 +236,7 @@ class HomeScreen extends ConsumerWidget {
                                   child: Column(
                                     crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
-                                      Text(
+                                      ArabicText(
                                         _getArabicGreeting(),
                                         maxLines: 1,
                                         overflow: TextOverflow.ellipsis,
@@ -104,7 +247,7 @@ class HomeScreen extends ConsumerWidget {
                                         ),
                                       ),
                                       const SizedBox(height: 2),
-                                      Text(
+                                      ArabicText(
                                         'مرحباً بك في زاد',
                                         maxLines: 1,
                                         overflow: TextOverflow.ellipsis,
@@ -138,8 +281,8 @@ class HomeScreen extends ConsumerWidget {
                                           children: [
                                             const Icon(LucideIcons.mapPin, size: 14, color: Colors.white),
                                             const SizedBox(width: 6),
-                                            Text(
-                                              loc?.cityName ?? 'مكة المكرمة',
+                                            ArabicText(
+                                              loc?.cityName ?? 'القاهرة',
                                               style: GoogleFonts.cairo(
                                                 fontSize: 12,
                                                 fontWeight: FontWeight.bold,
@@ -177,7 +320,7 @@ class HomeScreen extends ConsumerWidget {
                                               ),
                                             ),
                                             const SizedBox(width: 6),
-                                            Text(
+                                            ArabicText(
                                               'جاري التحديد...',
                                               style: GoogleFonts.cairo(
                                                 fontSize: 12,
@@ -209,7 +352,7 @@ class HomeScreen extends ConsumerWidget {
                                           children: [
                                             const Icon(LucideIcons.alertTriangle, size: 14, color: Colors.white),
                                             const SizedBox(width: 6),
-                                            Text(
+                                            ArabicText(
                                               'فشل التحديد',
                                               style: GoogleFonts.cairo(
                                                 fontSize: 12,
@@ -226,7 +369,7 @@ class HomeScreen extends ConsumerWidget {
                               ],
                             ).animate().fade(duration: 500.ms).slideY(begin: -0.05, end: 0),
                             const SizedBox(height: 8),
-                            Text(
+                            ArabicText(
                               _getIslamicDateArabic(),
                               style: GoogleFonts.cairo(
                                 fontSize: 13,
@@ -293,13 +436,13 @@ class HomeScreen extends ConsumerWidget {
                                 return PrayerCountdownCard(pt: pt);
                               },
                               loading: () => _buildShimmerCard(180, theme),
-                              error: (err, _) => Center(child: Text('خطأ في تحميل مواقيت الصلاة: $err')),
+                              error: (err, _) => Center(child: ArabicText('خطأ في تحميل مواقيت الصلاة: $err')),
                             ),
 
                             const SizedBox(height: 28),
 
                             // 4. Quick Actions Grid
-                            Text(
+                            ArabicText(
                               'أبواب الطاعات',
                               style: GoogleFonts.cairo(
                                 fontSize: 18,
@@ -312,7 +455,7 @@ class HomeScreen extends ConsumerWidget {
                             const SizedBox(height: 28),
 
                             // 5. Hadith of the Day
-                            Text(
+                            ArabicText(
                               'حديث اليوم',
                               style: GoogleFonts.cairo(
                                 fontSize: 18,
@@ -326,7 +469,7 @@ class HomeScreen extends ConsumerWidget {
                                 return _buildHadithCard(context, hadith, theme);
                               },
                               loading: () => _buildShimmerCard(120, theme),
-                              error: (err, _) => Center(child: Text('خطأ في تحميل الحديث: $err')),
+                              error: (err, _) => Center(child: ArabicText('خطأ في تحميل الحديث: $err')),
                             ),
                             // Safe area bottom padding for floating navbar
                             const SizedBox(height: 100),
@@ -376,7 +519,7 @@ class HomeScreen extends ConsumerWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
+                    ArabicText(
                       'واصل القراءة',
                       style: GoogleFonts.cairo(
                         fontSize: 15,
@@ -384,7 +527,7 @@ class HomeScreen extends ConsumerWidget {
                         color: theme.colorScheme.secondary,
                       ),
                     ),
-                    Text(
+                    ArabicText(
                       'آخر صفحة قمت بزيارتها هي الصفحة $page',
                       style: GoogleFonts.cairo(
                         fontSize: 12,
@@ -410,8 +553,8 @@ class HomeScreen extends ConsumerWidget {
 
   Widget _buildQuickActionsGrid(BuildContext context, ThemeData theme, PrayerTimes? prayerTimes) {
     final quranAction = _ActionItem('القرآن الكريم', 'assets/Icon/quran-rehal-svgrepo-com.svg', '/quran', const Color(0xFFFFF8E1), subtitle: 'تلاوة وتفسير');
-    final adhkarAction = _ActionItem('الأذكار والأدعية', 'assets/Icon/muslim-man-praying-svgrepo-com.svg', '/adhkar', const Color(0xFFFFF8E1), subtitle: 'أذكار الصباح والمساء والتحصين اليومي للمسلم');
-    final hadithAction = _ActionItem('الأحاديث النبوية', LucideIcons.scroll, '/hadith', const Color(0xFFFFF8E1), subtitle: 'رياض الصالحين');
+    final adhkarAction = _ActionItem('الأذكار والأدعية', 'assets/Icon/muslim-man-praying-svgrepo-com.svg', '/adhkar', const Color(0xFFFFF8E1), subtitle: 'حصن المسلم اليومي');
+    final hadithAction = _ActionItem('الأحاديث', LucideIcons.scroll, '/hadith', const Color(0xFFFFF8E1), subtitle: 'رياض الصالحين');
     final prayerAction = _ActionItem('مواقيت الصلاة', LucideIcons.clock, '/prayer/times', const Color(0xFFFFF8E1), subtitle: 'أوقات الصلوات');
     final tasbihAction = _ActionItem('المسبحة', 'assets/Icon/prayer-beads-svgrepo-com.svg', '/adhkar/tasbih/list', const Color(0xFFFFF8E1), subtitle: 'عداد التسبيح');
     final qiblaAction = _ActionItem('اتجاه القبلة', LucideIcons.compass, '/qibla', const Color(0xFFFFF8E1), subtitle: 'تحديد اتجاه الكعبة');
@@ -552,7 +695,7 @@ class HomeScreen extends ConsumerWidget {
                   child: _buildIcon(action.icon, theme),
                 ),
                 const SizedBox(height: 8),
-                Text(
+                ArabicText(
                   action.title,
                   textAlign: TextAlign.center,
                   maxLines: 1,
@@ -612,7 +755,7 @@ class HomeScreen extends ConsumerWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Text(
+                      ArabicText(
                         action.title,
                         style: GoogleFonts.cairo(
                           fontSize: 16,
@@ -620,7 +763,7 @@ class HomeScreen extends ConsumerWidget {
                           color: theme.textTheme.titleMedium?.color,
                         ),
                       ),
-                      Text(
+                      ArabicText(
                         subtitle,
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
@@ -685,6 +828,8 @@ class HomeScreen extends ConsumerWidget {
       }
     }
 
+    final isAudios = action.title == 'الصوتيات';
+
     return Container(
       width: double.infinity,
       height: height,
@@ -709,81 +854,154 @@ class HomeScreen extends ConsumerWidget {
           onTap: () => context.push(action.route),
           borderRadius: BorderRadius.circular(24),
           child: Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.all(10),
-                      decoration: BoxDecoration(
-                        color: action.bgColor,
-                        shape: BoxShape.circle,
-                      ),
-                      child: _buildIcon(action.icon, theme),
-                    ),
-                    const SizedBox(height: 12),
-                    Text(
-                      action.title,
-                      textAlign: TextAlign.center,
-                      style: GoogleFonts.cairo(
-                        fontSize: 14,
-                        fontWeight: FontWeight.bold,
-                        color: theme.textTheme.titleMedium?.color,
-                      ),
-                    ),
-                  ],
-                ),
-                if (prayerTimes != null)
-                  Container(
-                    width: double.infinity,
-                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
-                    decoration: BoxDecoration(
-                      color: theme.colorScheme.primary.withValues(alpha: 0.06),
-                      borderRadius: BorderRadius.circular(16),
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        Text(
-                          'التالي: $nextPrayerName',
-                          textAlign: TextAlign.center,
-                          style: GoogleFonts.cairo(
-                            fontSize: 11,
-                            fontWeight: FontWeight.bold,
-                            color: theme.colorScheme.primary,
-                          ),
+            padding: const EdgeInsets.all(14.0),
+            child: isAudios
+                ? Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(8),
+                        decoration: BoxDecoration(
+                          color: action.bgColor,
+                          shape: BoxShape.circle,
                         ),
-                        Text(
-                          nextPrayerTime,
-                          textAlign: TextAlign.center,
-                          style: GoogleFonts.cairo(
-                            fontSize: 13,
-                            fontWeight: FontWeight.w900,
-                            color: theme.colorScheme.primary,
-                          ),
+                        child: _buildIcon(action.icon, theme),
+                      ),
+                      const SizedBox(height: 8),
+                      ArabicText(
+                        action.title,
+                        textAlign: TextAlign.center,
+                        style: GoogleFonts.cairo(
+                          fontSize: 13,
+                          fontWeight: FontWeight.bold,
+                          color: theme.textTheme.titleMedium?.color,
                         ),
-                      ],
-                    ),
+                      ),
+                      const SizedBox(height: 6),
+                      Container(
+                        width: 32,
+                        height: 1.5,
+                        color: theme.colorScheme.secondary.withValues(alpha: 0.3),
+                      ),
+                      const SizedBox(height: 8),
+                      _buildAudioSubItem(theme, LucideIcons.bookOpen, 'قرآن'),
+                      const SizedBox(height: 6),
+                      _buildAudioSubItem(theme, LucideIcons.radio, 'إذاعة'),
+                      const SizedBox(height: 6),
+                      _buildAudioSubItem(theme, LucideIcons.mic, 'بودكاست'),
+                    ],
                   )
-                else
-                  Text(
-                    action.subtitle ?? 'مواقيت الصلاة اليومية',
-                    textAlign: TextAlign.center,
-                    style: GoogleFonts.cairo(
-                      fontSize: 10,
-                      color: theme.textTheme.bodyMedium?.color?.withValues(alpha: 0.6),
-                    ),
+                : Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.all(10),
+                            decoration: BoxDecoration(
+                              color: action.bgColor,
+                              shape: BoxShape.circle,
+                            ),
+                            child: _buildIcon(action.icon, theme),
+                          ),
+                          const SizedBox(height: 12),
+                          ArabicText(
+                            action.title,
+                            textAlign: TextAlign.center,
+                            style: GoogleFonts.cairo(
+                              fontSize: 14,
+                              fontWeight: FontWeight.bold,
+                              color: theme.textTheme.titleMedium?.color,
+                            ),
+                          ),
+                        ],
+                      ),
+                      if (prayerTimes != null)
+                        Container(
+                          width: double.infinity,
+                          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+                          decoration: BoxDecoration(
+                            color: theme.colorScheme.primary.withValues(alpha: 0.06),
+                            borderRadius: BorderRadius.circular(16),
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              ArabicText(
+                                'التالي: $nextPrayerName',
+                                textAlign: TextAlign.center,
+                                style: GoogleFonts.cairo(
+                                  fontSize: 11,
+                                  fontWeight: FontWeight.bold,
+                                  color: theme.colorScheme.primary,
+                                ),
+                              ),
+                              ArabicText(
+                                nextPrayerTime,
+                                textAlign: TextAlign.center,
+                                style: GoogleFonts.cairo(
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.w900,
+                                  color: theme.colorScheme.primary,
+                                ),
+                              ),
+                            ],
+                          ),
+                        )
+                      else
+                        ArabicText(
+                          action.subtitle ?? 'مواقيت الصلاة اليومية',
+                          textAlign: TextAlign.center,
+                          style: GoogleFonts.cairo(
+                            fontSize: 10,
+                            color: theme.textTheme.bodyMedium?.color?.withValues(alpha: 0.6),
+                          ),
+                        ),
+                    ],
                   ),
-              ],
-            ),
           ),
         ),
       ),
     ).animate(delay: delay.ms).scale(begin: const Offset(0.95, 0.95), end: const Offset(1, 1), duration: 250.ms).fade();
+  }
+
+  Widget _buildAudioSubItem(ThemeData theme, IconData icon, String label) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      decoration: BoxDecoration(
+        color: theme.colorScheme.primary.withValues(alpha: 0.04),
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(
+          color: theme.colorScheme.primary.withValues(alpha: 0.03),
+          width: 1,
+        ),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(
+            icon,
+            size: 11,
+            color: theme.colorScheme.secondary,
+          ),
+          const SizedBox(width: 6),
+          Expanded(
+            child: ArabicText(
+              label,
+              style: GoogleFonts.cairo(
+                fontSize: 9,
+                fontWeight: FontWeight.w600,
+                color: theme.colorScheme.primary,
+              ),
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
+        ],
+      ),
+    );
   }
 
   Widget _buildHadithCard(BuildContext context, Hadith hadith, ThemeData theme) {
@@ -809,7 +1027,7 @@ class HomeScreen extends ConsumerWidget {
                   Icon(LucideIcons.quote, color: theme.colorScheme.secondary, size: 28),
                   const SizedBox(width: 8),
                   Expanded(
-                    child: Text(
+                    child: ArabicText(
                       hadith.narrator,
                       style: GoogleFonts.cairo(
                         fontSize: 13,
@@ -821,7 +1039,7 @@ class HomeScreen extends ConsumerWidget {
                 ],
               ),
               const SizedBox(height: 12),
-              Text(
+              ArabicText(
                 hadith.text,
                 style: GoogleFonts.cairo(
                   fontSize: 14,
@@ -831,7 +1049,7 @@ class HomeScreen extends ConsumerWidget {
               ),
               if (hadith.source.isNotEmpty) ...[
                 const Divider(height: 24),
-                Text(
+                ArabicText(
                   'المصدر: ${hadith.source}',
                   style: GoogleFonts.cairo(
                     fontSize: 11,
@@ -963,7 +1181,7 @@ class _PrayerCountdownCardState extends ConsumerState<PrayerCountdownCard> {
                       size: 20,
                     ),
                     const SizedBox(width: 8),
-                    Text(
+                    ArabicText(
                       'صلاة ${displayNextPrayer.name}${isTomorrow ? ' (غداً)' : ''}',
                       style: GoogleFonts.cairo(
                         fontSize: 16,
@@ -973,7 +1191,7 @@ class _PrayerCountdownCardState extends ConsumerState<PrayerCountdownCard> {
                     ),
                   ],
                 ),
-                Text(
+                ArabicText(
                   'المتبقي',
                   style: GoogleFonts.cairo(
                     fontSize: 12,
@@ -987,7 +1205,7 @@ class _PrayerCountdownCardState extends ConsumerState<PrayerCountdownCard> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                Text(
+                ArabicText(
                   DateFormat('hh:mm a', 'ar').format(displayNextPrayer.time),
                   style: GoogleFonts.cairo(
                     fontSize: 22,
@@ -995,9 +1213,9 @@ class _PrayerCountdownCardState extends ConsumerState<PrayerCountdownCard> {
                     fontWeight: FontWeight.w900,
                   ),
                 ),
-                Text(
+                ArabicText(
                   countdownStr,
-                  style: GoogleFonts.robotoMono(
+                  style: GoogleFonts.cairo(
                     fontSize: 28,
                     color: Colors.white,
                     fontWeight: FontWeight.bold,
@@ -1012,7 +1230,7 @@ class _PrayerCountdownCardState extends ConsumerState<PrayerCountdownCard> {
                 final isCurrent = nextPrayer != null && list.indexOf(p) == (list.indexOf(nextPrayer) - 1);
                 return Column(
                   children: [
-                    Text(
+                    ArabicText(
                       p.name,
                       style: GoogleFonts.cairo(
                         fontSize: 11,
@@ -1021,7 +1239,7 @@ class _PrayerCountdownCardState extends ConsumerState<PrayerCountdownCard> {
                       ),
                     ),
                     const SizedBox(height: 4),
-                    Text(
+                    ArabicText(
                       DateFormat('hh:mm', 'ar').format(p.time),
                       style: GoogleFonts.cairo(
                         fontSize: 12,

@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter/services.dart';
 import 'package:zad/src/core/database/shared_preferences_provider.dart';
+import 'package:zad/src/core/widgets/arabic_text.dart';
 
 class NotificationsScreen extends ConsumerWidget {
   const NotificationsScreen({super.key});
@@ -23,7 +24,7 @@ class NotificationsScreen extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(
+        title: ArabicText(
           'تنبيهات الصلاة والأذان',
           style: GoogleFonts.cairo(fontWeight: FontWeight.bold),
         ),
@@ -88,7 +89,7 @@ class NotificationsScreen extends ConsumerWidget {
                 ),
                 
                 // Prayer Name
-                Text(
+                ArabicText(
                   prayer.title,
                   style: GoogleFonts.cairo(
                     fontWeight: FontWeight.bold,
@@ -132,7 +133,7 @@ class NotificationsScreen extends ConsumerWidget {
         ),
         child: Row(
           children: [
-            Text(
+            ArabicText(
               label,
               style: GoogleFonts.cairo(
                 fontSize: 11,

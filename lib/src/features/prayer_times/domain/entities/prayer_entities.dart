@@ -71,7 +71,7 @@ class UserLocation {
   final double longitude;
   final String cityName;
 
-  UserLocation({
+  const UserLocation({
     required this.latitude,
     required this.longitude,
     required this.cityName,

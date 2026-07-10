@@ -85,8 +85,13 @@ class AppTheme {
       // AppBar Theme
       appBarTheme: AppBarTheme(
         backgroundColor: bgLight,
-        elevation: 0,
+        surfaceTintColor: Colors.transparent,
+        elevation: 2,
+        shadowColor: Colors.black.withValues(alpha: 0.15),
         centerTitle: true,
+        shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(bottom: Radius.circular(24)),
+        ),
         titleTextStyle: GoogleFonts.cairo(
           color: textPrimaryLight,
           fontSize: 20,

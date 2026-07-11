@@ -41,6 +41,7 @@ class _SurahDetailScreenState extends ConsumerState<SurahDetailScreen> with Sing
   @override
   void dispose() {
     _tabController.dispose();
+    ref.read(audioPlayerProvider.notifier).stop();
     super.dispose();
   }
 

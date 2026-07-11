@@ -143,7 +143,7 @@ class SettingsScreen extends ConsumerWidget {
   Widget _buildReciterCard(AudioPlaybackState playbackState, WidgetRef ref, ThemeData theme) {
     final activeReciterId = staticReciters.any((r) => r.id == playbackState.activeReciterId)
         ? playbackState.activeReciterId
-        : 'mishary_alfasy';
+        : 'yasser_al_dossari';
 
     return Card(
       elevation: 0,

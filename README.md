@@ -14,9 +14,9 @@ The application features a beautifully structured, responsive layout:
 *   🕌 **Prayer Times**: Automatic location-based prayer times with a next prayer countdown.
 *   🧭 **Qibla Direction**: A precise interactive compass to locate the Kaaba.
 *   🤲 **Adhkar & Supplications**: Fortress of the Muslim (morning, evening, and daily remembrance).
-*   🎧 **Audios** (*Under Development*): Beautiful recitations and audio supplications.
-*   ✨ **Sunan** (*Under Development*): A comprehensive guide to the daily Sunnah of Prophet Muhammad ﷺ.
-*   📚 **Stories** (*Under Development*): Islamic and prophetic historical stories with lessons.
+*   🎧 **Audios**: Beautiful recitations, Quran radio stations, and audio supplications/podcasts.
+*   ✨ **Sunan**: A comprehensive guide to the daily Sunnah of Prophet Muhammad ﷺ with progress checklist.
+*   📚 **Stories**: Islamic and prophetic historical stories with search, lessons, and bookmarking.
 
 ---
 

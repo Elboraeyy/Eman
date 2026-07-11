@@ -173,7 +173,9 @@ class _PrayerTimesScreenState extends ConsumerState<PrayerTimesScreen> {
                         ),
                         const SizedBox(height: 8),
                         ArabicText(
-                          'صلاة $_nextPrayerName القادمة خلال',
+                          _nextPrayerName.startsWith('الشروق')
+                              ? '$_nextPrayerName القادم خلال'
+                              : 'صلاة $_nextPrayerName القادمة خلال',
                           style: GoogleFonts.cairo(fontSize: 16, color: Colors.white),
                         ),
                         const SizedBox(height: 12),

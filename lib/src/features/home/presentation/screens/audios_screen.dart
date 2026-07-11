@@ -51,7 +51,7 @@ class _AudiosScreenState extends ConsumerState<AudiosScreen> with SingleTickerPr
           final prefs = ref.read(sharedPreferencesProvider);
           if (_tabController.index == 0) {
             // Load last played Quran or default
-            final reciterId = prefs.getString('last_quran_reciter') ?? 'mishary_alfasy';
+            final reciterId = prefs.getString('last_quran_reciter') ?? 'yasser_al_dossari';
             final surah = prefs.getInt('last_quran_surah') ?? 1;
             ref.read(audioPlayerProvider.notifier).setLastPlayedState(
               surah: surah,

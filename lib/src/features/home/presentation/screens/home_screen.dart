@@ -1182,7 +1182,7 @@ class _PrayerCountdownCardState extends ConsumerState<PrayerCountdownCard> {
                     ),
                     const SizedBox(width: 8),
                     ArabicText(
-                      'صلاة ${displayNextPrayer.name}${isTomorrow ? ' (غداً)' : ''}',
+                      '${displayNextPrayer.name == 'الشروق' ? '' : 'صلاة '}${displayNextPrayer.name}${isTomorrow ? ' (غداً)' : ''}',
                       style: GoogleFonts.cairo(
                         fontSize: 16,
                         color: Colors.white,

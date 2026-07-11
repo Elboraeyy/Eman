@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:just_audio/just_audio.dart';
@@ -20,9 +21,60 @@ class Reciter {
     required this.server,
     this.surahServer,
   });
+
+  Map<String, dynamic> toJson() => {
+    'id': id,
+    'nameEnglish': nameEnglish,
+    'nameArabic': nameArabic,
+    'server': server,
+    'surahServer': surahServer,
+  };
+
+  factory Reciter.fromJson(Map<String, dynamic> json) => Reciter(
+    id: json['id'] as String,
+    nameEnglish: json['nameEnglish'] as String,
+    nameArabic: json['nameArabic'] as String,
+    server: json['server'] as String,
+    surahServer: json['surahServer'] as String?,
+  );
 }
 
 const List<Reciter> staticReciters = [
+  Reciter(
+    id: 'yasser_al_dossari',
+    nameEnglish: 'Yasser Al-Dossari',
+    nameArabic: 'ياسر الدوسري',
+    server: 'https://everyayah.com/data/Yasser_Ad-Dussary_128kbps/',
+    surahServer: 'https://server11.mp3quran.net/yasser/',
+  ),
+  Reciter(
+    id: 'maher_al_muaiqly',
+    nameEnglish: 'Maher Al-Muaiqly',
+    nameArabic: 'ماهر المعيقلي',
+    server: 'https://everyayah.com/data/MaherAlMuaiqly128kbps/',
+    surahServer: 'https://server12.mp3quran.net/maher/',
+  ),
+  Reciter(
+    id: 'mishary_alfasy',
+    nameEnglish: 'Mishary Alafasy',
+    nameArabic: 'مشاري العفاسي',
+    server: 'https://everyayah.com/data/Alafasy_128kbps/',
+    surahServer: 'https://server8.mp3quran.net/afs/',
+  ),
+  Reciter(
+    id: 'mahmoud_al_husary',
+    nameEnglish: 'Mahmoud Khalil Al-Husary (Murattal)',
+    nameArabic: 'محمود خليل الحصري (مرتل)',
+    server: 'https://everyayah.com/data/Husary_128kbps/',
+    surahServer: 'https://server13.mp3quran.net/husr/',
+  ),
+  Reciter(
+    id: 'al_minshawi',
+    nameEnglish: 'Al-Minshawi',
+    nameArabic: 'محمد صديق المنشاوي',
+    server: 'https://everyayah.com/data/Minshawy_Murattal_128kbps/',
+    surahServer: 'https://server11.mp3quran.net/minsh/',
+  ),
   Reciter(
     id: 'abdul_basit',
     nameEnglish: 'Abdul Basit',
@@ -30,17 +82,34 @@ const List<Reciter> staticReciters = [
     server: 'https://everyayah.com/data/Abdul_Basit_Murattal_192kbps/',
     surahServer: 'https://server7.mp3quran.net/basit/',
   ),
+];
+
+const List<Reciter> allEveryAyahReciters = [
   Reciter(
-    id: 'al_hudhaifi',
-    nameEnglish: 'Al-Hudhaifi',
-    nameArabic: 'صالح الحذيفي',
-    server: 'https://everyayah.com/data/Hudhaifi_128kbps/',
-    surahServer: 'https://server9.mp3quran.net/hudhaifi/',
+    id: 'abdul_basit',
+    nameEnglish: 'Abdul Basit (Murattal)',
+    nameArabic: 'عبد الباسط عبد الصمد (مرتل)',
+    server: 'https://everyayah.com/data/Abdul_Basit_Murattal_192kbps/',
+    surahServer: 'https://server7.mp3quran.net/basit/',
+  ),
+  Reciter(
+    id: 'abdul_basit_mujawwad',
+    nameEnglish: 'Abdul Basit (Mujawwad)',
+    nameArabic: 'عبد الباسط عبد الصمد (مجود)',
+    server: 'https://everyayah.com/data/Abdul_Basit_Mujawwad_128kbps/',
+    surahServer: 'https://server7.mp3quran.net/basit_mjwd/',
+  ),
+  Reciter(
+    id: 'yasser_al_dossari',
+    nameEnglish: 'Yasser Al-Dossari',
+    nameArabic: 'ياسر الدوسري',
+    server: 'https://everyayah.com/data/Yasser_Ad-Dussary_128kbps/',
+    surahServer: 'https://server11.mp3quran.net/yasser/',
   ),
   Reciter(
     id: 'al_minshawi',
-    nameEnglish: 'Al-Minshawi',
-    nameArabic: 'محمد صديق المنشاوي',
+    nameEnglish: 'Al-Minshawi (Murattal)',
+    nameArabic: 'محمد صديق المنشاوي (مرتل)',
     server: 'https://everyayah.com/data/Minshawy_Murattal_128kbps/',
     surahServer: 'https://server11.mp3quran.net/minsh/',
   ),
@@ -65,7 +134,121 @@ const List<Reciter> staticReciters = [
     server: 'https://everyayah.com/data/MaherAlMuaiqly128kbps/',
     surahServer: 'https://server12.mp3quran.net/maher/',
   ),
+  Reciter(
+    id: 'abdurrahman_al_sudais',
+    nameEnglish: 'Abdul Rahman Al-Sudais',
+    nameArabic: 'عبد الرحمن السديس',
+    server: 'https://everyayah.com/data/Abdurrahmaan_As-Sudais_192kbps/',
+    surahServer: 'https://server11.mp3quran.net/sds/',
+  ),
+  Reciter(
+    id: 'saud_al_shuraim',
+    nameEnglish: 'Saud Al-Shuraim',
+    nameArabic: 'سعود الشريم',
+    server: 'https://everyayah.com/data/Saood_ash-Shuraym_128kbps/',
+    surahServer: 'https://server7.mp3quran.net/shrm/',
+  ),
+  Reciter(
+    id: 'mahmoud_al_husary',
+    nameEnglish: 'Mahmoud Khalil Al-Husary (Murattal)',
+    nameArabic: 'محمود خليل الحصري (مرتل)',
+    server: 'https://everyayah.com/data/Husary_128kbps/',
+    surahServer: 'https://server13.mp3quran.net/husr/',
+  ),
+  Reciter(
+    id: 'nasser_al_qatami',
+    nameEnglish: 'Nasser Al-Qatami',
+    nameArabic: 'ناصر القطامي',
+    server: 'https://everyayah.com/data/Nasser_Alqatami_128kbps/',
+    surahServer: 'https://server11.mp3quran.net/qtm/',
+  ),
+  Reciter(
+    id: 'fares_abbad',
+    nameEnglish: 'Fares Abbad',
+    nameArabic: 'فارس عباد',
+    server: 'https://everyayah.com/data/Fares_Abbad_64kbps/',
+    surahServer: 'https://server8.mp3quran.net/frs_a/',
+  ),
+  Reciter(
+    id: 'abdullah_basfar',
+    nameEnglish: 'Abdullah Basfar',
+    nameArabic: 'عبد الله بصفر',
+    server: 'https://everyayah.com/data/Abdullah_Basfar_192kbps/',
+    surahServer: 'https://server6.mp3quran.net/bsfr/',
+  ),
+  Reciter(
+    id: 'muhammad_ayyoub',
+    nameEnglish: 'Muhammad Ayyoub',
+    nameArabic: 'محمد أيوب',
+    server: 'https://everyayah.com/data/Muhammad_Ayyoub_128kbps/',
+    surahServer: 'https://server8.mp3quran.net/ayoub/',
+  ),
+  Reciter(
+    id: 'muhammad_jibreel',
+    nameEnglish: 'Muhammad Jibreel',
+    nameArabic: 'محمد جبريل',
+    server: 'https://everyayah.com/data/Muhammad_Jibreel_128kbps/',
+    surahServer: 'https://server8.mp3quran.net/jbrl/',
+  ),
+  Reciter(
+    id: 'salah_al_budair',
+    nameEnglish: 'Salah Al-Budair',
+    nameArabic: 'صلاح البدير',
+    server: 'https://everyayah.com/data/Salah_Al_Budair_128kbps/',
+    surahServer: 'https://server11.mp3quran.net/budair/',
+  ),
+  Reciter(
+    id: 'ahmed_al_hawashi',
+    nameEnglish: 'Ahmed Al-Hawashi',
+    nameArabic: 'أحمد الحواشي',
+    server: 'https://everyayah.com/data/Ahmed_Neana_128kbps/',
+    surahServer: 'https://server11.mp3quran.net/hawash/',
+  ),
+  Reciter(
+    id: 'sahl_yassin',
+    nameEnglish: 'Sahl Yassin',
+    nameArabic: 'سهل ياسين',
+    server: 'https://everyayah.com/data/Sahl_Yassin_128kbps/',
+    surahServer: 'https://server6.mp3quran.net/sahil/',
+  ),
 ];
+
+final recentRecitersProvider = NotifierProvider<RecentRecitersNotifier, List<Reciter>>(() {
+  return RecentRecitersNotifier();
+});
+
+class RecentRecitersNotifier extends Notifier<List<Reciter>> {
+  @override
+  List<Reciter> build() {
+    return _loadRecentReciters();
+  }
+
+  List<Reciter> _loadRecentReciters() {
+    final prefs = ref.read(sharedPreferencesProvider);
+    final list = prefs.getStringList('recent_quran_reciters');
+    if (list == null || list.isEmpty) {
+      return List.from(staticReciters);
+    } else {
+      try {
+        return list.map((item) => Reciter.fromJson(jsonDecode(item))).toList();
+      } catch (e) {
+        return List.from(staticReciters);
+      }
+    }
+  }
+
+  void addReciter(Reciter reciter) {
+    final prefs = ref.read(sharedPreferencesProvider);
+    final newList = state.where((r) => r.id != reciter.id).toList();
+    newList.insert(0, reciter);
+    if (newList.length > 6) {
+      newList.removeRange(6, newList.length);
+    }
+    state = newList;
+    final stringList = newList.map((r) => jsonEncode(r.toJson())).toList();
+    prefs.setStringList('recent_quran_reciters', stringList);
+  }
+}
 
 const List<String> surahNamesArabic = [
   "الفاتحة", "البقرة", "آل عمران", "النساء", "المائدة", "الأنعام", "الأعراف", "الأنفال", "التوبة", "يونس",
@@ -184,7 +367,7 @@ class AudioPlayerNotifier extends Notifier<AudioPlaybackState> {
     final lastGlobalType = prefs.getString('last_global_type') ?? 'quran';
 
     if (lastGlobalType == 'quran') {
-      final reciterId = prefs.getString('last_quran_reciter') ?? 'mishary_alfasy';
+      final reciterId = prefs.getString('last_quran_reciter') ?? 'yasser_al_dossari';
       final surah = prefs.getInt('last_quran_surah') ?? 1;
       return AudioPlaybackState(
         isPlaying: false,
@@ -298,10 +481,25 @@ class AudioPlayerNotifier extends Notifier<AudioPlaybackState> {
   }
 
   Reciter _getReciter(String reciterId) {
-    return staticReciters.firstWhere(
+    debugPrint('AudioPlayerNotifier: _getReciter called for ID: "$reciterId"');
+    // Search in recent reciters first
+    try {
+      final reciters = ref.read(recentRecitersProvider);
+      debugPrint('AudioPlayerNotifier: recent reciters IDs: ${reciters.map((r) => r.id).toList()}');
+      final match = reciters.firstWhere((r) => r.id == reciterId);
+      debugPrint('AudioPlayerNotifier: match found in recent reciters: "${match.nameArabic}" with ID: "${match.id}"');
+      return match;
+    } catch (e) {
+      debugPrint('AudioPlayerNotifier: failed to find match in recent: $e');
+    }
+
+    // Fallback to static reciters
+    final fallback = staticReciters.firstWhere(
       (r) => r.id == reciterId,
       orElse: () => staticReciters.first,
     );
+    debugPrint('AudioPlayerNotifier: fallback resolved: "${fallback.nameArabic}" with ID: "${fallback.id}"');
+    return fallback;
   }
 
   String _getAyahAudioUrl(Reciter reciter, int surah, int ayah) {
@@ -316,7 +514,7 @@ class AudioPlayerNotifier extends Notifier<AudioPlaybackState> {
     return '$baseUrl$sStr.mp3';
   }
 
-  Future<void> playSurah(String reciterId, int surahNumber) async {
+  Future<void> playSurah(String reciterId, int surahNumber, {bool play = true}) async {
     try {
       final reciter = _getReciter(reciterId);
       final url = _getSurahAudioUrl(reciter, surahNumber);
@@ -360,19 +558,28 @@ class AudioPlayerNotifier extends Notifier<AudioPlaybackState> {
       );
 
       await _player.setAudioSource(source);
-      _player.play();
-      state = state.copyWith(isPlaying: true, isLoading: false);
+      if (play) {
+        _player.play();
+        state = state.copyWith(isPlaying: true, isLoading: false);
+      } else {
+        state = state.copyWith(isPlaying: false, isLoading: false);
+      }
     } catch (e) {
       debugPrint('AudioPlayerNotifier Error: Failed to play surah: $e');
       state = state.copyWith(isPlaying: false, isLoading: false);
     }
   }
 
-  Future<void> playPageAyahs(String reciterId, List<QcfVerse> verses) async {
+  Future<void> playPageAyahs(String reciterId, List<QcfVerse> verses, {int initialIndex = 0, bool play = true}) async {
     if (verses.isEmpty) return;
 
     try {
       final reciter = _getReciter(reciterId);
+      if (!reciter.server.contains('everyayah.com')) {
+        debugPrint('AudioPlayerNotifier: Reciter does not support Ayah mode. Falling back to Surah mode.');
+        await playSurah(reciterId, verses.first.surahNumber, play: play);
+        return;
+      }
       
       final sources = verses.map((v) {
         final surahName = surahNamesArabic[v.surahNumber - 1];
@@ -392,7 +599,7 @@ class AudioPlayerNotifier extends Notifier<AudioPlaybackState> {
       state = AudioPlaybackState(
         isPlaying: false,
         currentSurah: verses.first.surahNumber,
-        currentAyahIndex: 0,
+        currentAyahIndex: initialIndex,
         position: Duration.zero,
         duration: Duration.zero,
         activeReciterId: reciterId,
@@ -409,9 +616,13 @@ class AudioPlayerNotifier extends Notifier<AudioPlaybackState> {
       );
 
       final playlist = ConcatenatingAudioSource(children: sources);
-      await _player.setAudioSource(playlist);
-      _player.play();
-      state = state.copyWith(isPlaying: true, isLoading: false);
+      await _player.setAudioSource(playlist, initialIndex: initialIndex);
+      if (play) {
+        _player.play();
+        state = state.copyWith(isPlaying: true, isLoading: false);
+      } else {
+        state = state.copyWith(isPlaying: false, isLoading: false);
+      }
     } catch (e) {
       debugPrint('AudioPlayerNotifier Error: Failed to play page: $e');
       state = state.copyWith(isPlaying: false, isLoading: false);
@@ -421,6 +632,11 @@ class AudioPlayerNotifier extends Notifier<AudioPlaybackState> {
   Future<void> playAyah(String reciterId, int surahNumber, int ayahNumber) async {
     try {
       final reciter = _getReciter(reciterId);
+      if (!reciter.server.contains('everyayah.com')) {
+        debugPrint('AudioPlayerNotifier: Reciter does not support Ayah mode. Falling back to Surah mode.');
+        await playSurah(reciterId, surahNumber);
+        return;
+      }
       final url = _getAyahAudioUrl(reciter, surahNumber, ayahNumber);
       final surahName = surahNamesArabic[surahNumber - 1];
 
@@ -467,6 +683,11 @@ class AudioPlayerNotifier extends Notifier<AudioPlaybackState> {
   Future<void> playSingleAyah(String reciterId, QcfVerse verse) async {
     try {
       final reciter = _getReciter(reciterId);
+      if (!reciter.server.contains('everyayah.com')) {
+        debugPrint('AudioPlayerNotifier: Reciter does not support single ayah mode. Falling back to Surah mode.');
+        await playSurah(reciterId, verse.surahNumber);
+        return;
+      }
       final url = _getAyahAudioUrl(reciter, verse.surahNumber, verse.ayahNumber);
       final surahName = surahNamesArabic[verse.surahNumber - 1];
 
@@ -665,13 +886,15 @@ class AudioPlayerNotifier extends Notifier<AudioPlaybackState> {
   }
 
   void changeReciter(String reciterId) {
+    final wasPlaying = state.isPlaying;
     state = state.copyWith(activeReciterId: reciterId);
     
-    if (state.isPlaying && state.currentSurah > 0) {
+    if (state.currentSurah > 0) {
       if (state.isPageMode) {
-        playPageAyahs(reciterId, state.pageVerses);
+        final index = state.currentAyahIndex >= 0 ? state.currentAyahIndex : 0;
+        playPageAyahs(reciterId, state.pageVerses, initialIndex: index, play: wasPlaying);
       } else {
-        playSurah(reciterId, state.currentSurah);
+        playSurah(reciterId, state.currentSurah, play: wasPlaying);
       }
     }
   }

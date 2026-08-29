@@ -15,21 +15,33 @@ import 'src/core/theme/app_theme.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Initialize background audio
-  await JustAudioBackground.init(
-    androidNotificationChannelId: 'com.elboraeyy.zad.channel.audio',
-    androidNotificationChannelName: 'Zad Audio Playback',
-    androidNotificationOngoing: true,
-    androidShowNotificationBadge: true,
-  );
+  // Initialize background audio safely
+  try {
+    await JustAudioBackground.init(
+      androidNotificationChannelId: 'com.elboraeyy.zad.channel.audio',
+      androidNotificationChannelName: 'Zad Audio Playback',
+      androidNotificationOngoing: true,
+      androidShowNotificationBadge: true,
+    );
+  } catch (e) {
+    debugPrint('JustAudioBackground init warning: $e');
+  }
 
   // Initialize date formatting for Arabic
-  await initializeDateFormatting('ar', null);
+  try {
+    await initializeDateFormatting('ar', null);
+  } catch (e) {
+    debugPrint('DateFormatting init warning: $e');
+  }
 
   // Create database instance and populate data if empty (offline Quran, Hadith, Adhkar)
   final db = AppDatabase();
-  final initializer = DatabaseInitializer(db);
-  await initializer.initializeDatabase();
+  try {
+    final initializer = DatabaseInitializer(db);
+    await initializer.initializeDatabase();
+  } catch (e) {
+    debugPrint('Database initialization warning: $e');
+  }
 
   final sharedPrefs = await SharedPreferences.getInstance();
 

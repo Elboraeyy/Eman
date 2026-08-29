@@ -70,5 +70,19 @@
 	<array>
 		<string>audio</string>
 	</array>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>نحتاج إلى معرفة موقعك لحساب أوقات الصلاة واتجاه القبلة بدقة.</string>
+	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+	<string>نحتاج إلى معرفة موقعك لحساب أوقات الصلاة وتنبيهات الأذان واتجاه القبلة.</string>
+	<key>ITSAppUsesNonExemptEncryption</key>
+	<false/>
+	<key>LSApplicationQueriesSchemes</key>
+	<array>
+		<string>https</string>
+		<string>http</string>
+		<string>tel</string>
+		<string>mailto</string>
+		<string>whatsapp</string>
+	</array>
 </dict>
 </plist>

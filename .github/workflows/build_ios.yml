@@ -2,11 +2,30 @@ name: Build iOS IPA
 
 on:
   workflow_dispatch:
+    inputs:
+      build_name:
+        description: 'iOS marketing version (for example 1.0.0)'
+        required: false
+        default: '1.0.0'
+      build_number:
+        description: 'iOS build number; must be a positive integer'
+        required: false
+        default: ''
+
+permissions:
+  contents: read
 
 jobs:
   build:
     name: Build iOS IPA (Unsigned for Sideloading)
-    runs-on: macos-latest
+    runs-on: macos-14
+
+    env:
+      # This workflow intentionally creates an unsigned device app. iLoader
+      # will sign it with the Apple account/certificate configured there.
+      CODE_SIGNING_ALLOWED: NO
+      CODE_SIGNING_REQUIRED: NO
+      CODE_SIGN_IDENTITY: ''
 
     steps:
       - name: Checkout Code
@@ -15,25 +34,67 @@ jobs:
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
         with:
-          channel: 'stable'
+          flutter-version: '3.41.9'
           cache: true
+
+      - name: Use CocoaPods for iOS Plugins
+        run: flutter config --no-enable-swift-package-manager
 
       - name: Get Dependencies
         run: flutter pub get
 
+      - name: Install CocoaPods Dependencies
+        working-directory: ios
+        run: pod install --repo-update
+
       - name: Build iOS App
-        run: flutter build ios --release --no-codesign
+        run: |
+          set -euo pipefail
+          BUILD_NUMBER="${{ inputs.build_number }}"
+          if [[ -z "$BUILD_NUMBER" ]]; then
+            BUILD_NUMBER="${GITHUB_RUN_NUMBER}"
+          fi
+
+          if ! [[ "$BUILD_NUMBER" =~ ^[1-9][0-9]*$ ]]; then
+            echo "build_number must be a positive integer, got: $BUILD_NUMBER" >&2
+            exit 1
+          fi
+
+          flutter build ios \
+            --release \
+            --no-codesign \
+            --build-name "${{ inputs.build_name }}" \
+            --build-number "$BUILD_NUMBER"
 
       - name: Create IPA Package
         run: |
-          mkdir -p Payload
-          cp -r build/ios/iphoneos/Runner.app Payload/
-          zip -r -y Zad.ipa Payload
-          rm -rf Payload
+          set -euo pipefail
+          APP_PATH="${GITHUB_WORKSPACE}/build/ios/iphoneos/Runner.app"
+          PAYLOAD_DIR="${RUNNER_TEMP}/zad-ipa/Payload"
+
+          test -d "$APP_PATH"
+          test -f "$APP_PATH/Info.plist"
+          test -x "$APP_PATH/Runner"
+
+          BUNDLE_ID=$(/usr/libexec/PlistBuddy -c 'Print :CFBundleIdentifier' "$APP_PATH/Info.plist")
+          if [[ "$BUNDLE_ID" != "com.elboraeyy.zad" ]]; then
+            echo "Unexpected bundle identifier: $BUNDLE_ID" >&2
+            exit 1
+          fi
+
+          rm -rf "${RUNNER_TEMP}/zad-ipa"
+          mkdir -p "$PAYLOAD_DIR"
+          ditto "$APP_PATH" "$PAYLOAD_DIR/Runner.app"
+
+          # iOS expects the application bundle directly under Payload.
+          (cd "${RUNNER_TEMP}/zad-ipa" && /usr/bin/zip -qry -y "${GITHUB_WORKSPACE}/Zad.ipa" Payload)
+          /usr/bin/unzip -t "${GITHUB_WORKSPACE}/Zad.ipa"
+          /usr/bin/unzip -Z1 "${GITHUB_WORKSPACE}/Zad.ipa" | grep -Fxq 'Payload/Runner.app/Info.plist'
 
       - name: Upload IPA Artifact
         uses: actions/upload-artifact@v4
         with:
           name: Zad_IPA
           path: Zad.ipa
+          if-no-files-found: error
           retention-days: 7

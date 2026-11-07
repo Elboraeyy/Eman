@@ -3,7 +3,7 @@ import 'dart:math' as math;
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_compass/flutter_compass.dart';
-import 'package:zad/src/core/database/shared_preferences_provider.dart';
+import 'package:iman/src/core/database/shared_preferences_provider.dart';
 import '../../data/repositories/prayer_repository_provider.dart';
 
 class FallbackCity {

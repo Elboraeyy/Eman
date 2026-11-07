@@ -4,12 +4,11 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:flutter/services.dart';
-import 'package:zad/src/core/database/app_database.dart';
 import '../../data/repositories/quran_repository_provider.dart';
 import '../../domain/entities/quran_entities.dart';
 import '../controllers/audio_player_controller.dart';
 import 'mushaf_screen.dart'; // Reuses providers like verseTafsirProvider, isVerseFavoriteProvider
-import 'package:zad/src/core/widgets/arabic_text.dart';
+import 'package:iman/src/core/widgets/arabic_text.dart';
 
 final surahDetailsProvider = FutureProvider.family<List<Ayah>, int>((ref, surahNumber) async {
   final repo = ref.watch(quranRepositoryProvider);
@@ -167,7 +166,7 @@ class _SurahDetailScreenState extends ConsumerState<SurahDetailScreen> with Sing
                         final shareText = 'قال تعالى:\n'
                             '« ${ayah.textUthmani} »\n\n'
                             '[سورة ${ayah.surahNumber}، الآية ${ayah.numberInSurah}]\n'
-                            'تمت المشاركة من تطبيق زاد المسلم';
+                            'تمت المشاركة من تطبيق إيمان';
                         SharePlus.instance.share(ShareParams(text: shareText));
                       },
                     ),
@@ -187,7 +186,7 @@ class _SurahDetailScreenState extends ConsumerState<SurahDetailScreen> with Sing
                         },
                       ),
                       loading: () => const SizedBox(width: 24, height: 24, child: CircularProgressIndicator(strokeWidth: 2)),
-                      error: (_, __) => const SizedBox(),
+                      error: (error, stackTrace) => const SizedBox(),
                     ),
                     IconButton(
                       icon: Icon(Icons.play_arrow, color: theme.colorScheme.primary, size: 20),

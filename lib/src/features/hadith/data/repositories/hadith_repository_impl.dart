@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:flutter/foundation.dart';
 import 'package:drift/drift.dart';
 import '../../../../core/database/app_database.dart';
 import '../../domain/entities/hadith_entities.dart';
@@ -32,7 +33,7 @@ class HadithRepositoryImpl implements HadithRepository {
       final List<dynamic> parsed = jsonDecode(h.vocabularyJson);
       vocabList = parsed.map((item) => HadithVocab.fromJson(item)).toList();
     } catch (e) {
-      print('HadithRepositoryImpl: Failed to parse vocabulary JSON: $e');
+      debugPrint('HadithRepositoryImpl: Failed to parse vocabulary JSON: $e');
     }
 
     List<String> lifeApps = [];
@@ -40,7 +41,7 @@ class HadithRepositoryImpl implements HadithRepository {
       final List<dynamic> parsed = jsonDecode(h.lifeApplicationsJson);
       lifeApps = parsed.cast<String>();
     } catch (e) {
-      print('HadithRepositoryImpl: Failed to parse life applications JSON: $e');
+      debugPrint('HadithRepositoryImpl: Failed to parse life applications JSON: $e');
     }
 
     return Hadith(

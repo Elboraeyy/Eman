@@ -8,7 +8,7 @@ import 'package:lucide_icons/lucide_icons.dart';
 import 'package:flutter/services.dart';
 import '../../data/repositories/hadith_repository_provider.dart';
 import '../../domain/entities/hadith_entities.dart';
-import 'package:zad/src/core/widgets/arabic_text.dart';
+import 'package:iman/src/core/widgets/arabic_text.dart';
 
 // Providers for loading books and categories are imported from hadith_repository_provider.dart
 
@@ -653,7 +653,7 @@ class _HadithIndexScreenState extends ConsumerState<HadithIndexScreen> {
                               '« ${hadith.text} »\n\n'
                               'الراوي: ${hadith.narrator}\n'
                               'المصدر: ${hadith.source}\n\n'
-                              'تمت المشاركة من تطبيق زاد المسلم';
+                              'تمت المشاركة من تطبيق إيمان';
                           SharePlus.instance.share(ShareParams(text: shareText));
                         },
                       ),

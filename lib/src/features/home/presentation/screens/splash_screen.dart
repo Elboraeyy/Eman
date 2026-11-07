@@ -5,7 +5,7 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../../core/database/shared_preferences_provider.dart';
-import 'package:zad/src/core/widgets/arabic_text.dart';
+import 'package:iman/src/core/widgets/arabic_text.dart';
 
 class SplashScreen extends ConsumerStatefulWidget {
   const SplashScreen({super.key});
@@ -22,7 +22,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
   }
 
   void _startTimer() {
-    Timer(const Duration(milliseconds: 2500), () {
+    Timer(const Duration(milliseconds: 2300), () {
       if (!mounted) return;
       final prefs = ref.read(sharedPreferencesProvider);
       final onboardingCompleted = prefs.getBool('onboarding_completed') ?? false;
@@ -38,101 +38,80 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    
+    const bgColor = Color(0xFFFAF8F5);
+
     return Scaffold(
+      backgroundColor: bgColor,
       body: Stack(
         alignment: Alignment.center,
         children: [
-          // Background soft gradient matching app palette
-          Positioned.fill(
+          // Background ambient soft glow
+          Positioned(
+            top: -100,
             child: Container(
+              width: 320,
+              height: 320,
               decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [
-                    theme.scaffoldBackgroundColor,
-                    theme.colorScheme.surface,
-                  ],
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                ),
+                shape: BoxShape.circle,
+                color: theme.colorScheme.primary.withValues(alpha: 0.04),
               ),
             ),
           ),
-          // Center logo & texts
+
+          // Center: Logo and Animated Slogan
           Center(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                // Logo frame
+                // Modern Geometric Logo
                 Container(
-                  width: 140,
-                  height: 140,
+                  width: 220,
+                  height: 220,
                   decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: theme.colorScheme.secondary.withValues(alpha: 0.15),
-                    border: Border.all(
-                      color: theme.colorScheme.secondary.withValues(alpha: 0.3),
-                      width: 1.5,
-                    ),
+                    borderRadius: BorderRadius.circular(40),
+                    boxShadow: [
+                      BoxShadow(
+                        color: theme.colorScheme.primary.withValues(alpha: 0.06),
+                        blurRadius: 30,
+                        offset: const Offset(0, 10),
+                      ),
+                    ],
                   ),
-                  child: Center(
-                    child: Icon(
-                      Icons.mosque,
-                      size: 64,
-                      color: theme.colorScheme.primary,
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(40),
+                    child: Image.asset(
+                      'assets/images/app_logo.png',
+                      fit: BoxFit.contain,
                     ),
                   ),
                 )
                 .animate()
-                .fade(duration: 1200.ms, curve: Curves.fastOutSlowIn)
-                .scale(begin: const Offset(0.8, 0.8), end: const Offset(1, 1), duration: 1200.ms, curve: Curves.fastOutSlowIn),
-                
-                const SizedBox(height: 32),
-                
-                // App Title
+                .fade(duration: 900.ms, curve: Curves.easeOutCubic)
+                .scale(
+                  begin: const Offset(0.85, 0.85),
+                  end: const Offset(1.0, 1.0),
+                  duration: 900.ms,
+                  curve: Curves.easeOutBack,
+                ),
+
+                const SizedBox(height: 28),
+
+                // Selected Slogan
                 ArabicText(
-                  'زاد مسلم',
-                  style: GoogleFonts.amiri(
-                    fontSize: 48,
+                  'إِيـمَــــــــانٌ يَـزْدَاد .. وَطَـاعَــــــــةٌ تُـثْـمِـر',
+                  style: GoogleFonts.cairo(
+                    fontSize: 15,
                     fontWeight: FontWeight.bold,
                     color: theme.colorScheme.primary,
-                  ),
-                )
-                .animate()
-                .fade(delay: 300.ms, duration: 1000.ms),
-                
-                const SizedBox(height: 8),
-                
-                // Tagline
-                ArabicText(
-                  'الدليل الإسلامي الشامل',
-                  style: GoogleFonts.cairo(
-                    fontSize: 16,
-                    color: theme.textTheme.bodyMedium?.color?.withValues(alpha: 0.7),
                     letterSpacing: 0.5,
-                    fontWeight: FontWeight.w500,
                   ),
                 )
                 .animate()
-                .fade(delay: 600.ms, duration: 1000.ms),
+                .fade(delay: 350.ms, duration: 800.ms)
+                .slideY(begin: 0.2, end: 0, curve: Curves.easeOutCubic),
               ],
             ),
           ),
-          
-          // Bottom loading indicator
-          Positioned(
-            bottom: 64,
-            child: SizedBox(
-              width: 28,
-              height: 28,
-              child: CircularProgressIndicator(
-                strokeWidth: 2.5,
-                valueColor: AlwaysStoppedAnimation<Color>(theme.colorScheme.primary),
-              ),
-            ),
-          )
-          .animate()
-          .fade(delay: 800.ms, duration: 600.ms),
         ],
       ),
     );

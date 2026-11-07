@@ -6,7 +6,7 @@ import 'package:lucide_icons/lucide_icons.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:share_plus/share_plus.dart';
-import 'package:zad/src/core/widgets/arabic_text.dart';
+import 'package:iman/src/core/widgets/arabic_text.dart';
 
 class StoriesScreen extends StatefulWidget {
   const StoriesScreen({super.key});
@@ -383,12 +383,12 @@ class _StoryDetailScreenState extends State<StoryDetailScreen> {
   }
 
   void _shareStory() {
-    final String shareText = 'من قصص وعبر زاد المسلم:\n\n'
+    final String shareText = 'من قصص وعبر إيمان:\n\n'
         '📌 ${widget.story['title']}\n\n'
         '${widget.story['content']}\n\n'
         '💡 العبر والدروس المستفادة:\n'
         '${(widget.story['lessons'] as List).map((l) => '- $l').join('\n')}\n\n'
-        'تمت المشاركة من تطبيق زاد المسلم 🌸';
+        'تمت المشاركة من تطبيق إيمان 🌸';
     SharePlus.instance.share(ShareParams(text: shareText));
   }
 

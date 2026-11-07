@@ -1,4 +1,4 @@
-# Zad (زاد) 🕋
+# Iman (إيمان) 🕋
 
 A premium, elegant, and lightweight Islamic Flutter application styled with a modern two-layer overlapping UI and warm aesthetics.
 
@@ -35,7 +35,7 @@ The application features a beautifully structured, responsive layout:
 1.  **Clone the repository**:
     ```bash
     git clone <repository-url>
-    cd zad
+    cd iman
     ```
 2.  **Install dependencies**:
     ```bash

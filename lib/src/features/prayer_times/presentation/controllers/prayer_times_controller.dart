@@ -1,5 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:zad/src/core/database/shared_preferences_provider.dart';
+import 'package:iman/src/core/database/shared_preferences_provider.dart';
 import '../../domain/entities/prayer_entities.dart';
 import '../../data/repositories/prayer_repository_provider.dart';
 

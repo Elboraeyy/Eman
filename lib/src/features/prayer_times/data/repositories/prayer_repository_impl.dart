@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:flutter/foundation.dart';
 import 'package:dio/dio.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -27,7 +28,7 @@ class PrayerRepositoryImpl implements PrayerRepository {
         );
       }
     } catch (e) {
-      print('Failed to get cached location: $e');
+      debugPrint('Failed to get cached location: $e');
     }
     return null;
   }
@@ -38,7 +39,7 @@ class PrayerRepositoryImpl implements PrayerRepository {
       await sharedPreferences.setDouble('cached_longitude', userLoc.longitude);
       await sharedPreferences.setString('cached_city_name', userLoc.cityName);
     } catch (e) {
-      print('Failed to cache location: $e');
+      debugPrint('Failed to cache location: $e');
     }
   }
 
@@ -58,15 +59,12 @@ class PrayerRepositoryImpl implements PrayerRepository {
       // Try to get last known position first (fast & offline cached)
       Position? position = await Geolocator.getLastKnownPosition();
 
-      if (position == null) {
-        // Fallback to active position query with a safe timeout
-        position = await Geolocator.getCurrentPosition(
-          locationSettings: const LocationSettings(
-            accuracy: LocationAccuracy.low,
-            timeLimit: Duration(seconds: 8),
-          ),
-        );
-      }
+      position ??= await Geolocator.getCurrentPosition(
+        locationSettings: const LocationSettings(
+          accuracy: LocationAccuracy.low,
+          timeLimit: Duration(seconds: 8),
+        ),
+      );
 
       // Reverse geocode to get Arabic city name
       String cityName = 'موقعي الحالي';
@@ -82,7 +80,7 @@ class PrayerRepositoryImpl implements PrayerRepository {
           },
           options: Options(
             headers: {
-              'User-Agent': 'ZadMuslimAppGeocodingClient',
+              'User-Agent': 'ImanAppGeocodingClient',
             },
             receiveTimeout: const Duration(seconds: 3),
             sendTimeout: const Duration(seconds: 3),
@@ -108,7 +106,7 @@ class PrayerRepositoryImpl implements PrayerRepository {
           }
         }
       } catch (e) {
-        print('Reverse geocoding failed: $e');
+        debugPrint('Reverse geocoding failed: $e');
         // Fallback to last cached city name if coordinates are close
         final cached = _getCachedLocation();
         if (cached != null) {
@@ -130,7 +128,7 @@ class PrayerRepositoryImpl implements PrayerRepository {
 
       return userLoc;
     } catch (e) {
-      print('PrayerRepositoryImpl: Location check failed: $e');
+      debugPrint('PrayerRepositoryImpl: Location check failed: $e');
       return _getCachedLocation();
     }
   }
@@ -154,7 +152,7 @@ class PrayerRepositoryImpl implements PrayerRepository {
         final List<dynamic> jsonList = jsonDecode(cachedData);
         return jsonList.map((item) => PrayerTimes.fromJson(item)).toList();
       } catch (e) {
-        print('PrayerRepositoryImpl: Error parsing cached calendar: $e');
+        debugPrint('PrayerRepositoryImpl: Error parsing cached calendar: $e');
       }
     }
 
@@ -196,7 +194,7 @@ class PrayerRepositoryImpl implements PrayerRepository {
         return prayerTimesList;
       }
     } catch (e) {
-      print('PrayerRepositoryImpl: Failed to fetch calendar from network: $e');
+      debugPrint('PrayerRepositoryImpl: Failed to fetch calendar from network: $e');
     }
 
     return [];

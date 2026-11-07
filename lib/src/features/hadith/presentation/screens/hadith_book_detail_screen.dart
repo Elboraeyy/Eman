@@ -7,7 +7,7 @@ import 'package:flutter_animate/flutter_animate.dart';
 import '../../data/repositories/hadith_repository_provider.dart';
 import '../../domain/entities/hadith_entities.dart';
 import 'hadith_index_screen.dart'; // To reuse HadithSearchFilter
-import 'package:zad/src/core/widgets/arabic_text.dart';
+import 'package:iman/src/core/widgets/arabic_text.dart';
 
 final bookHadithsProvider = FutureProvider.family<List<Hadith>, int>((ref, bookId) async {
   final repo = ref.watch(hadithRepositoryProvider);

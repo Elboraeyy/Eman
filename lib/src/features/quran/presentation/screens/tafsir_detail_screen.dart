@@ -4,11 +4,10 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:flutter/services.dart';
-import '../../data/repositories/quran_repository_provider.dart';
 import '../../domain/entities/quran_entities.dart';
 import 'mushaf_screen.dart'; // Reuses verseTafsirProvider
 import 'surah_detail_screen.dart'; // Reuses singleSurahProvider, surahDetailsProvider
-import 'package:zad/src/core/widgets/arabic_text.dart';
+import 'package:iman/src/core/widgets/arabic_text.dart';
 
 class TafsirDetailScreen extends ConsumerStatefulWidget {
   final int surahNumber;
@@ -57,7 +56,7 @@ class _TafsirDetailScreenState extends ConsumerState<TafsirDetailScreen> with Si
             onPressed: () {
               final surahName = surahAsync.value?.nameArabic ?? '';
               SharePlus.instance.share(
-                ShareParams(text: 'اقرأ تفسير سورة $surahName عبر تطبيق زاد مسلم.'),
+                ShareParams(text: 'اقرأ تفسير سورة $surahName عبر تطبيق إيمان.'),
               );
             },
           ),

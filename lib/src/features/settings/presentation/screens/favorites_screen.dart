@@ -4,11 +4,11 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter/services.dart';
-import 'package:zad/src/features/quran/domain/entities/quran_entities.dart' as quran;
-import 'package:zad/src/features/quran/data/repositories/quran_repository_provider.dart';
-import 'package:zad/src/features/hadith/domain/entities/hadith_entities.dart' as hadith;
-import 'package:zad/src/features/hadith/data/repositories/hadith_repository_provider.dart';
-import 'package:zad/src/core/widgets/arabic_text.dart';
+import 'package:iman/src/features/quran/domain/entities/quran_entities.dart' as quran;
+import 'package:iman/src/features/quran/data/repositories/quran_repository_provider.dart';
+import 'package:iman/src/features/hadith/domain/entities/hadith_entities.dart' as hadith;
+import 'package:iman/src/features/hadith/data/repositories/hadith_repository_provider.dart';
+import 'package:iman/src/core/widgets/arabic_text.dart';
 
 class FavoritesScreen extends ConsumerStatefulWidget {
   const FavoritesScreen({super.key});

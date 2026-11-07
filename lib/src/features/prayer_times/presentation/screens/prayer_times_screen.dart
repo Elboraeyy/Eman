@@ -4,12 +4,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart' hide TextDirection;
-import 'package:flutter/services.dart';
-import 'package:zad/src/core/database/shared_preferences_provider.dart';
-import 'package:zad/src/features/prayer_times/data/repositories/prayer_repository_provider.dart';
+import 'package:iman/src/core/database/shared_preferences_provider.dart';
+import 'package:iman/src/features/prayer_times/data/repositories/prayer_repository_provider.dart';
 import '../../domain/entities/prayer_entities.dart';
 import '../controllers/prayer_times_controller.dart';
-import 'package:zad/src/core/widgets/arabic_text.dart';
+import 'package:iman/src/core/widgets/arabic_text.dart';
 
 // NotifierProvider to manage the active selected date for prayer times
 class SelectedPrayerDateNotifier extends Notifier<DateTime> {
@@ -413,17 +412,10 @@ class _PrayerTimesScreenState extends ConsumerState<PrayerTimesScreen> {
           width: double.maxFinite,
           child: ListView(
             shrinkWrap: true,
-            children: methods.entries.map((entry) {
-              return RadioListTile<int>(
-                title: ArabicText(
-                  entry.value,
-                  style: GoogleFonts.cairo(fontSize: 13),
-                  textAlign: TextAlign.right,
-                ),
-                value: entry.key,
+            children: [
+              RadioGroup<int>(
                 groupValue: currentMethod,
-                activeColor: Theme.of(context).colorScheme.primary,
-                onChanged: (val) async {
+                onChanged: (int? val) async {
                   if (val != null) {
                     await prefs.setInt('prayer_calculation_method', val);
                     ref.invalidate(todayPrayerTimesProvider);
@@ -431,8 +423,22 @@ class _PrayerTimesScreenState extends ConsumerState<PrayerTimesScreen> {
                     if (context.mounted) Navigator.pop(context);
                   }
                 },
-              );
-            }).toList(),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: methods.entries.map((entry) {
+                    return RadioListTile<int>(
+                      title: ArabicText(
+                        entry.value,
+                        style: GoogleFonts.cairo(fontSize: 13),
+                        textAlign: TextAlign.right,
+                      ),
+                      value: entry.key,
+                      activeColor: Theme.of(context).colorScheme.primary,
+                    );
+                  }).toList(),
+                ),
+              ),
+            ],
           ),
         ),
       ),

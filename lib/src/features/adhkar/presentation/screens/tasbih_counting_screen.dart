@@ -7,7 +7,8 @@ import 'package:flutter/services.dart';
 import '../../data/repositories/adhkar_repository_provider.dart';
 import '../../domain/entities/adhkar_entities.dart';
 import 'tasbih_list_screen.dart';
-import 'package:zad/src/core/widgets/arabic_text.dart';
+import 'package:iman/src/core/widgets/arabic_text.dart';
+import 'package:iman/src/features/tracker/data/repositories/tracker_repository_provider.dart';
 
 final singleTasbihProvider = FutureProvider.family<Tasbih?, int>((ref, id) async {
   final repo = ref.watch(adhkarRepositoryProvider);
@@ -273,6 +274,9 @@ class _TasbihCountingScreenState extends ConsumerState<TasbihCountingScreen> wit
 
     final repo = ref.read(adhkarRepositoryProvider);
     await repo.incrementTasbih(tasbih.id);
+    try {
+      ref.read(trackerRepositoryProvider).recordTasbihCount(1);
+    } catch (_) {}
     ref.invalidate(singleTasbihProvider(widget.tasbihId));
     ref.invalidate(tasbihListProvider);
     ref.invalidate(tasbihLifetimeCountProvider);

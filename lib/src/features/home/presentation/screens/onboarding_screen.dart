@@ -4,7 +4,7 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../../../core/database/shared_preferences_provider.dart';
-import 'package:zad/src/core/widgets/arabic_text.dart';
+import 'package:iman/src/core/widgets/arabic_text.dart';
 
 class OnboardingScreen extends ConsumerStatefulWidget {
   const OnboardingScreen({super.key});
@@ -19,7 +19,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
 
   final List<OnboardingPageData> _pages = [
     OnboardingPageData(
-      title: "بدء رحلتك بثقة... زاد مسلم",
+      title: "بدء رحلتك بثقة... إيمان",
       description: "تطبيق يساعدك على الثبات على الطاعة، وتنظيم عبادتك بسهولة ويسر دون عناء.",
       icon: Icons.verified_user_outlined,
     ),

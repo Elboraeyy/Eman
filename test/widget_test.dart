@@ -5,10 +5,10 @@ import 'dart:io';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:zad/main.dart';
-import 'package:zad/src/core/database/app_database.dart';
-import 'package:zad/src/core/database/database_provider.dart';
-import 'package:zad/src/core/database/shared_preferences_provider.dart';
+import 'package:iman/main.dart';
+import 'package:iman/src/core/database/app_database.dart';
+import 'package:iman/src/core/database/database_provider.dart';
+import 'package:iman/src/core/database/shared_preferences_provider.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -61,8 +61,8 @@ void main() {
       ),
     );
 
-    // Verify that the splash screen shows 'زاد مسلم'
-    expect(find.text('زاد مسلم'), findsOneWidget);
+    // Verify that the splash screen shows 'إيمان'
+    expect(find.text('إيمان'), findsOneWidget);
     await db.close();
   });
 }

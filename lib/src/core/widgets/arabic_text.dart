@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:zad/src/core/utils/arabic_numbers_helper.dart';
+import 'package:iman/src/core/utils/arabic_numbers_helper.dart';
 
 class ArabicText extends StatelessWidget {
   final String? data;
@@ -86,7 +86,6 @@ class ArabicText extends StatelessWidget {
         locale: locale,
         softWrap: softWrap,
         overflow: overflow,
-        textScaleFactor: textScaleFactor,
         textScaler: textScaler,
         maxLines: maxLines,
         semanticsLabel: semanticsLabel,
@@ -104,7 +103,6 @@ class ArabicText extends StatelessWidget {
         locale: locale,
         softWrap: softWrap,
         overflow: overflow,
-        textScaleFactor: textScaleFactor,
         textScaler: textScaler,
         maxLines: maxLines,
         semanticsLabel: semanticsLabel,

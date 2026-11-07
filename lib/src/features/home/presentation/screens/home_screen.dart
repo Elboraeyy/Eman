@@ -5,18 +5,19 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart' hide TextDirection;
-import 'package:zad/src/features/hadith/data/repositories/hadith_repository_provider.dart';
-import 'package:zad/src/features/hadith/domain/entities/hadith_entities.dart';
-import 'package:zad/src/features/prayer_times/domain/entities/prayer_entities.dart';
-import 'package:zad/src/features/prayer_times/presentation/controllers/prayer_times_controller.dart';
+import 'package:iman/src/features/hadith/data/repositories/hadith_repository_provider.dart';
+import 'package:iman/src/features/hadith/domain/entities/hadith_entities.dart';
+import 'package:iman/src/features/prayer_times/domain/entities/prayer_entities.dart';
+import 'package:iman/src/features/prayer_times/presentation/controllers/prayer_times_controller.dart';
 import '../../../quran/presentation/controllers/quran_progress_controller.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter/services.dart';
-import 'package:zad/src/core/widgets/arabic_text.dart';
+import 'package:iman/src/core/widgets/arabic_text.dart';
 import 'package:geolocator/geolocator.dart';
-import 'package:zad/src/core/database/shared_preferences_provider.dart';
+import 'package:iman/src/core/database/shared_preferences_provider.dart';
 import 'package:hijri/hijri_calendar.dart';
+import 'package:iman/src/features/tracker/presentation/screens/tracker_screen.dart';
 
 // Hadith of the day provider
 final hadithOfTheDayProvider = FutureProvider<Hadith?>((ref) async {
@@ -103,7 +104,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               ),
               const SizedBox(height: 12),
               ArabicText(
-                'يحتاج تطبيق زاد إلى صلاحية الوصول للموقع لكي يتمكن من تحديد مواقيت الصلاة واتجاه القبلة بدقة متناهية بناءً على مكانك الحالي.',
+                'يحتاج تطبيق إيمان إلى صلاحية الوصول للموقع لكي يتمكن من تحديد مواقيت الصلاة واتجاه القبلة بدقة متناهية بناءً على مكانك الحالي.',
                 textAlign: TextAlign.center,
                 style: GoogleFonts.cairo(
                   fontSize: 14,
@@ -248,7 +249,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                                       ),
                                       const SizedBox(height: 2),
                                       ArabicText(
-                                        'مرحباً بك في زاد',
+                                        'مرحباً بك في إيمان',
                                         maxLines: 1,
                                         overflow: TextOverflow.ellipsis,
                                         style: GoogleFonts.cairo(
@@ -439,6 +440,11 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                               error: (err, _) => Center(child: ArabicText('خطأ في تحميل مواقيت الصلاة: $err')),
                             ),
 
+                            const SizedBox(height: 20),
+
+                            // Daily Worship Tracker Progress Card
+                            _buildDailyTrackerBanner(context, theme, ref),
+
                             const SizedBox(height: 28),
 
                             // 4. Quick Actions Grid
@@ -549,6 +555,134 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         ),
       ),
     ).animate().fade(duration: 500.ms).slideY(begin: 0.05, end: 0);
+  }
+
+  Widget _buildDailyTrackerBanner(BuildContext context, ThemeData theme, WidgetRef ref) {
+    final todayStr = DateFormat('yyyy-MM-dd').format(DateTime.now());
+    final tasksAsync = ref.watch(tasksListProvider);
+    final completionsAsync = ref.watch(completionsForDateProvider(todayStr));
+    final summaryAsync = ref.watch(overallStatsSummaryProvider);
+
+    return tasksAsync.when(
+      data: (tasks) {
+        if (tasks.isEmpty) return const SizedBox.shrink();
+        final completions = completionsAsync.value ?? [];
+        final completedCount = completions.where((c) => c.completed).length;
+        final totalCount = tasks.length;
+        final ratio = totalCount == 0 ? 0.0 : (completedCount / totalCount).clamp(0.0, 1.0);
+        final streak = (summaryAsync.value?['currentStreak'] as int?) ?? 0;
+
+        return Card(
+          elevation: 0,
+          margin: const EdgeInsets.symmetric(vertical: 4),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+            side: BorderSide(color: theme.colorScheme.primary.withValues(alpha: 0.18)),
+          ),
+          color: theme.colorScheme.primary.withValues(alpha: 0.05),
+          child: InkWell(
+            onTap: () => context.go('/tracker/tasks'),
+            borderRadius: BorderRadius.circular(20),
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Row(
+                children: [
+                  Stack(
+                    alignment: Alignment.center,
+                    children: [
+                      SizedBox(
+                        width: 48,
+                        height: 48,
+                        child: CircularProgressIndicator(
+                          value: ratio,
+                          strokeWidth: 5,
+                          backgroundColor: theme.colorScheme.primary.withValues(alpha: 0.15),
+                          valueColor: AlwaysStoppedAnimation<Color>(theme.colorScheme.primary),
+                        ),
+                      ),
+                      ArabicText(
+                        '${(ratio * 100).toInt()}%',
+                        style: GoogleFonts.cairo(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 12,
+                          color: theme.colorScheme.primary,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(width: 14),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            ArabicText(
+                              'طاعات اليوم',
+                              style: GoogleFonts.cairo(
+                                fontSize: 15,
+                                fontWeight: FontWeight.bold,
+                                color: theme.colorScheme.primary,
+                              ),
+                            ),
+                            if (streak > 0) ...[
+                              const SizedBox(width: 8),
+                              Container(
+                                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 1),
+                                decoration: BoxDecoration(
+                                  color: const Color(0xFFF59E0B).withValues(alpha: 0.15),
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                child: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    const Icon(Icons.local_fire_department_rounded, size: 12, color: Color(0xFFF59E0B)),
+                                    const SizedBox(width: 2),
+                                    ArabicText(
+                                      '$streak',
+                                      style: GoogleFonts.cairo(fontSize: 10, fontWeight: FontWeight.bold, color: const Color(0xFFF59E0B)),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ],
+                        ),
+                        const SizedBox(height: 2),
+                        ArabicText(
+                          '$completedCount من $totalCount عبادات منجزة اليوم',
+                          style: GoogleFonts.cairo(fontSize: 12, color: theme.textTheme.bodyMedium?.color?.withValues(alpha: 0.7)),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                    decoration: BoxDecoration(
+                      color: theme.colorScheme.primary.withValues(alpha: 0.12),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        ArabicText(
+                          'متابعة',
+                          style: GoogleFonts.cairo(fontSize: 11, fontWeight: FontWeight.bold, color: theme.colorScheme.primary),
+                        ),
+                        const SizedBox(width: 4),
+                        Icon(Icons.arrow_forward_ios_rounded, size: 10, color: theme.colorScheme.primary),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        );
+      },
+      loading: () => const SizedBox.shrink(),
+      error: (_, __) => const SizedBox.shrink(),
+    );
   }
 
   Widget _buildQuickActionsGrid(BuildContext context, ThemeData theme, PrayerTimes? prayerTimes) {

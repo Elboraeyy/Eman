@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:dio/dio.dart';
 import 'package:drift/drift.dart';
@@ -74,7 +75,7 @@ class QuranRepositoryImpl implements QuranRepository {
       _cachedSurahs = surahs;
       return surahs;
     } catch (e) {
-      print('QuranRepositoryImpl: Failed to load surahs from assets fallback: $e');
+      debugPrint('QuranRepositoryImpl: Failed to load surahs from assets fallback: $e');
       return [];
     }
   }
@@ -115,7 +116,7 @@ class QuranRepositoryImpl implements QuranRepository {
           });
         }
       } catch (e) {
-        print('QuranRepositoryImpl: Failed to sync plain text ayahs from remote API: $e');
+        debugPrint('QuranRepositoryImpl: Failed to sync plain text ayahs from remote API: $e');
       }
       
       // Fetch updated local ayahs
@@ -200,14 +201,32 @@ class QuranRepositoryImpl implements QuranRepository {
       _cachedJuzBoundaries = boundaries;
       return boundaries;
     } catch (e) {
-      print('QuranRepositoryImpl: Failed to load juz boundaries: $e');
+      debugPrint('QuranRepositoryImpl: Failed to load juz boundaries: $e');
       return [];
     }
   }
 
   @override
   Future<QcfPage> getQcfPage(int pageNumber) async {
-    final headerLines = await _getSurahHeadersForPage(pageNumber);
+    final rawHeaderLines = await _getSurahHeadersForPage(pageNumber);
+
+    // سور تبدأ من نص الصفحة (مثل النساء، يونس، الحج...) يظهر عنصر البسملة فقط
+    // بدون عنصر اسم السورة (isBismillah=false) — فيختفي الفريم والاسم.
+    // نضيف سطر إطار اسم السورة فوق سطر البسملة ليطلع مثل باقي السور.
+    final headerLines = <QcfLine>[];
+    for (final h in rawHeaderLines) {
+      if (h.isBismillah &&
+          !rawHeaderLines.any((o) => !o.isBismillah && o.surahNumber == h.surahNumber)) {
+        headerLines.add(QcfLine(
+          // رقم سطر أقل من البسملة (على الأقل 0) فيرسم الفريم فوقها مباشرة
+          lineNumber: h.lineNumber - 1 < 0 ? 0 : h.lineNumber - 1,
+          text: '',
+          surahNumber: h.surahNumber,
+        ));
+      }
+      headerLines.add(h);
+    }
+
     final headerLineNumbers = headerLines.map((h) => h.lineNumber).toSet();
 
     final linesMap = await _getQcfLinesForPage(pageNumber);
@@ -258,7 +277,7 @@ class QuranRepositoryImpl implements QuranRepository {
         final jsonStr = await rootBundle.loadString('assets/qcf_lines.json');
         _cachedQcfLinesJson = jsonDecode(jsonStr) as Map<String, dynamic>;
       } catch (e) {
-        print('QuranRepositoryImpl: Failed to load qcf_lines.json: $e');
+        debugPrint('QuranRepositoryImpl: Failed to load qcf_lines.json: $e');
         return {};
       }
     }
@@ -273,7 +292,7 @@ class QuranRepositoryImpl implements QuranRepository {
         final jsonStr = await rootBundle.loadString('assets/surah_headers.json');
         _cachedSurahHeadersJson = jsonDecode(jsonStr) as Map<String, dynamic>;
       } catch (e) {
-        print('QuranRepositoryImpl: Failed to load surah_headers.json: $e');
+        debugPrint('QuranRepositoryImpl: Failed to load surah_headers.json: $e');
         return [];
       }
     }
@@ -328,7 +347,7 @@ class QuranRepositoryImpl implements QuranRepository {
       _cachedQcfVerses = verses;
       return verses;
     } catch (e) {
-      print('QuranRepositoryImpl: Failed to load QCF mapping fallback: $e');
+      debugPrint('QuranRepositoryImpl: Failed to load QCF mapping fallback: $e');
       return [];
     }
   }
@@ -353,7 +372,7 @@ class QuranRepositoryImpl implements QuranRepository {
             ));
       }
     } catch (e) {
-      print('QuranRepositoryImpl: Failed to save reading progress: $e');
+      debugPrint('QuranRepositoryImpl: Failed to save reading progress: $e');
     }
   }
 
@@ -363,7 +382,7 @@ class QuranRepositoryImpl implements QuranRepository {
       final match = await db.select(db.progress).getSingleOrNull();
       return match?.lastReadPage ?? 1;
     } catch (e) {
-      print('QuranRepositoryImpl: Failed to get last read page: $e');
+      debugPrint('QuranRepositoryImpl: Failed to get last read page: $e');
       return 1;
     }
   }
@@ -395,7 +414,7 @@ class QuranRepositoryImpl implements QuranRepository {
         );
       }
     } catch (e) {
-      print('QuranRepositoryImpl: Failed to toggle verse favorite: $e');
+      debugPrint('QuranRepositoryImpl: Failed to toggle verse favorite: $e');
     }
   }
 
@@ -410,7 +429,7 @@ class QuranRepositoryImpl implements QuranRepository {
           .getSingleOrNull();
       return match != null;
     } catch (e) {
-      print('QuranRepositoryImpl: Failed to check verse favorite: $e');
+      debugPrint('QuranRepositoryImpl: Failed to check verse favorite: $e');
       return false;
     }
   }
@@ -432,7 +451,7 @@ class QuranRepositoryImpl implements QuranRepository {
       }
       return results;
     } catch (e) {
-      print('QuranRepositoryImpl: Failed to get favorite verses: $e');
+      debugPrint('QuranRepositoryImpl: Failed to get favorite verses: $e');
       return [];
     }
   }

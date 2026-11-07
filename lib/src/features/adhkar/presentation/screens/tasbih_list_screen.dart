@@ -6,7 +6,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter/services.dart';
 import '../../data/repositories/adhkar_repository_provider.dart';
 import '../../domain/entities/adhkar_entities.dart';
-import 'package:zad/src/core/widgets/arabic_text.dart';
+import 'package:iman/src/core/widgets/arabic_text.dart';
 
 final tasbihListProvider = FutureProvider<List<Tasbih>>((ref) async {
   final repo = ref.watch(adhkarRepositoryProvider);
@@ -66,7 +66,7 @@ class TasbihListScreen extends ConsumerWidget {
                               ),
                             ),
                             loading: () => const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2)),
-                            error: (_, __) => const ArabicText('0'),
+                            error: (error, stackTrace) => const ArabicText('0'),
                           ),
                           const SizedBox(height: 4),
                           ArabicText(
@@ -97,7 +97,7 @@ class TasbihListScreen extends ConsumerWidget {
                               ),
                             ),
                             loading: () => const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2)),
-                            error: (_, __) => const ArabicText('0'),
+                            error: (error, stackTrace) => const ArabicText('0'),
                           ),
                           const SizedBox(height: 4),
                           ArabicText(

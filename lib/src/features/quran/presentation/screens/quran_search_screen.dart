@@ -7,7 +7,7 @@ import 'package:google_fonts/google_fonts.dart';
 import '../../domain/entities/quran_entities.dart' as quran;
 import '../../data/repositories/quran_repository_provider.dart';
 import 'quran_index_screen.dart';
-import 'package:zad/src/core/widgets/arabic_text.dart';
+import 'package:iman/src/core/widgets/arabic_text.dart';
 
 final quranSearchQueryProvider = StateProvider<String>((ref) => '');
 
@@ -200,7 +200,7 @@ class _QuranSearchScreenState extends ConsumerState<QuranSearchScreen> {
                             );
                           },
                           loading: () => const SizedBox(),
-                          error: (_, __) => const SizedBox(),
+                          error: (error, stackTrace) => const SizedBox(),
                         ),
 
                         surahsAsync.when(
@@ -225,7 +225,7 @@ class _QuranSearchScreenState extends ConsumerState<QuranSearchScreen> {
                             );
                           },
                           loading: () => const Center(child: CircularProgressIndicator()),
-                          error: (_, __) => const SizedBox(),
+                          error: (error, stackTrace) => const SizedBox(),
                         ),
 
                         ayahsAsync.when(
@@ -250,7 +250,7 @@ class _QuranSearchScreenState extends ConsumerState<QuranSearchScreen> {
                             );
                           },
                           loading: () => const SizedBox(),
-                          error: (_, __) => const SizedBox(),
+                          error: (error, stackTrace) => const SizedBox(),
                         ),
 
                         _buildNoResultsPlaceholder(ref, theme, parsedPage, parsedPage != null),

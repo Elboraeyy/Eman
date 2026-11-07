@@ -8,7 +8,7 @@ import 'package:lucide_icons/lucide_icons.dart';
 import '../../data/repositories/hadith_repository_provider.dart';
 import '../../domain/entities/hadith_entities.dart';
 import 'hadith_index_screen.dart';
-import 'package:zad/src/core/widgets/arabic_text.dart';
+import 'package:iman/src/core/widgets/arabic_text.dart';
 
 final hadithDetailProvider = FutureProvider.family<Hadith?, int>((ref, hadithId) async {
   final repo = ref.watch(hadithRepositoryProvider);
@@ -75,7 +75,7 @@ class _HadithDetailScreenState extends ConsumerState<HadithDetailScreen> {
                     '« ${hadith.text} »\n\n'
                     'الراوي: ${hadith.narrator}\n'
                     'المصدر: ${hadith.source}\n\n'
-                    'تمت المشاركة من تطبيق زاد المسلم';
+                    'تمت المشاركة من تطبيق إيمان';
                 SharePlus.instance.share(ShareParams(text: shareText));
               }
             },

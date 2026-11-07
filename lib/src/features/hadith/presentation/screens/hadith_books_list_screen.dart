@@ -5,8 +5,7 @@ import 'package:go_router/go_router.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import '../../data/repositories/hadith_repository_provider.dart';
-import '../../domain/entities/hadith_entities.dart';
-import 'package:zad/src/core/widgets/arabic_text.dart';
+import 'package:iman/src/core/widgets/arabic_text.dart';
 
 enum HadithBookSearchFilter {
   all,

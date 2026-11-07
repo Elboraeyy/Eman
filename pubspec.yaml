@@ -1,5 +1,5 @@
-name: zad
-description: "A new Flutter project."
+name: iman
+description: "إيمان — تطبيق إسلامي."
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
@@ -87,9 +87,17 @@ flutter:
   # the material Icons class.
   uses-material-design: true
 
+  # خط أسماء السور (Surah name font v1 - QUL/Tarteel)
+  # بيتخدع بكتابة surah001 .. surah114 فيرندر الاسم المزيّن كليغاتور
+  fonts:
+    - family: SurahNameV1
+      fonts:
+        - asset: assets/fonts/surah_name_v1.ttf
+
   # To add assets to your application, add an assets section, like this:
   assets:
     - assets/
     - assets/fonts/
     - assets/Icon/
+    - assets/images/
 

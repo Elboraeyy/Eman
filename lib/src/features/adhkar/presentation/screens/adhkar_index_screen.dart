@@ -7,7 +7,8 @@ import 'package:intl/intl.dart' hide TextDirection;
 import '../../data/repositories/adhkar_repository_provider.dart';
 import '../../domain/entities/adhkar_entities.dart';
 import 'package:lucide_icons/lucide_icons.dart';
-import 'package:zad/src/core/widgets/arabic_text.dart';
+import 'package:iman/src/core/widgets/arabic_text.dart';
+import 'package:iman/src/features/tracker/data/repositories/tracker_repository_provider.dart';
 
 enum AdhkarSearchFilter {
   all,
@@ -175,6 +176,9 @@ class _AdhkarIndexScreenState extends ConsumerState<AdhkarIndexScreen> {
     // Heavy haptic feedback when completed
     if (newCount == item.targetCount) {
       HapticFeedback.heavyImpact();
+      try {
+        ref.read(trackerRepositoryProvider).recordAdhkarCompleted();
+      } catch (_) {}
     }
   }
 

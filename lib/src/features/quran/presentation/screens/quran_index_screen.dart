@@ -6,7 +6,7 @@ import 'package:flutter_animate/flutter_animate.dart';
 import '../../domain/entities/quran_entities.dart';
 import '../../data/repositories/quran_repository_provider.dart';
 import '../controllers/quran_progress_controller.dart';
-import 'package:zad/src/core/widgets/arabic_text.dart';
+import 'package:iman/src/core/widgets/arabic_text.dart';
 
 final surahsListProvider = FutureProvider<List<Surah>>((ref) async {
   final repo = ref.watch(quranRepositoryProvider);

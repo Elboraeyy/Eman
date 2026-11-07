@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 
 class FontLoaderHelper {
@@ -25,7 +26,7 @@ class FontLoaderHelper {
     } catch (e) {
       // Fallback: If page font fails to load, use standard sans-serif
       // or default system font.
-      print('Error loading dynamic QCF font $fontName: $e');
+      debugPrint('Error loading dynamic QCF font $fontName: $e');
     }
     
     return fontName;
@@ -44,7 +45,7 @@ class FontLoaderHelper {
       await fontLoader.load();
       _loadedFonts.add(bsmlFontFamily);
     } catch (e) {
-      print('Error loading Bismillah font: $e');
+      debugPrint('Error loading Bismillah font: $e');
     }
     
     return bsmlFontFamily;

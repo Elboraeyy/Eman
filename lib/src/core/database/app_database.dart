@@ -184,7 +184,7 @@ class UserStats extends Table {
   UserStats,
 ])
 class AppDatabase extends _$AppDatabase {
-  AppDatabase() : super(driftDatabase(name: 'zad_database'));
+  AppDatabase() : super(driftDatabase(name: 'iman_database'));
 
   @override
   int get schemaVersion => 1;

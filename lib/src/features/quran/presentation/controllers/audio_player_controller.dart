@@ -4,7 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:just_audio_background/just_audio_background.dart';
-import 'package:zad/src/core/database/shared_preferences_provider.dart';
+import 'package:iman/src/core/database/shared_preferences_provider.dart';
 import '../../domain/entities/quran_entities.dart';
 
 class Reciter {
@@ -615,8 +615,7 @@ class AudioPlayerNotifier extends Notifier<AudioPlaybackState> {
         sleepTimeRemaining: state.sleepTimeRemaining,
       );
 
-      final playlist = ConcatenatingAudioSource(children: sources);
-      await _player.setAudioSource(playlist, initialIndex: initialIndex);
+      await _player.setAudioSources(sources, initialIndex: initialIndex);
       if (play) {
         _player.play();
         state = state.copyWith(isPlaying: true, isLoading: false);
@@ -772,7 +771,7 @@ class AudioPlayerNotifier extends Notifier<AudioPlaybackState> {
         Uri.parse(url),
         tag: MediaItem(
           id: url,
-          album: isLiveStream ? 'البث الحي' : 'صوتيات زاد',
+          album: isLiveStream ? 'البث الحي' : 'صوتيات إيمان',
           title: title,
           artist: subtitle,
         ),

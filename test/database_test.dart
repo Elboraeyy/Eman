@@ -1,7 +1,7 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:drift/native.dart';
-import 'package:zad/src/core/database/app_database.dart';
-import 'package:zad/src/core/database/database_initializer.dart';
+import 'package:iman/src/core/database/app_database.dart';
+import 'package:iman/src/core/database/database_initializer.dart';
 import 'package:flutter/services.dart';
 import 'dart:io';
 import 'dart:convert';
@@ -41,38 +41,38 @@ void main() {
     final db = AppDatabase();
     final initializer = DatabaseInitializer(db);
 
-    print('Starting database initialization test...');
+    debugPrint('Starting database initialization test...');
     try {
       await initializer.initializeDatabase();
-      print('Database initialization finished successfully!');
+      debugPrint('Database initialization finished successfully!');
       
       // Verify Categories
       final cats = await db.select(db.hadithCategories).get();
-      print('Total Categories seeded: ${cats.length}');
+      debugPrint('Total Categories seeded: ${cats.length}');
       for (var c in cats.take(3)) {
-        print('Category: ID=${c.id}, Title=${c.title}');
+        debugPrint('Category: ID=${c.id}, Title=${c.title}');
       }
 
       // Verify Books
       final books = await db.select(db.hadithBooks).get();
-      print('Total Books seeded: ${books.length}');
+      debugPrint('Total Books seeded: ${books.length}');
       for (var b in books.take(3)) {
-        print('Book: ID=${b.id}, Title=${b.title}');
+        debugPrint('Book: ID=${b.id}, Title=${b.title}');
       }
 
       // Verify Hadiths
       final hadiths = await db.select(db.hadiths).get();
-      print('Total Hadiths seeded: ${hadiths.length}');
+      debugPrint('Total Hadiths seeded: ${hadiths.length}');
       for (var h in hadiths.take(3)) {
-        print('Hadith: ID=${h.id}, TextLength=${h.textContent.length}, BookID=${h.bookId}, CatID=${h.categoryId}');
+        debugPrint('Hadith: ID=${h.id}, TextLength=${h.textContent.length}, BookID=${h.bookId}, CatID=${h.categoryId}');
       }
 
       expect(cats, isNotEmpty);
       expect(books, isNotEmpty);
       expect(hadiths, isNotEmpty);
     } catch (e, stack) {
-      print('Exception thrown during initialization: $e');
-      print(stack);
+      debugPrint('Exception thrown during initialization: $e');
+      debugPrint(stack.toString());
       fail('Database initialization failed!');
     } finally {
       await db.close();

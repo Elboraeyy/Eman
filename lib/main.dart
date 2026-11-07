@@ -18,8 +18,8 @@ void main() async {
   // Initialize background audio safely
   try {
     await JustAudioBackground.init(
-      androidNotificationChannelId: 'com.elboraeyy.zad.channel.audio',
-      androidNotificationChannelName: 'Zad Audio Playback',
+      androidNotificationChannelId: 'com.elboraeyy.iman.channel.audio',
+      androidNotificationChannelName: 'Iman Audio Playback',
       androidNotificationOngoing: true,
       androidShowNotificationBadge: true,
     );
@@ -62,7 +62,7 @@ class MyApp extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return MaterialApp.router(
-      title: 'زاد المسلم',
+      title: 'إيمان',
       debugShowCheckedModeBanner: false,
       
       // Themes

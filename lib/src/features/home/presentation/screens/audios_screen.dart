@@ -5,11 +5,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import 'package:flutter_animate/flutter_animate.dart';
-import 'package:zad/src/core/database/shared_preferences_provider.dart';
-import 'package:zad/src/features/quran/presentation/controllers/audio_player_controller.dart';
-import 'package:zad/src/features/quran/presentation/screens/quran_index_screen.dart'; // Reuses surahsListProvider
-import 'package:zad/src/features/home/presentation/controllers/audios_controller.dart';
-import 'package:zad/src/core/widgets/arabic_text.dart';
+import 'package:iman/src/core/database/shared_preferences_provider.dart';
+import 'package:iman/src/features/quran/presentation/controllers/audio_player_controller.dart';
+import 'package:iman/src/features/quran/presentation/screens/quran_index_screen.dart'; // Reuses surahsListProvider
+import 'package:iman/src/features/home/presentation/controllers/audios_controller.dart';
+import 'package:iman/src/core/widgets/arabic_text.dart';
 
 class AudiosScreen extends ConsumerStatefulWidget {
   const AudiosScreen({super.key});
@@ -1120,7 +1120,7 @@ class _MiniPlayer extends ConsumerWidget {
     } else {
       // Custom stream/url (Radio, Podcast, or API Surah)
       title = playbackState.customTitle ?? 'بث صوتي';
-      subtitle = playbackState.customSubtitle ?? 'زاد المسلم';
+      subtitle = playbackState.customSubtitle ?? 'إيمان';
     }
 
     return Container(
@@ -1431,7 +1431,7 @@ class _NowPlayingOverlayState extends ConsumerState<NowPlayingOverlay> with Sing
       });
     } else {
       title = playerState.customTitle ?? 'بث صوتي';
-      subtitle = playerState.customSubtitle ?? 'زاد المسلم';
+      subtitle = playerState.customSubtitle ?? 'إيمان';
     }
 
     return Container(
@@ -1503,8 +1503,7 @@ class _NowPlayingOverlayState extends ConsumerState<NowPlayingOverlay> with Sing
                       children: [
                         // Calligraphy Centerpiece Card (Premium Glowing Vinyl Record)
                         Center(
-                          child: Container(
-                            child: RotationTransition(
+                          child: RotationTransition(
                               turns: _rotationController,
                               child: Container(
                                 width: 250,
@@ -1575,7 +1574,6 @@ class _NowPlayingOverlayState extends ConsumerState<NowPlayingOverlay> with Sing
                                   ],
                                 ),
                               ),
-                            ),
                           ).animate(
                             target: playerState.isPlaying ? 1 : 0,
                             onPlay: (c) => c.repeat(reverse: true),

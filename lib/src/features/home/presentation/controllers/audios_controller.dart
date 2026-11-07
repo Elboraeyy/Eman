@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:zad/src/core/network/dio_provider.dart';
+import 'package:iman/src/core/network/dio_provider.dart';
 
 // --- Entities ---
 

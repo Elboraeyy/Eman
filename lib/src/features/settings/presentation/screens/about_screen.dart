@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:zad/src/core/widgets/arabic_text.dart';
+import 'package:iman/src/core/widgets/arabic_text.dart';
 
 class AboutScreen extends StatelessWidget {
   const AboutScreen({super.key});
@@ -54,7 +54,7 @@ class AboutScreen extends StatelessWidget {
                       const SizedBox(height: 24),
                       
                       ArabicText(
-                        'زاد مسلم',
+                        'إيمان',
                         style: GoogleFonts.cairo(
                           fontSize: 24,
                           fontWeight: FontWeight.bold,

@@ -27,6 +27,9 @@ import '../../features/settings/presentation/screens/settings_screen.dart';
 import '../../features/settings/presentation/screens/favorites_screen.dart';
 import '../../features/settings/presentation/screens/notifications_screen.dart';
 import '../../features/settings/presentation/screens/about_screen.dart';
+import '../../features/settings/presentation/screens/privacy_policy_screen.dart';
+import '../../features/settings/presentation/screens/terms_screen.dart';
+import '../../features/settings/presentation/screens/contact_screen.dart';
 import '../../features/prayer_times/presentation/screens/compass_screen.dart';
 import '../../features/prayer_times/presentation/screens/prayer_times_screen.dart';
 import 'main_shell.dart';
@@ -267,6 +270,27 @@ final GoRouter appRouter = GoRouter(
       parentNavigatorKey: _rootNavigatorKey,
       builder: (BuildContext context, GoRouterState state) {
         return const AboutScreen();
+      },
+    ),
+    GoRoute(
+      path: '/settings/privacy',
+      parentNavigatorKey: _rootNavigatorKey,
+      builder: (BuildContext context, GoRouterState state) {
+        return const PrivacyPolicyScreen();
+      },
+    ),
+    GoRoute(
+      path: '/settings/terms',
+      parentNavigatorKey: _rootNavigatorKey,
+      builder: (BuildContext context, GoRouterState state) {
+        return const TermsScreen();
+      },
+    ),
+    GoRoute(
+      path: '/settings/contact',
+      parentNavigatorKey: _rootNavigatorKey,
+      builder: (BuildContext context, GoRouterState state) {
+        return const ContactScreen();
       },
     ),
   ],

@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:zad/src/core/widgets/arabic_text.dart';
+import 'package:iman/src/core/widgets/arabic_text.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lucide_icons/lucide_icons.dart';
-import 'package:zad/src/features/quran/presentation/controllers/audio_player_controller.dart';
-import 'package:zad/src/features/quran/presentation/screens/quran_index_screen.dart'; // for surahsListProvider
-import 'package:zad/src/features/home/presentation/screens/audios_screen.dart'; // for NowPlayingOverlay
+import 'package:iman/src/features/quran/presentation/controllers/audio_player_controller.dart';
+import 'package:iman/src/features/quran/presentation/screens/quran_index_screen.dart'; // for surahsListProvider
+import 'package:iman/src/features/home/presentation/screens/audios_screen.dart'; // for NowPlayingOverlay
 
 class MainShell extends ConsumerStatefulWidget {
   final Widget child;
@@ -90,7 +90,7 @@ class _MainShellState extends ConsumerState<MainShell> with SingleTickerProvider
       });
     } else {
       title = playbackState.customTitle ?? 'بث صوتي';
-      subtitle = playbackState.customSubtitle ?? 'زاد المسلم';
+      subtitle = playbackState.customSubtitle ?? 'إيمان';
     }
 
     return Scaffold(

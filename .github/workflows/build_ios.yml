@@ -70,31 +70,31 @@ jobs:
         run: |
           set -euo pipefail
           APP_PATH="${GITHUB_WORKSPACE}/build/ios/iphoneos/Runner.app"
-          PAYLOAD_DIR="${RUNNER_TEMP}/zad-ipa/Payload"
+          PAYLOAD_DIR="${RUNNER_TEMP}/iman-ipa/Payload"
 
           test -d "$APP_PATH"
           test -f "$APP_PATH/Info.plist"
           test -x "$APP_PATH/Runner"
 
           BUNDLE_ID=$(/usr/libexec/PlistBuddy -c 'Print :CFBundleIdentifier' "$APP_PATH/Info.plist")
-          if [[ "$BUNDLE_ID" != "com.elboraeyy.zad" ]]; then
+          if [[ "$BUNDLE_ID" != "com.elboraeyy.iman" ]]; then
             echo "Unexpected bundle identifier: $BUNDLE_ID" >&2
             exit 1
           fi
 
-          rm -rf "${RUNNER_TEMP}/zad-ipa"
+          rm -rf "${RUNNER_TEMP}/iman-ipa"
           mkdir -p "$PAYLOAD_DIR"
           ditto "$APP_PATH" "$PAYLOAD_DIR/Runner.app"
 
           # iOS expects the application bundle directly under Payload.
-          (cd "${RUNNER_TEMP}/zad-ipa" && /usr/bin/zip -qry -y "${GITHUB_WORKSPACE}/Zad.ipa" Payload)
-          /usr/bin/unzip -t "${GITHUB_WORKSPACE}/Zad.ipa"
-          /usr/bin/unzip -Z1 "${GITHUB_WORKSPACE}/Zad.ipa" | grep -Fxq 'Payload/Runner.app/Info.plist'
+          (cd "${RUNNER_TEMP}/iman-ipa" && /usr/bin/zip -qry -y "${GITHUB_WORKSPACE}/Iman.ipa" Payload)
+          /usr/bin/unzip -t "${GITHUB_WORKSPACE}/Iman.ipa"
+          /usr/bin/unzip -Z1 "${GITHUB_WORKSPACE}/Iman.ipa" | grep -Fxq 'Payload/Runner.app/Info.plist'
 
       - name: Upload IPA Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: Zad_IPA
-          path: Zad.ipa
+          name: Iman_IPA
+          path: Iman.ipa
           if-no-files-found: error
           retention-days: 7

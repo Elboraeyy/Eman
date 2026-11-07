@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/database/shared_preferences_provider.dart';
 import '../../data/repositories/quran_repository_provider.dart';
 import '../../domain/entities/quran_entities.dart';
+import '../../../tracker/data/repositories/tracker_repository_provider.dart';
 
 // 1. Notifier for custom page bookmarks
 class CustomBookmarksNotifier extends Notifier<List<CustomBookmark>> {
@@ -75,9 +76,17 @@ class LastReadPageNotifier extends Notifier<int> {
 
   Future<void> updatePage(int page) async {
     if (state == page) return;
+    final prevPage = state;
     state = page;
     final repo = ref.read(quranRepositoryProvider);
     await repo.saveReadingProgress(page);
+
+    // Auto-record page read in tracker stats
+    try {
+      final pagesDelta = (page - prevPage).abs();
+      final trackerRepo = ref.read(trackerRepositoryProvider);
+      await trackerRepo.recordQuranPagesRead(pagesDelta > 0 ? pagesDelta : 1);
+    } catch (_) {}
   }
 }
 

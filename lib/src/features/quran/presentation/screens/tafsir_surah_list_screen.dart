@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_animate/flutter_animate.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../../domain/entities/quran_entities.dart';
 import '../../data/repositories/quran_repository_provider.dart';
 import 'quran_index_screen.dart'; // Reuses surahsListProvider, juzListProvider
-import 'package:zad/src/core/widgets/arabic_text.dart';
+import 'package:iman/src/core/widgets/arabic_text.dart';
 
 class TafsirSurahListScreen extends ConsumerStatefulWidget {
   const TafsirSurahListScreen({super.key});

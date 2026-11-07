@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:drift/drift.dart';
 import 'app_database.dart';
@@ -36,12 +37,12 @@ class DatabaseInitializer {
         await _initializeDefaultTasks();
       }
     } catch (e) {
-      print('DatabaseInitializer Error: Failed to initialize database: $e');
+      debugPrint('DatabaseInitializer Error: Failed to initialize database: $e');
     }
   }
 
   Future<void> _initializeQuranCore() async {
-    print('Initializing Quran database tables...');
+    debugPrint('Initializing Quran database tables...');
     
     // Load Surahs JSON
     final surahsJsonStr = await rootBundle.loadString('assets/surahs.json');
@@ -106,11 +107,11 @@ class DatabaseInitializer {
       });
     }
     
-    print('Quran Core tables successfully populated.');
+    debugPrint('Quran Core tables successfully populated.');
   }
 
   Future<void> _initializeAdhkar() async {
-    print('Initializing Adhkar database tables...');
+    debugPrint('Initializing Adhkar database tables...');
     final adhkarJsonStr = await rootBundle.loadString('assets/adhkar.json');
     final Map<String, dynamic> adhkarMap = jsonDecode(adhkarJsonStr);
     final List<dynamic> categoriesList = adhkarMap['categories'] as List<dynamic>;
@@ -142,11 +143,11 @@ class DatabaseInitializer {
         );
       });
     }
-    print('Adhkar tables successfully populated.');
+    debugPrint('Adhkar tables successfully populated.');
   }
 
   Future<void> _initializeHadiths() async {
-    print('Initializing Hadiths database tables...');
+    debugPrint('Initializing Hadiths database tables...');
     final hadithsJsonStr = await rootBundle.loadString('assets/hadiths.json');
     final Map<String, dynamic> hadithMap = jsonDecode(hadithsJsonStr);
 
@@ -203,11 +204,11 @@ class DatabaseInitializer {
         );
       });
     }
-    print('Hadith tables successfully populated.');
+    debugPrint('Hadith tables successfully populated.');
   }
 
   Future<void> _initializeDefaultTasks() async {
-    print('Initializing default religious tasks...');
+    debugPrint('Initializing default religious tasks...');
     final defaultTasks = [
       'الصلوات الخمس في أوقاتها',
       'صلاة الضحى',
@@ -229,7 +230,7 @@ class DatabaseInitializer {
         }).toList(),
       );
     });
-    print('Default religious tasks populated.');
+    debugPrint('Default religious tasks populated.');
   }
 
   int _calculateJuz(int surah, int ayah, List<dynamic> boundaries) {

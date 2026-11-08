@@ -101,7 +101,6 @@ jobs:
     # mode=none يعني مفيش أي بناء خالص
     if: ${{ needs.classify.outputs.mode != 'none' }}
     outputs:
-      version: ${{ needs.classify.outputs.version }}
       mode: ${{ steps.build.outputs.mode }}
       apk_ready: ${{ steps.build.outputs.apk }}
     steps:
@@ -312,7 +311,7 @@ jobs:
   # ================================================================
   release:
     name: Publish GitHub Release
-    needs: [android, ios]
+    needs: [android, ios, classify]
     # الـ Release بيتم بأذن الله طول ما الـ APK اتبنى بنجاح
     if: ${{ always() && needs.android.result == 'success' && needs.android.outputs.apk_ready == 'true' }}
     runs-on: ubuntu-latest
@@ -321,7 +320,7 @@ jobs:
         id: rel
         run: |
           set -euo pipefail
-          VERSION='${{ needs.android.outputs.version }}'
+          VERSION='${{ needs.classify.outputs.version }}'
           if [[ '${{ github.ref_type }}' == 'tag' ]]; then
             TAG='${{ github.ref_name }}'
           else

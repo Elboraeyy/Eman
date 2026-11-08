@@ -2,6 +2,12 @@ name: Build & Publish Release (APK + IPA)
 
 # بناء نسخ التثبيت ونشرها تلقائيًا في صفحة Releases:
 #   - Android: ملف APK جاهز للتثبيت المباشر على الجوال.
+#     ولو Shorebird مفعّل (shorebird.yaml + سر SHOREBIRD_TOKEN موجودين):
+#       • تعديلات Dart/Assets فقط → تحديث فوري (OTA Patch) يوصل لكل المستخدمين بدون إعادة تثبيت.
+#       • تعديلات Native أو نسخة جديدة أو تشغيل يدوي/تاج → shorebird release كاملة (+ APK جديد في Releases).
+#       • ولو الـ patch فشل لأي سبب → يرجع تلقائيًا لعمل نسخة كاملة.
+#       • لا يوجد تغيّر مهم → لا بناء إطلاقًا والمهمة تُنجَح برضه.
+#     ولو Shorebird مش مفعّل → بناء عادي بـ flutter build apk (زالـ الأول).
 #   - iOS: ملف IPA غير موقّع — يثبَّت عبر إعادة التوقيع (Sideloadly / AltStore / iLoader).
 #
 # طرق التشغيل:
@@ -28,32 +34,72 @@ concurrency:
 
 jobs:
   # ================================================================
-  # بناء APK للأندرويد (Ubuntu)
+  # بناء APK للأندرويد (Ubuntu) — مع منطق Shorebird OTA
   # ================================================================
   android:
     name: Build Android APK
     runs-on: ubuntu-latest
     outputs:
       version: ${{ steps.meta.outputs.version }}
+      mode: ${{ steps.build.outputs.mode }}
+      apk_ready: ${{ steps.build.outputs.apk }}
     steps:
+      # fetch-depth: 0 لأننا بنقارن ملفات آخر تنفيذ لتصنيف التغييرات
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
-      - name: Extract App Version
+      - name: Determine version & change mode
         id: meta
+        env:
+          SHOREBIRD_TOKEN: ${{ secrets.SHOREBIRD_TOKEN }}
         run: |
           set -euo pipefail
           VERSION=$(sed -n 's/^version:[[:space:]]*//p' pubspec.yaml | head -n1 | cut -d'+' -f1 | tr -d ' \r')
           echo "version=$VERSION" >> "$GITHUB_OUTPUT"
           echo "App version: $VERSION"
 
+          SHOREBIRD_READY="false"
+          if [ -f shorebird.yaml ] && [ -n "${SHOREBIRD_TOKEN:-}" ]; then
+            SHOREBIRD_READY="true"
+          fi
+          echo "shorebird_ready=$SHOREBIRD_READY" >> "$GITHUB_OUTPUT"
+
+          # 1) تشغيل يدوي أو دفع تاج → نسخة كاملة
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ] || [ "${{ github.ref_type }}" = "tag" ]; then
+            MODE="release"
+          elif [ -z "${{ github.event.before }}" ] || [ "${{ github.event.before }}" = "0000000000000000000000000000000000000000" ]; then
+            # فرع جديد (مفيش نقطة مقارنة) → نسخة كاملة بأمان
+            MODE="release"
+          elif [ "$SHOREBIRD_READY" = "true" ]; then
+            CHANGED=$(git diff --name-only "${{ github.event.before }}" "${{ github.sha }}" || true)
+            # تغييرات native أو إعداد → لازم نسخة كاملة (الـ patch مش بيقبل Native)
+            if echo "$CHANGED" | grep -Eq '^(android/|ios/|pubspec\.yaml$|pubspec\.lock$|shorebird\.yaml$)'; then
+              MODE="release"
+            # Dart أو Assets بس → تحديث فوري (OTA)
+            elif echo "$CHANGED" | grep -Eq '^(lib/|assets/)'; then
+              MODE="patch"
+            else
+              MODE="none"
+            fi
+          else
+            # من غير Shorebird: أي تغيّر يستحق بناء عادي (السلوك القديم)
+            MODE="plain"
+          fi
+
+          echo "mode=$MODE" >> "$GITHUB_OUTPUT"
+          echo "Resolved mode: $MODE (shorebird_ready=$SHOREBIRD_READY)"
+
       - name: Setup Java 17 (required by AGP 8.x)
+        if: ${{ steps.meta.outputs.mode != 'none' }}
         uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: '17'
 
       - name: Cache Gradle artifacts
+        if: ${{ steps.meta.outputs.mode != 'none' }}
         uses: actions/cache@v4
         with:
           path: |
@@ -66,32 +112,100 @@ jobs:
       # نحافظ على نفس مفتاح الـ debug بين التنفيذات — حتى يشتغل
       # التحديث (تثبيت فوق النسخة القديمة) من نفس المصدر في كل مرة
       - name: Cache signing keystore
+        if: ${{ steps.meta.outputs.mode != 'none' }}
         uses: actions/cache@v4
         with:
           path: ~/.android/debug.keystore
           key: iman-debug-keystore-v1
 
+      # مسار Shorebird: الـ CLI بيجيب نسخة Flutter خاصة بيه بنفسه
+      - name: Setup Shorebird
+        if: ${{ steps.meta.outputs.mode != 'none' && steps.meta.outputs.shorebird_ready == 'true' }}
+        uses: shorebirdtech/setup-shorebird@v1
+        with:
+          cache: true
+
+      # المسار العادي فقط (بدون Shorebird)
       - name: Setup Flutter
+        if: ${{ steps.meta.outputs.mode != 'none' && steps.meta.outputs.shorebird_ready != 'true' }}
         uses: subosito/flutter-action@v2
         with:
           flutter-version: '3.41.9'
           cache: true
 
       - name: Get Dependencies
+        if: ${{ steps.meta.outputs.mode != 'none' }}
         run: flutter pub get
 
-      - name: Build Release APK
-        run: flutter build apk --release --build-number "$GITHUB_RUN_NUMBER"
-
-      - name: Prepare APK file
+      # ==============================================================
+      # البناء الفعلي حسب التصنيف:
+      #   patch   → shorebird patch (OTA) — ولو فشل تُبنى نسخة كاملة
+      #   release → shorebird release كاملة (رشم بناء = رقم التشغيل)
+      #   plain   → flutter build apk (بدون Shorebird)
+      #   none    → مفيش بناء خالص، والمهمة تُنجَح
+      # ==============================================================
+      - name: Build (Shorebird release / patch / plain)
+        id: build
+        env:
+          SHOREBIRD_TOKEN: ${{ secrets.SHOREBIRD_TOKEN }}
         run: |
           set -euo pipefail
+          MODE='${{ steps.meta.outputs.mode }}'
+          VERSION='${{ steps.meta.outputs.version }}'
+
+          if [ "$MODE" = "none" ]; then
+            echo "::notice::No buildable change in this push (native/android untouched, no Dart changes). Skipping builds."
+            echo "mode=none" >> "$GITHUB_OUTPUT"
+            echo "apk=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          if [ "$MODE" = "patch" ]; then
+            echo "::group::Shorebird OTA patch"
+            if shorebird patch android --release-version latest --track stable --allow-asset-diffs; then
+              echo "::notice::OTA patch published successfully (updates will reach users within a few minutes)."
+              echo "mode=patched" >> "$GITHUB_OUTPUT"
+              echo "apk=false" >> "$GITHUB_OUTPUT"
+              exit 0
+            fi
+            echo "::warning::shorebird patch failed (no release yet? native diff?) — falling back to a full release."
+            echo "::endgroup::"
+            MODE="release"
+          fi
+
+          if [ "$MODE" = "release" ]; then
+            echo "::group::Shorebird full release (version will be $VERSION+$GITHUB_RUN_NUMBER)"
+            shorebird release android --artifact apk --build-name "$VERSION" --build-number "$GITHUB_RUN_NUMBER"
+            echo "::endgroup::"
+            echo "mode=release" >> "$GITHUB_OUTPUT"
+          elif [ "$MODE" = "plain" ]; then
+            echo "::group::Plain flutter build (no Shorebird)"
+            flutter build apk --release --build-number "$GITHUB_RUN_NUMBER"
+            echo "::endgroup::"
+            echo "mode=plain" >> "$GITHUB_OUTPUT"
+          else
+            echo "::error::Unknown mode: $MODE"
+            exit 1
+          fi
+
+          echo "apk=true" >> "$GITHUB_OUTPUT"
+
+      - name: Prepare APK file
+        if: ${{ steps.build.outputs.apk == 'true' }}
+        run: |
+          set -euo pipefail
+          APK=$(find build/app/outputs -type f -name '*-release.apk' | head -n1)
+          if [ -z "$APK" ]; then
+            echo "::error::No release APK found under build/app/outputs" >&2
+            exit 1
+          fi
+          echo "Found APK: $APK"
           mkdir -p dist
-          cp build/app/outputs/flutter-apk/app-release.apk \
-            "dist/Iman-${{ steps.meta.outputs.version }}-b${GITHUB_RUN_NUMBER}.apk"
+          cp "$APK" "dist/Iman-${{ steps.meta.outputs.version }}-b${GITHUB_RUN_NUMBER}.apk"
           ls -lh dist
 
       - name: Upload APK Artifact
+        if: ${{ steps.build.outputs.apk == 'true' }}
         uses: actions/upload-artifact@v4
         with:
           name: Iman-APK
@@ -179,12 +293,13 @@ jobs:
 
   # ================================================================
   # نشر كل الملفات في GitHub Release واحدة مع مباشر التحميل
+  # (بتتخطى لما يكون الـ push كان patch فوري أو بدون تغيّر)
   # ================================================================
   release:
     name: Publish GitHub Release
     needs: [android, ios]
     # الـ Release بيتم بأذن الله طول ما الـ APK اتبنى بنجاح
-    if: ${{ always() && needs.android.result == 'success' }}
+    if: ${{ always() && needs.android.result == 'success' && needs.android.outputs.apk_ready == 'true' }}
     runs-on: ubuntu-latest
     steps:
       - name: Determine release tag
@@ -245,4 +360,7 @@ jobs:
             - نزّل ملف `Iman-*.ipa` من الأسفل.
             - جدد توقيعه بحساب آبل من خلال **Sideloadly** أو **AltStore** أو **iLoader** ثم ثبّته.
 
-            > كل بناء جديد يحمل رقم Build أعلى (versionCode) حتى يعمل التحديث فوق النسخة القديمة مباشرة.
+            **تحديثات فورية (Code Push)**
+            - تحديثات الأندرويد لتعديلات الكود تصل تلقائيًا داخل التطبيق (OTA) بدون إعادة تثبيت — في أول تشغيل بعد الدقاجق القليلة التالية للنشر.
+
+            > كل نسخة كاملة جديدة تحمل رقم Build أعلى (versionCode) حتى يعمل التحديث فوق النسخة القديمة مباشرة.

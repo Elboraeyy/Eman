@@ -100,6 +100,7 @@ jobs:
     needs: classify
     # mode=none يعني مفيش أي بناء خالص
     if: ${{ needs.classify.outputs.mode != 'none' }}
+    runs-on: ubuntu-latest
     outputs:
       mode: ${{ steps.build.outputs.mode }}
       apk_ready: ${{ steps.build.outputs.apk }}
@@ -234,6 +235,7 @@ jobs:
     name: Build iOS IPA (Unsigned for Sideloading)
     needs: classify
     if: ${{ needs.classify.outputs.mode != 'none' }}
+    runs-on: macos-latest
     continue-on-error: true
     outputs:
       ipa_ok: ${{ steps.flag.outputs.ipa_ok }}

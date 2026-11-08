@@ -125,9 +125,10 @@ jobs:
         with:
           cache: true
 
-      # المسار العادي فقط (بدون Shorebird)
+      # نثبت Flutter على الـ PATH دايمًا (لـ flutter pub get ولـ fallback داخلي
+      # لو shorebird release فشل) — Shorebird نفسه بيستخدم نسخته الخاصة للبناء
       - name: Setup Flutter
-        if: ${{ steps.meta.outputs.mode != 'none' && steps.meta.outputs.shorebird_ready != 'true' }}
+        if: ${{ steps.meta.outputs.mode != 'none' }}
         uses: subosito/flutter-action@v2
         with:
           flutter-version: '3.41.9'
@@ -175,9 +176,16 @@ jobs:
 
           if [ "$MODE" = "release" ]; then
             echo "::group::Shorebird full release (version will be $VERSION+$GITHUB_RUN_NUMBER)"
-            shorebird release android --artifact apk --build-name "$VERSION" --build-number "$GITHUB_RUN_NUMBER"
-            echo "::endgroup::"
-            echo "mode=release" >> "$GITHUB_OUTPUT"
+            # نسخة Flutter متثبتة (3.47.7) لضمان نفس الأداة سواء كانت release أو patch
+            if shorebird release android --artifact apk --build-name "$VERSION" --build-number "$GITHUB_RUN_NUMBER" --flutter-version 3.47.7; then
+              echo "::endgroup::"
+              echo "mode=release" >> "$GITHUB_OUTPUT"
+            else
+              echo "::warning::shorebird release failed — falling back to a plain flutter build so the run still succeeds."
+              echo "::endgroup::"
+              flutter build apk --release --build-number "$GITHUB_RUN_NUMBER"
+              echo "mode=plain" >> "$GITHUB_OUTPUT"
+            fi
           elif [ "$MODE" = "plain" ]; then
             echo "::group::Plain flutter build (no Shorebird)"
             flutter build apk --release --build-number "$GITHUB_RUN_NUMBER"

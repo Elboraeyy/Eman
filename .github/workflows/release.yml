@@ -176,8 +176,10 @@ jobs:
 
           if [ "$MODE" = "release" ]; then
             echo "::group::Shorebird full release (version will be $VERSION+$GITHUB_RUN_NUMBER)"
-            # نسخة Flutter متثبتة (3.47.7) لضمان نفس الأداة سواء كانت release أو patch
-            if shorebird release android --artifact apk --build-name "$VERSION" --build-number "$GITHUB_RUN_NUMBER" --flutter-version 3.47.7; then
+            # نسبط Flutter 3.41.9 (نفس نسخة البناء العادي) لأن lucide_icons
+            # بيمتد من IconData وده متمنع في 3.47+ — والـ patches بتبني تلقائيًا
+            # بنفس نسخة Flutter الخاصة بالـ release
+            if shorebird release android --artifact apk --build-name "$VERSION" --build-number "$GITHUB_RUN_NUMBER" --flutter-version 3.41.9; then
               echo "::endgroup::"
               echo "mode=release" >> "$GITHUB_OUTPUT"
             else

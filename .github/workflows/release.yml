@@ -7,7 +7,7 @@ name: Build & Publish Release (APK + IPA)
 #       • تعديلات Native أو نسخة جديدة أو تشغيل يدوي/تاج → shorebird release كاملة (+ APK جديد في Releases).
 #       • ولو الـ patch فشل لأي سبب → يرجع تلقائيًا لعمل نسخة كاملة.
 #       • لا يوجد تغيّر مهم → لا بناء إطلاقًا والمهمة تُنجَح برضه.
-#     ولو Shorebird مش مفعّل → بناء عادي بـ flutter build apk (زالـ الأول).
+#     ولو Shorebird مش مفعّل → بناء عادي بـ flutter build apk (زي الأول).
 #   - iOS: ملف IPA غير موقّع — يثبَّت عبر إعادة التوقيع (Sideloadly / AltStore / iLoader).
 #
 # طرق التشغيل:
@@ -34,17 +34,18 @@ concurrency:
 
 jobs:
   # ================================================================
-  # بناء APK للأندرويد (Ubuntu) — مع منطق Shorebird OTA
+  # 1) تصنيف التغييرات — سريع جدًا (بدون بناء)
+  #    version / mode (none|plain|patch|release) / shorebird_ready
   # ================================================================
-  android:
-    name: Build Android APK
+  classify:
+    name: Classify Changes
     runs-on: ubuntu-latest
     outputs:
       version: ${{ steps.meta.outputs.version }}
-      mode: ${{ steps.build.outputs.mode }}
-      apk_ready: ${{ steps.build.outputs.apk }}
+      mode: ${{ steps.meta.outputs.mode }}
+      shorebird_ready: ${{ steps.meta.outputs.shorebird_ready }}
     steps:
-      # fetch-depth: 0 لأننا بنقارن ملفات آخر تنفيذ لتصنيف التغييرات
+      # fetch-depth: 0 لأننا بنقارن ملفات آخر تنفيذ
       - name: Checkout
         uses: actions/checkout@v4
         with:
@@ -91,15 +92,29 @@ jobs:
           echo "mode=$MODE" >> "$GITHUB_OUTPUT"
           echo "Resolved mode: $MODE (shorebird_ready=$SHOREBIRD_READY)"
 
+  # ================================================================
+  # 2) بناء APK للأندرويد (Ubuntu) — مع منطق Shorebird OTA
+  # ================================================================
+  android:
+    name: Build Android APK
+    needs: classify
+    # mode=none يعني مفيش أي بناء خالص
+    if: ${{ needs.classify.outputs.mode != 'none' }}
+    outputs:
+      version: ${{ needs.classify.outputs.version }}
+      mode: ${{ steps.build.outputs.mode }}
+      apk_ready: ${{ steps.build.outputs.apk }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
       - name: Setup Java 17 (required by AGP 8.x)
-        if: ${{ steps.meta.outputs.mode != 'none' }}
         uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: '17'
 
       - name: Cache Gradle artifacts
-        if: ${{ steps.meta.outputs.mode != 'none' }}
         uses: actions/cache@v4
         with:
           path: |
@@ -112,7 +127,6 @@ jobs:
       # نحافظ على نفس مفتاح الـ debug بين التنفيذات — حتى يشتغل
       # التحديث (تثبيت فوق النسخة القديمة) من نفس المصدر في كل مرة
       - name: Cache signing keystore
-        if: ${{ steps.meta.outputs.mode != 'none' }}
         uses: actions/cache@v4
         with:
           path: ~/.android/debug.keystore
@@ -120,7 +134,7 @@ jobs:
 
       # مسار Shorebird: الـ CLI بيجيب نسخة Flutter خاصة بيه بنفسه
       - name: Setup Shorebird
-        if: ${{ steps.meta.outputs.mode != 'none' && steps.meta.outputs.shorebird_ready == 'true' }}
+        if: ${{ needs.classify.outputs.shorebird_ready == 'true' }}
         uses: shorebirdtech/setup-shorebird@v1
         with:
           cache: true
@@ -128,14 +142,12 @@ jobs:
       # نثبت Flutter على الـ PATH دايمًا (لـ flutter pub get ولـ fallback داخلي
       # لو shorebird release فشل) — Shorebird نفسه بيستخدم نسخته الخاصة للبناء
       - name: Setup Flutter
-        if: ${{ steps.meta.outputs.mode != 'none' }}
         uses: subosito/flutter-action@v2
         with:
           flutter-version: '3.41.9'
           cache: true
 
       - name: Get Dependencies
-        if: ${{ steps.meta.outputs.mode != 'none' }}
         run: flutter pub get
 
       # ==============================================================
@@ -143,7 +155,6 @@ jobs:
       #   patch   → shorebird patch (OTA) — ولو فشل تُبنى نسخة كاملة
       #   release → shorebird release كاملة (رشم بناء = رقم التشغيل)
       #   plain   → flutter build apk (بدون Shorebird)
-      #   none    → مفيش بناء خالص، والمهمة تُنجَح
       # ==============================================================
       - name: Build (Shorebird release / patch / plain)
         id: build
@@ -151,15 +162,8 @@ jobs:
           SHOREBIRD_TOKEN: ${{ secrets.SHOREBIRD_TOKEN }}
         run: |
           set -euo pipefail
-          MODE='${{ steps.meta.outputs.mode }}'
-          VERSION='${{ steps.meta.outputs.version }}'
-
-          if [ "$MODE" = "none" ]; then
-            echo "::notice::No buildable change in this push (native/android untouched, no Dart changes). Skipping builds."
-            echo "mode=none" >> "$GITHUB_OUTPUT"
-            echo "apk=false" >> "$GITHUB_OUTPUT"
-            exit 0
-          fi
+          MODE='${{ needs.classify.outputs.mode }}'
+          VERSION='${{ needs.classify.outputs.version }}'
 
           if [ "$MODE" = "patch" ]; then
             echo "::group::Shorebird OTA patch"
@@ -211,7 +215,7 @@ jobs:
           fi
           echo "Found APK: $APK"
           mkdir -p dist
-          cp "$APK" "dist/Iman-${{ steps.meta.outputs.version }}-b${GITHUB_RUN_NUMBER}.apk"
+          cp "$APK" "dist/Iman-${{ needs.classify.outputs.version }}-b${GITHUB_RUN_NUMBER}.apk"
           ls -lh dist
 
       - name: Upload APK Artifact
@@ -224,12 +228,13 @@ jobs:
           retention-days: 14
 
   # ================================================================
-  # بناء IPA للايفون (macOS) — نسخة غير موقّعة للتثبيت عبر إعادة التوقيع
+  # 3) بناء IPA للايفون (macOS) — نسخة غير موقّعة للتثبيت عبر إعادة التوقيع
   # لو فشل البناء لأي سبب، مش هنفشل الاكشن كله: الـ Release هيطلع بالـ APK
   # ================================================================
   ios:
     name: Build iOS IPA (Unsigned for Sideloading)
-    runs-on: macos-latest
+    needs: classify
+    if: ${{ needs.classify.outputs.mode != 'none' }}
     continue-on-error: true
     outputs:
       ipa_ok: ${{ steps.flag.outputs.ipa_ok }}
@@ -269,7 +274,7 @@ jobs:
         if: ${{ steps.build_ios.outcome == 'success' }}
         run: |
           set -euo pipefail
-          VERSION=$(sed -n 's/^version:[[:space:]]*//p' pubspec.yaml | head -n1 | cut -d'+' -f1 | tr -d ' \r')
+          VERSION='${{ needs.classify.outputs.version }}'
           APP_PATH="${GITHUB_WORKSPACE}/build/ios/iphoneos/Runner.app"
           PAYLOAD_DIR="${RUNNER_TEMP}/iman-ipa/Payload"
 
@@ -302,7 +307,7 @@ jobs:
         run: echo "ipa_ok=true" >> "$GITHUB_OUTPUT"
 
   # ================================================================
-  # نشر كل الملفات في GitHub Release واحدة مع مباشر التحميل
+  # 4) نشر كل الملفات في GitHub Release واحدة مع مباشر التحميل
   # (بتتخطى لما يكون الـ push كان patch فوري أو بدون تغيّر)
   # ================================================================
   release:

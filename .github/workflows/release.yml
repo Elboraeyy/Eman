@@ -234,7 +234,8 @@ jobs:
   ios:
     name: Build iOS IPA (Unsigned for Sideloading)
     needs: classify
-    if: ${{ needs.classify.outputs.mode != 'none' }}
+    # الـ iOS يبنى بس لما هيحصل Release بمشكلة ملفات جديدة (مش في patch ولا none)
+    if: ${{ needs.classify.outputs.mode != 'none' && needs.classify.outputs.mode != 'patch' }}
     runs-on: macos-latest
     continue-on-error: true
     outputs:

@@ -1,0 +1,248 @@
+name: Build & Publish Release (APK + IPA)
+
+# بناء نسخ التثبيت ونشرها تلقائيًا في صفحة Releases:
+#   - Android: ملف APK جاهز للتثبيت المباشر على الجوال.
+#   - iOS: ملف IPA غير موقّع — يثبَّت عبر إعادة التوقيع (Sideloadly / AltStore / iLoader).
+#
+# طرق التشغيل:
+#   1) يدويًا من تبويب Actions (Run workflow).
+#   2) تلقائيًا مع كل رفع (push) على فرع main.
+#   3) تلقائيًا عند إضافة تاج يبدأ بـ v (مثل v1.0.1) — وتقدر تستخدمن اسمه كما هو للنسخة.
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+    tags:
+      - 'v*'
+    paths-ignore:
+      - '**.md'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  # ================================================================
+  # بناء APK للأندرويد (Ubuntu)
+  # ================================================================
+  android:
+    name: Build Android APK
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.meta.outputs.version }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Extract App Version
+        id: meta
+        run: |
+          set -euo pipefail
+          VERSION=$(sed -n 's/^version:[[:space:]]*//p' pubspec.yaml | head -n1 | cut -d'+' -f1 | tr -d ' \r')
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          echo "App version: $VERSION"
+
+      - name: Setup Java 17 (required by AGP 8.x)
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Cache Gradle artifacts
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: gradle-${{ runner.os }}-${{ hashFiles('android/gradle/wrapper/gradle-wrapper.properties', 'pubspec.lock') }}
+          restore-keys: |
+            gradle-${{ runner.os }}-
+
+      # نحافظ على نفس مفتاح الـ debug بين التنفيذات — حتى يشتغل
+      # التحديث (تثبيت فوق النسخة القديمة) من نفس المصدر في كل مرة
+      - name: Cache signing keystore
+        uses: actions/cache@v4
+        with:
+          path: ~/.android/debug.keystore
+          key: iman-debug-keystore-v1
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.41.9'
+          cache: true
+
+      - name: Get Dependencies
+        run: flutter pub get
+
+      - name: Build Release APK
+        run: flutter build apk --release --build-number "$GITHUB_RUN_NUMBER"
+
+      - name: Prepare APK file
+        run: |
+          set -euo pipefail
+          mkdir -p dist
+          cp build/app/outputs/flutter-apk/app-release.apk \
+            "dist/Iman-${{ steps.meta.outputs.version }}-b${GITHUB_RUN_NUMBER}.apk"
+          ls -lh dist
+
+      - name: Upload APK Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: Iman-APK
+          path: dist/*.apk
+          if-no-files-found: error
+          retention-days: 14
+
+  # ================================================================
+  # بناء IPA للايفون (macOS) — نسخة غير موقّعة للتثبيت عبر إعادة التوقيع
+  # لو فشل البناء لأي سبب، مش هنفشل الاكشن كله: الـ Release هيطلع بالـ APK
+  # ================================================================
+  ios:
+    name: Build iOS IPA (Unsigned for Sideloading)
+    runs-on: macos-latest
+    continue-on-error: true
+    outputs:
+      ipa_ok: ${{ steps.flag.outputs.ipa_ok }}
+    env:
+      # This workflow intentionally creates an unsigned device app. Sideloadly /
+      # AltStore / iLoader will sign it with the Apple account of the user.
+      CODE_SIGNING_ALLOWED: NO
+      CODE_SIGNING_REQUIRED: NO
+      CODE_SIGN_IDENTITY: ''
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.41.9'
+          cache: true
+
+      - name: CocoaPods Integration
+        run: flutter config --no-enable-swift-package-manager
+
+      - name: Get Dependencies
+        run: flutter pub get
+
+      - name: Install CocoaPods Dependencies
+        working-directory: ios
+        run: pod install --repo-update
+
+      - name: Build iOS App
+        id: build_ios
+        run: |
+          set -euo pipefail
+          flutter build ios --release --no-codesign --build-number "$GITHUB_RUN_NUMBER"
+
+      - name: Create IPA Package
+        if: ${{ steps.build_ios.outcome == 'success' }}
+        run: |
+          set -euo pipefail
+          VERSION=$(sed -n 's/^version:[[:space:]]*//p' pubspec.yaml | head -n1 | cut -d'+' -f1 | tr -d ' \r')
+          APP_PATH="${GITHUB_WORKSPACE}/build/ios/iphoneos/Runner.app"
+          PAYLOAD_DIR="${RUNNER_TEMP}/iman-ipa/Payload"
+
+          test -d "$APP_PATH"
+          test -f "$APP_PATH/Info.plist"
+
+          rm -rf "${RUNNER_TEMP}/iman-ipa"
+          mkdir -p "$PAYLOAD_DIR"
+          ditto "$APP_PATH" "$PAYLOAD_DIR/Runner.app"
+
+          IPA_TEST="${RUNNER_TEMP}/Iman-${VERSION}-b${GITHUB_RUN_NUMBER}.ipa"
+          (cd "${RUNNER_TEMP}/iman-ipa" && zip -qry -y "$IPA_TEST" Payload)
+          unzip -t "$IPA_TEST" > /dev/null
+
+          mkdir -p dist
+          mv "$IPA_TEST" dist/
+
+      - name: Upload IPA Artifact
+        if: ${{ steps.build_ios.outcome == 'success' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: Iman-IPA
+          path: dist/*.ipa
+          if-no-files-found: error
+          retention-days: 14
+
+      - name: Set success flag
+        id: flag
+        if: ${{ steps.build_ios.outcome == 'success' }}
+        run: echo "ipa_ok=true" >> "$GITHUB_OUTPUT"
+
+  # ================================================================
+  # نشر كل الملفات في GitHub Release واحدة مع مباشر التحميل
+  # ================================================================
+  release:
+    name: Publish GitHub Release
+    needs: [android, ios]
+    # الـ Release بيتم بأذن الله طول ما الـ APK اتبنى بنجاح
+    if: ${{ always() && needs.android.result == 'success' }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Determine release tag
+        id: rel
+        run: |
+          set -euo pipefail
+          VERSION='${{ needs.android.outputs.version }}'
+          if [[ '${{ github.ref_type }}' == 'tag' ]]; then
+            TAG='${{ github.ref_name }}'
+          else
+            TAG="v${VERSION}-b${GITHUB_RUN_NUMBER}"
+          fi
+          echo "tag=$TAG" >> "$GITHUB_OUTPUT"
+          echo "Release tag: $TAG"
+
+      - name: Download APK artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: Iman-APK
+          path: dist
+
+      - name: Download IPA artifact
+        if: ${{ needs.ios.outputs.ipa_ok == 'true' }}
+        uses: actions/download-artifact@v4
+        with:
+          name: Iman-IPA
+          path: dist
+
+      - name: Verify at least one file exists
+        run: |
+          set -euo pipefail
+          ls -lh dist
+          FOUND=$(find dist -type f \( -name '*.apk' -o -name '*.ipa' \) | wc -l)
+          if [ "$FOUND" -eq 0 ]; then
+            echo "::error::No APK/IPA files were produced." >&2
+            exit 1
+          fi
+
+      - name: Create / Update GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.rel.outputs.tag }}
+          name: إيمان ${{ steps.rel.outputs.tag }}
+          target_commitish: ${{ github.sha }}
+          files: |
+            dist/*.apk
+            dist/*.ipa
+          fail_on_unmatched_files: false
+          generate_release_notes: true
+          body: |
+            ## طريقة التثبيت
+
+            **Android**
+            - نزّل ملف `Iman-*.apk` من الأسفل وثبّته مباشرة على جهازك.
+            - إن طُلب منك ذلك، اسمح بـ "التثبيت من مصادر غير معروفة".
+
+            **iPhone (نسخة غير موقّعة)**
+            - نزّل ملف `Iman-*.ipa` من الأسفل.
+            - جدد توقيعه بحساب آبل من خلال **Sideloadly** أو **AltStore** أو **iLoader** ثم ثبّته.
+
+            > كل بناء جديد يحمل رقم Build أعلى (versionCode) حتى يعمل التحديث فوق النسخة القديمة مباشرة.

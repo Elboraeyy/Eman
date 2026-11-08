@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:go_router/go_router.dart';
+import 'package:in_app_review/in_app_review.dart';
 import 'package:share_plus/share_plus.dart';
 import '../../../../core/database/shared_preferences_provider.dart';
 
@@ -126,10 +127,16 @@ class SettingsScreen extends ConsumerWidget {
               subtitle: 'تقييمك يساعدنا على التحسين، ويشجع غيرك على نشر الخير',
               icon: Icons.star_border,
               theme: theme,
-              onTap: () {
-                SharePlus.instance.share(ShareParams(
-                  text: 'قيّم تطبيق «إيمان» ⭐\nرابط التطبيق:\nhttps://play.google.com/store/apps/details?id=com.elboraeyy.iman',
-                ));
+              onTap: () async {
+                try {
+                  // في المتجر: يفتح نافذة التقييم داخل التطبيق (بلا مغادرة)
+                  await InAppReview.instance.requestReview();
+                } catch (_) {
+                  // احتياطي: لو مفيش متجر (بيلد تنصيب مباشر) نشارك الرابط
+                  SharePlus.instance.share(ShareParams(
+                    text: 'قيّم تطبيق «إيمان» ⭐\nرابط التطبيق:\nhttps://play.google.com/store/apps/details?id=com.elboraeyy.iman',
+                  ));
+                }
               },
             ),
 

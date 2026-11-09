@@ -9,6 +9,7 @@ import '../../data/repositories/hadith_repository_provider.dart';
 import '../../domain/entities/hadith_entities.dart';
 import 'hadith_index_screen.dart';
 import 'package:iman/src/core/widgets/arabic_text.dart';
+import 'package:iman/src/core/responsive/app_insets.dart';
 
 final hadithDetailProvider = FutureProvider.family<Hadith?, int>((ref, hadithId) async {
   final repo = ref.watch(hadithRepositoryProvider);
@@ -94,7 +95,7 @@ class _HadithDetailScreenState extends ConsumerState<HadithDetailScreen> {
           }
 
           return SingleChildScrollView(
-            padding: const EdgeInsets.all(20.0),
+            padding: EdgeInsets.fromLTRB(20, 20, 20, 20 + context.navBarInset),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [

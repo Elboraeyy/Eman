@@ -6,6 +6,7 @@ import '../../domain/entities/quran_entities.dart';
 import '../../data/repositories/quran_repository_provider.dart';
 import 'quran_index_screen.dart'; // Reuses surahsListProvider, juzListProvider
 import 'package:iman/src/core/widgets/arabic_text.dart';
+import 'package:iman/src/core/responsive/app_insets.dart';
 
 class TafsirSurahListScreen extends ConsumerStatefulWidget {
   const TafsirSurahListScreen({super.key});
@@ -105,7 +106,7 @@ class _TafsirSurahListScreenState extends ConsumerState<TafsirSurahListScreen> w
                     }
 
                     return ListView.separated(
-                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                      padding: EdgeInsets.fromLTRB(16, 8, 16, AppInsets.page(context, gap: 16)),
                       itemCount: filteredSurahs.length,
                       separatorBuilder: (context, index) => Divider(color: theme.dividerColor, height: 1),
                       itemBuilder: (context, index) {
@@ -162,7 +163,7 @@ class _TafsirSurahListScreenState extends ConsumerState<TafsirSurahListScreen> w
           juzAsync.when(
             data: (juzs) {
               return ListView.separated(
-                padding: const EdgeInsets.all(16),
+                padding: EdgeInsets.fromLTRB(16, 16, 16, AppInsets.page(context, gap: 16)),
                 itemCount: juzs.length,
                 separatorBuilder: (context, index) => Divider(color: theme.dividerColor, height: 1),
                 itemBuilder: (context, index) {
@@ -176,53 +177,54 @@ class _TafsirSurahListScreenState extends ConsumerState<TafsirSurahListScreen> w
                     child: Padding(
                       padding: const EdgeInsets.symmetric(vertical: 16.0),
                       child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Row(
-                            children: [
-                              Container(
-                                width: 44,
-                                height: 44,
-                                decoration: BoxDecoration(
-                                  shape: BoxShape.circle,
-                                  color: theme.colorScheme.secondary.withValues(alpha: 0.08),
-                                  border: Border.all(color: theme.colorScheme.secondary.withValues(alpha: 0.15)),
-                                ),
-                                child: Center(
-                                  child: Icon(
-                                    Icons.chrome_reader_mode_outlined,
-                                    size: 20,
-                                    color: theme.colorScheme.secondary,
-                                  ),
-                                ),
+                          Container(
+                            width: 44,
+                            height: 44,
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: theme.colorScheme.secondary.withValues(alpha: 0.08),
+                              border: Border.all(color: theme.colorScheme.secondary.withValues(alpha: 0.15)),
+                            ),
+                            child: Center(
+                              child: Icon(
+                                Icons.chrome_reader_mode_outlined,
+                                size: 20,
+                                color: theme.colorScheme.secondary,
                               ),
-                              const SizedBox(width: 16),
-                              Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  ArabicText(
-                                    'الجزء $juzNum',
-                                    style: GoogleFonts.cairo(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.bold,
-                                    ),
+                            ),
+                          ),
+                          const SizedBox(width: 16),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                ArabicText(
+                                  'الجزء $juzNum',
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: GoogleFonts.cairo(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold,
                                   ),
-                                  FutureBuilder<Surah?>(
-                                    future: ref.read(quranRepositoryProvider).getSurahByNumber(boundary.surahNumber),
-                                    builder: (context, snapshot) {
-                                      final surahName = snapshot.data?.nameArabic ?? '';
-                                      return ArabicText(
-                                        'يبدأ من سورة: $surahName',
-                                        style: GoogleFonts.cairo(
-                                          fontSize: 12,
-                                          color: theme.textTheme.bodyMedium?.color,
-                                        ),
-                                      );
-                                    },
-                                  ),
-                                ],
-                              ),
-                            ],
+                                ),
+                                FutureBuilder<Surah?>(
+                                  future: ref.read(quranRepositoryProvider).getSurahByNumber(boundary.surahNumber),
+                                  builder: (context, snapshot) {
+                                    final surahName = snapshot.data?.nameArabic ?? '';
+                                    return ArabicText(
+                                      'يبدأ من سورة: $surahName',
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                      style: GoogleFonts.cairo(
+                                        fontSize: 12,
+                                        color: theme.textTheme.bodyMedium?.color,
+                                      ),
+                                    );
+                                  },
+                                ),
+                              ],
+                            ),
                           ),
                           Icon(
                             Directionality.of(context) == TextDirection.rtl

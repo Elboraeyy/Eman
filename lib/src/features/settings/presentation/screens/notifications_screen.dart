@@ -4,6 +4,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter/services.dart';
 import 'package:iman/src/core/database/shared_preferences_provider.dart';
 import 'package:iman/src/core/widgets/arabic_text.dart';
+import 'package:iman/src/core/responsive/app_insets.dart';
 
 class NotificationsScreen extends ConsumerWidget {
   const NotificationsScreen({super.key});
@@ -30,7 +31,7 @@ class NotificationsScreen extends ConsumerWidget {
         ),
       ),
       body: ListView.separated(
-        padding: const EdgeInsets.all(20.0),
+        padding: EdgeInsets.fromLTRB(20, 20, 20, AppInsets.page(context, gap: 16)),
         itemCount: prayers.length,
         separatorBuilder: (context, index) => Divider(color: theme.dividerColor, height: 1),
         itemBuilder: (context, index) {
@@ -40,61 +41,75 @@ class NotificationsScreen extends ConsumerWidget {
           return Padding(
             padding: const EdgeInsets.symmetric(vertical: 8.0),
             child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                // Alert type selectors
-                Row(
-                  children: [
-                    _buildAlertOption(
-                      context,
-                      theme,
-                      icon: Icons.notifications_off,
-                      label: 'صامت',
-                      isSelected: currentAlert == 0,
-                      onTap: () async {
-                        HapticFeedback.lightImpact();
-                        await prefs.setInt('prayer_alert_${prayer.key}', 0);
-                        ref.invalidate(sharedPreferencesProvider);
-                      },
+                // Alert type selectors — مقيدة بمساحة الصف عشان ما تغيرش
+                // بره الشاشة في التليفات الضيقة أو مع تكبير خط النظام
+                Flexible(
+                  fit: FlexFit.loose,
+                  child: FittedBox(
+                    fit: BoxFit.scaleDown,
+                    alignment: AlignmentDirectional.centerEnd,
+                    child: Row(
+                      children: [
+                        _buildAlertOption(
+                          context,
+                          theme,
+                          icon: Icons.notifications_off,
+                          label: 'صامت',
+                          isSelected: currentAlert == 0,
+                          onTap: () async {
+                            HapticFeedback.lightImpact();
+                            await prefs.setInt('prayer_alert_${prayer.key}', 0);
+                            ref.invalidate(sharedPreferencesProvider);
+                          },
+                        ),
+                        const SizedBox(width: 8),
+                        _buildAlertOption(
+                          context,
+                          theme,
+                          icon: Icons.notifications,
+                          label: 'رنين',
+                          isSelected: currentAlert == 1,
+                          onTap: () async {
+                            HapticFeedback.lightImpact();
+                            await prefs.setInt('prayer_alert_${prayer.key}', 1);
+                            ref.invalidate(sharedPreferencesProvider);
+                          },
+                        ),
+                        if (prayer.isPrayer) ...[
+                          const SizedBox(width: 8),
+                          _buildAlertOption(
+                            context,
+                            theme,
+                            icon: Icons.notifications_active,
+                            label: 'أذان',
+                            isSelected: currentAlert == 2,
+                            onTap: () async {
+                              HapticFeedback.lightImpact();
+                              await prefs.setInt('prayer_alert_${prayer.key}', 2);
+                              ref.invalidate(sharedPreferencesProvider);
+                            },
+                          ),
+                        ],
+                      ],
                     ),
-                    const SizedBox(width: 8),
-                    _buildAlertOption(
-                      context,
-                      theme,
-                      icon: Icons.notifications,
-                      label: 'رنين',
-                      isSelected: currentAlert == 1,
-                      onTap: () async {
-                        HapticFeedback.lightImpact();
-                        await prefs.setInt('prayer_alert_${prayer.key}', 1);
-                        ref.invalidate(sharedPreferencesProvider);
-                      },
-                    ),
-                    if (prayer.isPrayer) ...[
-                      const SizedBox(width: 8),
-                      _buildAlertOption(
-                        context,
-                        theme,
-                        icon: Icons.notifications_active,
-                        label: 'أذان',
-                        isSelected: currentAlert == 2,
-                        onTap: () async {
-                          HapticFeedback.lightImpact();
-                          await prefs.setInt('prayer_alert_${prayer.key}', 2);
-                          ref.invalidate(sharedPreferencesProvider);
-                        },
-                      ),
-                    ],
-                  ],
+                  ),
                 ),
-                
+
+                const SizedBox(width: 8),
+
                 // Prayer Name
-                ArabicText(
-                  prayer.title,
-                  style: GoogleFonts.cairo(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 16,
-                    color: theme.colorScheme.primary,
+                Flexible(
+                  fit: FlexFit.tight,
+                  child: ArabicText(
+                    prayer.title,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: GoogleFonts.cairo(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
+                      color: theme.colorScheme.primary,
+                    ),
                   ),
                 ),
               ],

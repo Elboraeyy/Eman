@@ -17,6 +17,7 @@ import 'package:iman/src/core/widgets/arabic_text.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:iman/src/core/database/shared_preferences_provider.dart';
 import 'package:hijri/hijri_calendar.dart';
+import 'package:iman/src/core/responsive/app_insets.dart';
 import 'package:iman/src/features/tracker/presentation/screens/tracker_screen.dart';
 
 // Hadith of the day provider
@@ -68,6 +69,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       context: context,
       isDismissible: false,
       enableDrag: false,
+      isScrollControlled: true,
       useRootNavigator: true,
       backgroundColor: Colors.transparent,
       builder: (context) {
@@ -76,7 +78,16 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             color: theme.scaffoldBackgroundColor,
             borderRadius: const BorderRadius.vertical(top: Radius.circular(32)),
           ),
-          padding: const EdgeInsets.fromLTRB(24, 28, 24, 40),
+          padding: EdgeInsets.fromLTRB(
+            24,
+            28,
+            24,
+            AppInsets.sheetBottom(context, gap: 24),
+          ),
+          // أقصى ارتفاع بشاشة العرض عشان ما يتأكدش overflow في الشاشات القصيرة
+          constraints: BoxConstraints(
+            maxHeight: MediaQuery.of(context).size.height * 0.8,
+          ),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -103,13 +114,19 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 ),
               ),
               const SizedBox(height: 12),
-              ArabicText(
-                'يحتاج تطبيق إيمان إلى صلاحية الوصول للموقع لكي يتمكن من تحديد مواقيت الصلاة واتجاه القبلة بدقة متناهية بناءً على مكانك الحالي.',
-                textAlign: TextAlign.center,
-                style: GoogleFonts.cairo(
-                  fontSize: 14,
-                  height: 1.6,
-                  color: theme.textTheme.bodyMedium?.color?.withValues(alpha: 0.8),
+              // النص التوضيحي: قابل للتمرير على الشاشات الصغيرة بدل ما يطلع بره
+              Flexible(
+                fit: FlexFit.loose,
+                child: SingleChildScrollView(
+                  child: ArabicText(
+                    'يحتاج تطبيق إيمان إلى صلاحية الوصول للموقع لكي يتمكن من تحديد مواقيت الصلاة واتجاه القبلة بدقة متناهية بناءً على مكانك الحالي.',
+                    textAlign: TextAlign.center,
+                    style: GoogleFonts.cairo(
+                      fontSize: 14,
+                      height: 1.6,
+                      color: theme.textTheme.bodyMedium?.color?.withValues(alpha: 0.8),
+                    ),
+                  ),
                 ),
               ),
               const SizedBox(height: 32),
@@ -477,8 +494,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                               loading: () => _buildShimmerCard(120, theme),
                               error: (err, _) => Center(child: ArabicText('خطأ في تحميل الحديث: $err')),
                             ),
-                            // Safe area bottom padding for floating navbar
-                            const SizedBox(height: 100),
+                            // مسافة سفلية تحترم شريط التنقّل العائم + شريط
+                            // تنقّل النظام (للأجهزة اللي فيها أزرار جوه الشاشة)
+                            SizedBox(height: context.shellBottomPadding),
                           ],
                         ),
                       ),
@@ -681,7 +699,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         );
       },
       loading: () => const SizedBox.shrink(),
-      error: (_, __) => const SizedBox.shrink(),
+      error: (_, _) => const SizedBox.shrink(),
     );
   }
 
@@ -989,8 +1007,13 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           borderRadius: BorderRadius.circular(24),
           child: Padding(
             padding: const EdgeInsets.all(14.0),
+            // بطاقة الصوتيات: محتواها الثابت قد يزيد عن ارتفاع الكارت مع
+            // تكبير خط النظام — FittedBox هنا يضمن ما يكونش أي overflow
             child: isAudios
-                ? Column(
+                ? FittedBox(
+                    fit: BoxFit.scaleDown,
+                    alignment: Alignment.center,
+                    child: Column(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       Container(
@@ -1005,6 +1028,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                       ArabicText(
                         action.title,
                         textAlign: TextAlign.center,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        textScaler: TextScaler.linear(1.0),
                         style: GoogleFonts.cairo(
                           fontSize: 13,
                           fontWeight: FontWeight.bold,
@@ -1024,6 +1050,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                       const SizedBox(height: 6),
                       _buildAudioSubItem(theme, LucideIcons.mic, 'بودكاست'),
                     ],
+                    ),
                   )
                 : Column(
                     crossAxisAlignment: CrossAxisAlignment.center,
@@ -1305,26 +1332,32 @@ class _PrayerCountdownCardState extends ConsumerState<PrayerCountdownCard> {
         child: Column(
           children: [
             Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Row(
-                  children: [
-                    Icon(
-                      displayNextPrayer.icon,
-                      color: theme.colorScheme.secondary,
-                      size: 20,
-                    ),
-                    const SizedBox(width: 8),
-                    ArabicText(
-                      '${displayNextPrayer.name == 'الشروق' ? '' : 'صلاة '}${displayNextPrayer.name}${isTomorrow ? ' (غداً)' : ''}',
-                      style: GoogleFonts.cairo(
-                        fontSize: 16,
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
+                Expanded(
+                  child: Row(
+                    children: [
+                      Icon(
+                        displayNextPrayer.icon,
+                        color: theme.colorScheme.secondary,
+                        size: 20,
                       ),
-                    ),
-                  ],
+                      const SizedBox(width: 8),
+                      Flexible(
+                        child: ArabicText(
+                          '${displayNextPrayer.name == 'الشروق' ? '' : 'صلاة '}${displayNextPrayer.name}${isTomorrow ? ' (غداً)' : ''}',
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: GoogleFonts.cairo(
+                            fontSize: 16,
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
+                const SizedBox(width: 8),
                 ArabicText(
                   'المتبقي',
                   style: GoogleFonts.cairo(
@@ -1339,20 +1372,32 @@ class _PrayerCountdownCardState extends ConsumerState<PrayerCountdownCard> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                ArabicText(
-                  DateFormat('hh:mm a', 'ar').format(displayNextPrayer.time),
-                  style: GoogleFonts.cairo(
-                    fontSize: 22,
-                    color: theme.colorScheme.secondary,
-                    fontWeight: FontWeight.w900,
+                Flexible(
+                  child: FittedBox(
+                    fit: BoxFit.scaleDown,
+                    alignment: AlignmentDirectional.centerStart,
+                    child: ArabicText(
+                      DateFormat('hh:mm a', 'ar').format(displayNextPrayer.time),
+                      style: GoogleFonts.cairo(
+                        fontSize: 22,
+                        color: theme.colorScheme.secondary,
+                        fontWeight: FontWeight.w900,
+                      ),
+                    ),
                   ),
                 ),
-                ArabicText(
-                  countdownStr,
-                  style: GoogleFonts.cairo(
-                    fontSize: 28,
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
+                Flexible(
+                  child: FittedBox(
+                    fit: BoxFit.scaleDown,
+                    alignment: AlignmentDirectional.centerEnd,
+                    child: ArabicText(
+                      countdownStr,
+                      style: GoogleFonts.cairo(
+                        fontSize: 28,
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
                   ),
                 ),
               ],
@@ -1362,14 +1407,18 @@ class _PrayerCountdownCardState extends ConsumerState<PrayerCountdownCard> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: list.map((p) {
                 final isCurrent = nextPrayer != null && list.indexOf(p) == (list.indexOf(nextPrayer) - 1);
-                return Column(
-                  children: [
-                    ArabicText(
-                      p.name,
-                      style: GoogleFonts.cairo(
-                        fontSize: 11,
-                        color: isCurrent ? theme.colorScheme.secondary : Colors.white70,
-                        fontWeight: isCurrent ? FontWeight.bold : FontWeight.normal,
+                return Expanded(
+                  child: Column(
+                    children: [
+                      ArabicText(
+                        p.name,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        textAlign: TextAlign.center,
+                        style: GoogleFonts.cairo(
+                          fontSize: 11,
+                          color: isCurrent ? theme.colorScheme.secondary : Colors.white70,
+                          fontWeight: isCurrent ? FontWeight.bold : FontWeight.normal,
                       ),
                     ),
                     const SizedBox(height: 4),
@@ -1382,6 +1431,7 @@ class _PrayerCountdownCardState extends ConsumerState<PrayerCountdownCard> {
                       ),
                     ),
                   ],
+                  ),
                 );
               }).toList(),
             ),

@@ -8,6 +8,7 @@ import '../../data/repositories/adhkar_repository_provider.dart';
 import '../../domain/entities/adhkar_entities.dart';
 import 'tasbih_list_screen.dart';
 import 'package:iman/src/core/widgets/arabic_text.dart';
+import 'package:iman/src/core/responsive/app_insets.dart';
 import 'package:iman/src/features/tracker/data/repositories/tracker_repository_provider.dart';
 
 final singleTasbihProvider = FutureProvider.family<Tasbih?, int>((ref, id) async {
@@ -78,9 +79,17 @@ class _TasbihCountingScreenState extends ConsumerState<TasbihCountingScreen> wit
                 ],
               ),
             ),
-            child: Column(
-              children: [
-                const SizedBox(height: 20),
+            child: SafeArea(
+              top: false,
+              child: LayoutBuilder(
+                builder: (context, viewport) {
+                  return SingleChildScrollView(
+                    child: ConstrainedBox(
+                      constraints: BoxConstraints(minHeight: viewport.maxHeight),
+                      child: IntrinsicHeight(
+                        child: Column(
+                          children: [
+                            const SizedBox(height: 20),
                 // Phrase Card
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 24.0),
@@ -112,15 +121,18 @@ class _TasbihCountingScreenState extends ConsumerState<TasbihCountingScreen> wit
                 ),
                 
                 const Spacer(),
-                
+
                 // Interactive Counter Button
-                _buildLiquidCounter(tasbih, progress, isCompleted, theme),
-                
+                LayoutBuilder(builder: (context, c2) {
+                  final counterSize = math.min(300.0, c2.maxWidth);
+                  return _buildLiquidCounter(tasbih, progress, isCompleted, theme, counterSize);
+                }),
+
                 const Spacer(),
 
                 // Control Bar
                 Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 40),
+                  padding: EdgeInsets.fromLTRB(32, 24, 32, context.navBarInset + 24),
                   child: Row(
                     children: [
                       Expanded(
@@ -153,6 +165,12 @@ class _TasbihCountingScreenState extends ConsumerState<TasbihCountingScreen> wit
                   ),
                 ),
               ],
+              ),
+                        ),
+                      ),
+                    );
+                },
+              ),
             ),
           );
         },
@@ -162,7 +180,7 @@ class _TasbihCountingScreenState extends ConsumerState<TasbihCountingScreen> wit
     );
   }
 
-  Widget _buildLiquidCounter(Tasbih tasbih, double progress, bool isCompleted, ThemeData theme) {
+  Widget _buildLiquidCounter(Tasbih tasbih, double progress, bool isCompleted, ThemeData theme, double size) {
     return GestureDetector(
       onTap: () => _incrementCount(tasbih),
       child: Stack(
@@ -171,8 +189,8 @@ class _TasbihCountingScreenState extends ConsumerState<TasbihCountingScreen> wit
           // Background Aura
           if (isCompleted)
             Container(
-              width: 300,
-              height: 300,
+              width: size,
+              height: size,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 boxShadow: [
@@ -191,7 +209,7 @@ class _TasbihCountingScreenState extends ConsumerState<TasbihCountingScreen> wit
             animation: _waveController,
             builder: (context, child) {
               return CustomPaint(
-                size: const Size(280, 280),
+                size: Size(size - 20, size - 20),
                 painter: LiquidPainter(
                   progress: progress,
                   waveValue: _waveController.value,
@@ -204,8 +222,8 @@ class _TasbihCountingScreenState extends ConsumerState<TasbihCountingScreen> wit
 
           // Inner Tapping Circle (Glassmorphism effect)
           Container(
-            width: 240,
-            height: 240,
+            width: size - 60,
+            height: size - 60,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
               color: Colors.white.withValues(alpha: 0.05),
@@ -214,23 +232,26 @@ class _TasbihCountingScreenState extends ConsumerState<TasbihCountingScreen> wit
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                ArabicText(
-                  tasbih.count.toString(),
-                  style: GoogleFonts.cairo(
-                    fontSize: 72,
-                    fontWeight: FontWeight.w900,
-                    color: isCompleted ? Colors.white : theme.colorScheme.onSurface,
-                    shadows: [
-                      if (progress > 0.5)
-                        const Shadow(color: Colors.black26, blurRadius: 4, offset: Offset(0, 2)),
-                    ],
-                  ),
-                ).animate(key: ValueKey(tasbih.count)).scale(
-                      begin: const Offset(0.85, 0.85),
-                      end: const Offset(1.0, 1.0),
-                      duration: 150.ms,
-                      curve: Curves.elasticOut,
+                FittedBox(
+                  fit: BoxFit.scaleDown,
+                  child: ArabicText(
+                    tasbih.count.toString(),
+                    style: GoogleFonts.cairo(
+                      fontSize: (size * 0.24).clamp(48.0, 72.0),
+                      fontWeight: FontWeight.w900,
+                      color: isCompleted ? Colors.white : theme.colorScheme.onSurface,
+                      shadows: [
+                        if (progress > 0.5)
+                          const Shadow(color: Colors.black26, blurRadius: 4, offset: Offset(0, 2)),
+                      ],
                     ),
+                  ).animate(key: ValueKey(tasbih.count)).scale(
+                        begin: const Offset(0.85, 0.85),
+                        end: const Offset(1.0, 1.0),
+                        duration: 150.ms,
+                        curve: Curves.elasticOut,
+                      ),
+                ),
                 ArabicText(
                   '${((progress) * 100).toInt()}%',
                   style: GoogleFonts.cairo(

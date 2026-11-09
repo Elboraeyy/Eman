@@ -7,6 +7,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:iman/src/core/widgets/arabic_text.dart';
+import 'package:iman/src/core/responsive/app_insets.dart';
 
 class StoriesScreen extends StatefulWidget {
   const StoriesScreen({super.key});
@@ -214,7 +215,7 @@ class _StoriesScreenState extends State<StoriesScreen> {
                           ),
                         )
                       : ListView.builder(
-                          padding: const EdgeInsets.fromLTRB(20, 4, 20, 20),
+                          padding: EdgeInsets.fromLTRB(20, 4, 20, AppInsets.page(context, gap: 20)),
                           itemCount: _filteredStories.length,
                           itemBuilder: (context, index) {
                             final story = _filteredStories[index];
@@ -495,7 +496,7 @@ class _StoryDetailScreenState extends State<StoryDetailScreen> {
           // Story Content
           Expanded(
             child: SingleChildScrollView(
-              padding: const EdgeInsets.all(24.0),
+              padding: EdgeInsets.fromLTRB(24, 24, 24, AppInsets.page(context, gap: 24)),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [

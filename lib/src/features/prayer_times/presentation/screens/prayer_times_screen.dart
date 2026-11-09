@@ -9,6 +9,7 @@ import 'package:iman/src/features/prayer_times/data/repositories/prayer_reposito
 import '../../domain/entities/prayer_entities.dart';
 import '../controllers/prayer_times_controller.dart';
 import 'package:iman/src/core/widgets/arabic_text.dart';
+import 'package:iman/src/core/responsive/app_insets.dart';
 
 // NotifierProvider to manage the active selected date for prayer times
 class SelectedPrayerDateNotifier extends Notifier<DateTime> {
@@ -198,7 +199,6 @@ class _PrayerTimesScreenState extends ConsumerState<PrayerTimesScreen> {
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20.0),
               child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   IconButton(
                     icon: Icon(Icons.arrow_back_ios, size: 18, color: theme.colorScheme.primary),
@@ -207,27 +207,32 @@ class _PrayerTimesScreenState extends ConsumerState<PrayerTimesScreen> {
                           selectedDate.add(const Duration(days: 1));
                     },
                   ),
-                  Column(
-                    children: [
-                      ArabicText(
-                        DateFormat('EEEE، d MMMM yyyy', 'ar').format(selectedDate),
-                        style: GoogleFonts.cairo(fontWeight: FontWeight.bold, fontSize: 16),
-                      ),
-                      if (!isToday)
-                        GestureDetector(
-                          onTap: () {
-                            ref.read(selectedPrayerDateProvider.notifier).state = DateTime.now();
-                          },
-                          child: ArabicText(
-                            'العودة لليوم',
-                            style: GoogleFonts.cairo(
-                              fontSize: 12,
-                              color: theme.colorScheme.secondary,
-                              fontWeight: FontWeight.bold,
+                  Expanded(
+                    child: Column(
+                      children: [
+                        ArabicText(
+                          DateFormat('EEEE، d MMMM yyyy', 'ar').format(selectedDate),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          textAlign: TextAlign.center,
+                          style: GoogleFonts.cairo(fontWeight: FontWeight.bold, fontSize: 16),
+                        ),
+                        if (!isToday)
+                          GestureDetector(
+                            onTap: () {
+                              ref.read(selectedPrayerDateProvider.notifier).state = DateTime.now();
+                            },
+                            child: ArabicText(
+                              'العودة لليوم',
+                              style: GoogleFonts.cairo(
+                                fontSize: 12,
+                                color: theme.colorScheme.secondary,
+                                fontWeight: FontWeight.bold,
+                              ),
                             ),
                           ),
-                        ),
-                    ],
+                      ],
+                    ),
                   ),
                   IconButton(
                     icon: Icon(Icons.arrow_forward_ios, size: 18, color: theme.colorScheme.primary),
@@ -284,6 +289,7 @@ class _PrayerTimesScreenState extends ConsumerState<PrayerTimesScreen> {
               ),
             ),
             const SizedBox(height: 32),
+            SizedBox(height: context.navBarInset),
           ],
         ),
       ),
@@ -312,39 +318,42 @@ class _PrayerTimesScreenState extends ConsumerState<PrayerTimesScreen> {
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 14),
         child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Row(
-              children: [
-                Icon(
-                  alertPref == 2
-                      ? Icons.notifications_active
-                      : alertPref == 1
-                          ? Icons.notifications
-                          : Icons.notifications_off,
-                  color: alertPref > 0
-                      ? theme.colorScheme.secondary
-                      : theme.disabledColor.withValues(alpha: 0.5),
-                  size: 20,
-                ),
-                const SizedBox(width: 14),
-                ArabicText(
-                  DateFormat('hh:mm a', 'ar').format(item.time),
-                  style: GoogleFonts.cairo(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: isCurrent ? theme.colorScheme.primary : theme.textTheme.bodyLarge?.color,
-                  ),
-                ),
-              ],
+            Icon(
+              alertPref == 2
+                  ? Icons.notifications_active
+                  : alertPref == 1
+                      ? Icons.notifications
+                      : Icons.notifications_off,
+              color: alertPref > 0
+                  ? theme.colorScheme.secondary
+                  : theme.disabledColor.withValues(alpha: 0.5),
+              size: 20,
             ),
-            Row(
-              children: [
-                Column(
+            const SizedBox(width: 14),
+            Expanded(
+              child: ArabicText(
+                DateFormat('hh:mm a', 'ar').format(item.time),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: GoogleFonts.cairo(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: isCurrent ? theme.colorScheme.primary : theme.textTheme.bodyLarge?.color,
+                ),
+              ),
+            ),
+            Flexible(
+              fit: FlexFit.loose,
+              child: Padding(
+                padding: const EdgeInsets.only(left: 14),
+                child: Column(
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
                     ArabicText(
                       item.name,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
                       style: GoogleFonts.cairo(
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
@@ -354,6 +363,8 @@ class _PrayerTimesScreenState extends ConsumerState<PrayerTimesScreen> {
                     if (isCurrent)
                       ArabicText(
                         'الصلاة القادمة',
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
                         style: GoogleFonts.cairo(
                           fontSize: 11,
                           color: theme.colorScheme.primary,
@@ -362,23 +373,22 @@ class _PrayerTimesScreenState extends ConsumerState<PrayerTimesScreen> {
                       ),
                   ],
                 ),
-                const SizedBox(width: 14),
-                Container(
-                  padding: const EdgeInsets.all(10),
-                  decoration: BoxDecoration(
-                    color: isCurrent
-                        ? theme.colorScheme.primary.withValues(alpha: 0.15)
-                        : theme.colorScheme.surface,
-                    shape: BoxShape.circle,
-                    border: Border.all(color: theme.dividerColor),
-                  ),
-                  child: Icon(
-                    item.icon,
-                    color: isCurrent ? theme.colorScheme.primary : theme.disabledColor,
-                    size: 22,
-                  ),
-                ),
-              ],
+              ),
+            ),
+            Container(
+              padding: const EdgeInsets.all(10),
+              decoration: BoxDecoration(
+                color: isCurrent
+                    ? theme.colorScheme.primary.withValues(alpha: 0.15)
+                    : theme.colorScheme.surface,
+                shape: BoxShape.circle,
+                border: Border.all(color: theme.dividerColor),
+              ),
+              child: Icon(
+                item.icon,
+                color: isCurrent ? theme.colorScheme.primary : theme.disabledColor,
+                size: 22,
+              ),
             ),
           ],
         ),

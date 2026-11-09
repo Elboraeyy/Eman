@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'dart:math' as math;
 import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -10,6 +11,7 @@ import 'package:iman/src/features/quran/presentation/controllers/audio_player_co
 import 'package:iman/src/features/quran/presentation/screens/quran_index_screen.dart'; // Reuses surahsListProvider
 import 'package:iman/src/features/home/presentation/controllers/audios_controller.dart';
 import 'package:iman/src/core/widgets/arabic_text.dart';
+import 'package:iman/src/core/responsive/app_insets.dart';
 
 class AudiosScreen extends ConsumerStatefulWidget {
   const AudiosScreen({super.key});
@@ -268,16 +270,16 @@ class _AudiosScreenState extends ConsumerState<AudiosScreen> with SingleTickerPr
                       ),
               ),
               if (playbackState.isPlaying || playbackState.isLoading || playbackState.position > Duration.zero)
-                const SizedBox(height: 80),
+                SizedBox(height: 80 + AppInsets.navBar(context)),
             ],
           ),
 
-          // Mini Player
+          // Mini Player — مرتفع فوق شريط تنقّل النظام (الأزرار الجوه الشاشة)
           if (playbackState.isPlaying || playbackState.isLoading || playbackState.position > Duration.zero)
             Positioned(
               left: 16,
               right: 16,
-              bottom: 12,
+              bottom: 12 + AppInsets.navBar(context),
               child: _MiniPlayer(
                 playbackState: playbackState,
                 onTap: () => _showNowPlayingOverlay(context, playbackState),
@@ -367,7 +369,7 @@ class _AudiosScreenState extends ConsumerState<AudiosScreen> with SingleTickerPr
               }
 
               return ListView.builder(
-                padding: const EdgeInsets.fromLTRB(20, 4, 20, 20),
+                padding: EdgeInsets.fromLTRB(20, 4, 20, 20 + AppInsets.navBar(context)),
                 itemCount: filteredStatic.length + filteredApi.length,
                 itemBuilder: (context, index) {
                   final isStatic = index < filteredStatic.length;
@@ -532,7 +534,7 @@ class _AudiosScreenState extends ConsumerState<AudiosScreen> with SingleTickerPr
               }
 
               return ListView.builder(
-                padding: const EdgeInsets.fromLTRB(20, 4, 20, 20),
+                padding: EdgeInsets.fromLTRB(20, 4, 20, 20 + AppInsets.navBar(context)),
                 itemCount: filtered.length,
                 itemBuilder: (context, index) {
                   final surah = filtered[index];
@@ -682,7 +684,7 @@ class _AudiosScreenState extends ConsumerState<AudiosScreen> with SingleTickerPr
               }
 
               return ListView.builder(
-                padding: const EdgeInsets.fromLTRB(20, 4, 20, 20),
+                padding: EdgeInsets.fromLTRB(20, 4, 20, 20 + AppInsets.navBar(context)),
                 itemCount: filtered.length,
                 itemBuilder: (context, index) {
                   final station = filtered[index];
@@ -828,7 +830,7 @@ class _AudiosScreenState extends ConsumerState<AudiosScreen> with SingleTickerPr
               }
 
               return GridView.builder(
-                padding: const EdgeInsets.fromLTRB(20, 4, 20, 20),
+                padding: EdgeInsets.fromLTRB(20, 4, 20, 20 + AppInsets.navBar(context)),
                 gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                   crossAxisCount: 2,
                   crossAxisSpacing: 16,
@@ -993,7 +995,7 @@ class _AudiosScreenState extends ConsumerState<AudiosScreen> with SingleTickerPr
               }
 
               return ListView.builder(
-                padding: const EdgeInsets.fromLTRB(20, 6, 20, 20),
+                padding: EdgeInsets.fromLTRB(20, 6, 20, 20 + AppInsets.navBar(context)),
                 itemCount: episodes.length,
                 itemBuilder: (context, index) {
                   final episode = episodes[index];
@@ -1286,6 +1288,7 @@ class _NowPlayingOverlayState extends ConsumerState<NowPlayingOverlay> with Sing
     
     showModalBottomSheet(
       context: context,
+      isScrollControlled: true,
       backgroundColor: Colors.transparent,
       builder: (context) {
         return StatefulBuilder(
@@ -1303,57 +1306,62 @@ class _NowPlayingOverlayState extends ConsumerState<NowPlayingOverlay> with Sing
                   ),
                 ],
               ),
-              padding: const EdgeInsets.fromLTRB(24, 12, 24, 24),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  Center(
-                    child: Container(
-                      width: 40,
-                      height: 4,
-                      decoration: BoxDecoration(
-                        color: theme.dividerColor,
-                        borderRadius: BorderRadius.circular(2),
+              padding: EdgeInsets.fromLTRB(24, 12, 24, AppInsets.sheetBottom(context, gap: 24)),
+              constraints: BoxConstraints(
+                maxHeight: MediaQuery.of(context).size.height * 0.7,
+              ),
+              child: SingleChildScrollView(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    Center(
+                      child: Container(
+                        width: 40,
+                        height: 4,
+                        decoration: BoxDecoration(
+                          color: theme.dividerColor,
+                          borderRadius: BorderRadius.circular(2),
+                        ),
                       ),
                     ),
-                  ),
-                  const SizedBox(height: 16),
-                  ArabicText(
-                    'مؤقت النوم',
-                    style: GoogleFonts.cairo(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                      color: theme.colorScheme.primary,
+                    const SizedBox(height: 16),
+                    ArabicText(
+                      'مؤقت النوم',
+                      style: GoogleFonts.cairo(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        color: theme.colorScheme.primary,
+                      ),
+                      textAlign: TextAlign.center,
                     ),
-                    textAlign: TextAlign.center,
-                  ),
-                  const SizedBox(height: 12),
-                  ArabicText(
-                    currentState.sleepTimeRemaining != null
-                        ? 'المتبقي لإيقاف التشغيل تلقائياً: ${_formatDuration(currentState.sleepTimeRemaining!)}'
-                        : 'سيتم إيقاف تشغيل الصوت تلقائياً بعد المدة المحددة.',
-                    style: GoogleFonts.cairo(fontSize: 12, color: Colors.grey.shade600),
-                    textAlign: TextAlign.center,
-                  ),
-                  const SizedBox(height: 20),
-                  
-                  // Timer Options
-                  Wrap(
-                    spacing: 12,
-                    runSpacing: 12,
-                    alignment: WrapAlignment.center,
-                    children: [
-                      _timerOption(context, ref, 'إلغاء المؤقت', null),
-                      _timerOption(context, ref, '5 دقائق', const Duration(minutes: 5)),
-                      _timerOption(context, ref, '15 دقيقة', const Duration(minutes: 15)),
-                      _timerOption(context, ref, '30 دقيقة', const Duration(minutes: 30)),
-                      _timerOption(context, ref, '45 دقيقة', const Duration(minutes: 45)),
-                      _timerOption(context, ref, '60 دقيقة', const Duration(minutes: 60)),
-                    ],
-                  ),
-                  const SizedBox(height: 16),
-                ],
+                    const SizedBox(height: 12),
+                    ArabicText(
+                      currentState.sleepTimeRemaining != null
+                          ? 'المتبقي لإيقاف التشغيل تلقائياً: ${_formatDuration(currentState.sleepTimeRemaining!)}'
+                          : 'سيتم إيقاف تشغيل الصوت تلقائياً بعد المدة المحددة.',
+                      style: GoogleFonts.cairo(fontSize: 12, color: Colors.grey.shade600),
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(height: 20),
+
+                    // Timer Options
+                    Wrap(
+                      spacing: 12,
+                      runSpacing: 12,
+                      alignment: WrapAlignment.center,
+                      children: [
+                        _timerOption(context, ref, 'إلغاء المؤقت', null),
+                        _timerOption(context, ref, '5 دقائق', const Duration(minutes: 5)),
+                        _timerOption(context, ref, '15 دقيقة', const Duration(minutes: 15)),
+                        _timerOption(context, ref, '30 دقيقة', const Duration(minutes: 30)),
+                        _timerOption(context, ref, '45 دقيقة', const Duration(minutes: 45)),
+                        _timerOption(context, ref, '60 دقيقة', const Duration(minutes: 60)),
+                      ],
+                    ),
+                    const SizedBox(height: 16),
+                  ],
+                ),
               ),
             );
           }
@@ -1456,7 +1464,6 @@ class _NowPlayingOverlayState extends ConsumerState<NowPlayingOverlay> with Sing
             ),
           ),
           child: SafeArea(
-            bottom: false,
             child: Column(
               children: [
                 // Drag handle
@@ -1498,16 +1505,32 @@ class _NowPlayingOverlayState extends ConsumerState<NowPlayingOverlay> with Sing
                 Expanded(
                   child: Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 32.0),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
+                    child: LayoutBuilder(
+                      builder: (context, constraints) {
+                        final h = constraints.maxHeight;
+                        final w = constraints.maxWidth;
+                        // الدايرة الزخرفية وأزرارها بتتحسب من مساحة الشاشة،
+                        // فتتطوع على الشاشات القصيرة (أفقي/لب تاب) بدون overflow،
+                        // والعمود كله قابل للتمرير لو امتلأ المساحة.
+                        final vinyl = math.max(
+                          140.0,
+                          math.min(250.0, math.min(h * 0.52, w * 0.85)),
+                        );
+                        final s = vinyl / 250.0;
+                        final playBtn = math.max(52.0, 68.0 * s);
+                        return SingleChildScrollView(
+                          child: ConstrainedBox(
+                            constraints: BoxConstraints(minHeight: h),
+                            child: Column(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: [
                         // Calligraphy Centerpiece Card (Premium Glowing Vinyl Record)
                         Center(
                           child: RotationTransition(
                               turns: _rotationController,
                               child: Container(
-                                width: 250,
-                                height: 250,
+                                width: vinyl,
+                                height: vinyl,
                                 decoration: BoxDecoration(
                                   shape: BoxShape.circle,
                                   gradient: SweepGradient(
@@ -1530,7 +1553,7 @@ class _NowPlayingOverlayState extends ConsumerState<NowPlayingOverlay> with Sing
                                   alignment: Alignment.center,
                                   children: [
                                     // Concentric vinyl grooves (thin circles)
-                                    for (double size in [220.0, 190.0, 160.0])
+                                    for (double size in [220.0 * s, 190.0 * s, 160.0 * s])
                                       Container(
                                         width: size,
                                         height: size,
@@ -1545,8 +1568,8 @@ class _NowPlayingOverlayState extends ConsumerState<NowPlayingOverlay> with Sing
                                     
                                     // Center artwork label
                                     Container(
-                                      width: 125,
-                                      height: 125,
+                                      width: 125 * s,
+                                      height: 125 * s,
                                       decoration: BoxDecoration(
                                         shape: BoxShape.circle,
                                         color: theme.colorScheme.surface,
@@ -1566,7 +1589,7 @@ class _NowPlayingOverlayState extends ConsumerState<NowPlayingOverlay> with Sing
                                       child: Center(
                                         child: Icon(
                                           playerState.isLiveStream ? LucideIcons.radio : LucideIcons.headphones,
-                                          size: 52,
+                                          size: 52 * s,
                                           color: theme.colorScheme.primary,
                                         ),
                                       ),
@@ -1795,8 +1818,8 @@ class _NowPlayingOverlayState extends ConsumerState<NowPlayingOverlay> with Sing
                                 }
                               },
                               child: Container(
-                                width: 68,
-                                height: 68,
+                                width: playBtn,
+                                height: playBtn,
                                 decoration: BoxDecoration(
                                   shape: BoxShape.circle,
                                   color: theme.colorScheme.primary,
@@ -1810,7 +1833,7 @@ class _NowPlayingOverlayState extends ConsumerState<NowPlayingOverlay> with Sing
                                 ),
                                 child: Icon(
                                   playerState.isPlaying ? LucideIcons.pause : LucideIcons.play,
-                                  size: 26,
+                                  size: 26 * math.max(0.8, s),
                                   color: Colors.white,
                                 ),
                               ),
@@ -1839,8 +1862,12 @@ class _NowPlayingOverlayState extends ConsumerState<NowPlayingOverlay> with Sing
                             ),
                           ],
                         ),
-                      ],
-                    ),
+                            ],
+                          ),
+                        ),
+                      );
+                    },
+                  ),
                   ),
                 ),
               ],

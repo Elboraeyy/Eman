@@ -8,6 +8,7 @@ import '../../data/repositories/adhkar_repository_provider.dart';
 import '../../domain/entities/adhkar_entities.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import 'package:iman/src/core/widgets/arabic_text.dart';
+import 'package:iman/src/core/responsive/app_insets.dart';
 import 'package:iman/src/features/tracker/data/repositories/tracker_repository_provider.dart';
 
 enum AdhkarSearchFilter {
@@ -1107,7 +1108,7 @@ class _AdhkarIndexScreenState extends ConsumerState<AdhkarIndexScreen> {
               children: [
                 Positioned.fill(
                   child: ListView.builder(
-                    padding: const EdgeInsets.fromLTRB(20, 160, 20, 20),
+                    padding: EdgeInsets.fromLTRB(20, 160, 20, 20 + context.navBarInset),
                     itemCount: _cachedCategoryItems?.length ?? 0,
                     itemBuilder: (context, index) {
                       final item = _cachedCategoryItems![index];
@@ -1154,24 +1155,31 @@ class _AdhkarIndexScreenState extends ConsumerState<AdhkarIndexScreen> {
                                 const Divider(height: 24),
                                 // Progress Indicators
                                 Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  crossAxisAlignment: CrossAxisAlignment.center,
                                   children: [
-                                    Row(
-                                      children: [
-                                        if (isCompleted)
-                                          Icon(Icons.check_circle, color: theme.colorScheme.primary, size: 20)
-                                        else
-                                          Icon(Icons.touch_app, color: theme.colorScheme.secondary, size: 20),
-                                        const SizedBox(width: 8),
-                                        ArabicText(
-                                          isCompleted ? 'اكتمل الذكر' : 'اضغط للتكرار',
-                                          style: GoogleFonts.cairo(
-                                            fontSize: 12,
-                                            fontWeight: FontWeight.bold,
-                                            color: isCompleted ? theme.colorScheme.primary : theme.colorScheme.secondary,
+                                    Expanded(
+                                      child: Row(
+                                        children: [
+                                          if (isCompleted)
+                                            Icon(Icons.check_circle, color: theme.colorScheme.primary, size: 20)
+                                          else
+                                            Icon(Icons.touch_app, color: theme.colorScheme.secondary, size: 20),
+                                          const SizedBox(width: 8),
+                                          Flexible(
+                                            fit: FlexFit.loose,
+                                            child: ArabicText(
+                                              isCompleted ? 'اكتمل الذكر' : 'اضغط للتكرار',
+                                              maxLines: 1,
+                                              overflow: TextOverflow.ellipsis,
+                                              style: GoogleFonts.cairo(
+                                                fontSize: 12,
+                                                fontWeight: FontWeight.bold,
+                                                color: isCompleted ? theme.colorScheme.primary : theme.colorScheme.secondary,
+                                              ),
+                                            ),
                                           ),
-                                        ),
-                                      ],
+                                        ],
+                                      ),
                                     ),
                                     Row(
                                       children: [
@@ -1209,6 +1217,8 @@ class _AdhkarIndexScreenState extends ConsumerState<AdhkarIndexScreen> {
                                           ),
                                           child: ArabicText(
                                             '$progress / ${item.targetCount}',
+                                            maxLines: 1,
+                                            overflow: TextOverflow.ellipsis,
                                             style: GoogleFonts.cairo(
                                               fontWeight: FontWeight.bold,
                                               fontSize: 13,

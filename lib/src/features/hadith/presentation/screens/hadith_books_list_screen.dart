@@ -6,6 +6,7 @@ import 'package:lucide_icons/lucide_icons.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import '../../data/repositories/hadith_repository_provider.dart';
 import 'package:iman/src/core/widgets/arabic_text.dart';
+import 'package:iman/src/core/responsive/app_insets.dart';
 
 enum HadithBookSearchFilter {
   all,
@@ -218,7 +219,7 @@ class _HadithBooksListScreenState extends ConsumerState<HadithBooksListScreen> {
           }
 
           return ListView.builder(
-            padding: const EdgeInsets.all(20.0),
+            padding: EdgeInsets.fromLTRB(20, 20, 20, 20 + context.navBarInset),
             itemCount: filteredBooks.length,
             itemBuilder: (context, idx) {
               final book = filteredBooks[idx];

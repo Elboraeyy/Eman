@@ -8,6 +8,7 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:intl/intl.dart';
 import 'package:iman/src/core/widgets/arabic_text.dart';
+import 'package:iman/src/core/responsive/app_insets.dart';
 
 class SunanScreen extends StatefulWidget {
   const SunanScreen({super.key});
@@ -142,7 +143,7 @@ class _SunanScreenState extends State<SunanScreen> {
                   topRight: Radius.circular(32),
                 ),
               ),
-              padding: const EdgeInsets.fromLTRB(24, 20, 24, 30),
+              padding: EdgeInsets.fromLTRB(24, 20, 24, AppInsets.sheetBottom(context, gap: 24)),
               child: SingleChildScrollView(
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
@@ -404,13 +405,15 @@ class _SunanScreenState extends State<SunanScreen> {
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
                         Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Column(
+                            Expanded(
+                              child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 ArabicText(
                                   'إحياء السنّة النبوية',
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
                                   style: GoogleFonts.cairo(
                                     fontSize: 18,
                                     fontWeight: FontWeight.bold,
@@ -420,6 +423,8 @@ class _SunanScreenState extends State<SunanScreen> {
                                 const SizedBox(height: 4),
                                 ArabicText(
                                   _getEncouragingMessage(),
+                                  maxLines: 2,
+                                  overflow: TextOverflow.ellipsis,
                                   style: GoogleFonts.cairo(
                                     fontSize: 12,
                                     color: Colors.white.withValues(alpha: 0.8),
@@ -427,6 +432,8 @@ class _SunanScreenState extends State<SunanScreen> {
                                 ),
                               ],
                             ),
+                            ),
+                            const SizedBox(width: 12),
                             Container(
                               padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
                               decoration: BoxDecoration(
@@ -508,7 +515,7 @@ class _SunanScreenState extends State<SunanScreen> {
                           ),
                         )
                       : ListView.builder(
-                          padding: const EdgeInsets.fromLTRB(20, 4, 20, 20),
+                          padding: EdgeInsets.fromLTRB(20, 4, 20, AppInsets.page(context, gap: 20)),
                           itemCount: _filteredSunan.length,
                           itemBuilder: (context, index) {
                             final sunnah = _filteredSunan[index];

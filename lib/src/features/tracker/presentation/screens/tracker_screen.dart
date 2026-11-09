@@ -8,6 +8,7 @@ import 'package:flutter/services.dart';
 import '../../../../core/database/app_database.dart';
 import 'package:iman/src/features/tracker/data/repositories/tracker_repository_provider.dart';
 import 'package:iman/src/core/widgets/arabic_text.dart';
+import 'package:iman/src/core/responsive/app_insets.dart';
 
 // Providers for Tasks & Stats
 final tasksListProvider = FutureProvider<List<ReligiousTaskData>>((ref) async {
@@ -88,8 +89,12 @@ class _TrackerScreenState extends ConsumerState<TrackerScreen> {
                 color: theme.scaffoldBackgroundColor,
                 borderRadius: const BorderRadius.vertical(top: Radius.circular(28.0)),
               ),
-              padding: const EdgeInsets.fromLTRB(24, 16, 24, 32),
-              child: Column(
+              padding: EdgeInsets.fromLTRB(24, 16, 24, AppInsets.sheetBottom(context, gap: 24)),
+              constraints: BoxConstraints(
+                maxHeight: MediaQuery.of(context).size.height * 0.85,
+              ),
+              child: SingleChildScrollView(
+                child: Column(
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
@@ -195,6 +200,7 @@ class _TrackerScreenState extends ConsumerState<TrackerScreen> {
                     ),
                   ),
                 ],
+                ),
               ),
             ),
           );
@@ -333,7 +339,7 @@ class _TrackerScreenState extends ConsumerState<TrackerScreen> {
         ref.invalidate(weeklyStatsProvider);
       },
       child: ListView(
-        padding: const EdgeInsets.fromLTRB(16, 12, 16, 170),
+        padding: EdgeInsets.fromLTRB(16, 12, 16, context.navBarInset + 152),
         children: [
           // A. Horizontal Date Strip
           _buildDateSelectorStrip(theme),
@@ -350,7 +356,7 @@ class _TrackerScreenState extends ConsumerState<TrackerScreen> {
               return _buildDailyProgressCard(theme, completedCount, totalCount, ratio);
             },
             loading: () => const SizedBox(height: 100, child: Center(child: CircularProgressIndicator())),
-            error: (_, __) => const SizedBox.shrink(),
+            error: (_, _) => const SizedBox.shrink(),
           ),
           const SizedBox(height: 16),
 
@@ -556,16 +562,20 @@ class _TrackerScreenState extends ConsumerState<TrackerScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          ArabicText(
-                            isToday ? 'إنجاز اليوم' : 'إنجاز يوم ${DateFormat('dd MMMM', 'ar').format(_selectedDate)}',
-                            style: GoogleFonts.cairo(
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
-                              color: theme.colorScheme.primary,
+                          Expanded(
+                            child: ArabicText(
+                              isToday ? 'إنجاز اليوم' : 'إنجاز يوم ${DateFormat('dd MMMM', 'ar').format(_selectedDate)}',
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: GoogleFonts.cairo(
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                                color: theme.colorScheme.primary,
+                              ),
                             ),
                           ),
+                          const SizedBox(width: 8),
                           Container(
                             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 3),
                             decoration: BoxDecoration(
@@ -702,16 +712,20 @@ class _TrackerScreenState extends ConsumerState<TrackerScreen> {
                         color: meta.color.withValues(alpha: 0.12),
                         borderRadius: BorderRadius.circular(12),
                       ),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          ArabicText(
-                            meta.actionLabel!,
-                            style: GoogleFonts.cairo(fontSize: 11, fontWeight: FontWeight.bold, color: meta.color),
-                          ),
-                          const SizedBox(width: 4),
-                          Icon(Icons.arrow_forward_ios_rounded, size: 10, color: meta.color),
-                        ],
+                      child: FittedBox(
+                        fit: BoxFit.scaleDown,
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            ArabicText(
+                              meta.actionLabel!,
+                              maxLines: 1,
+                              style: GoogleFonts.cairo(fontSize: 11, fontWeight: FontWeight.bold, color: meta.color),
+                            ),
+                            const SizedBox(width: 4),
+                            Icon(Icons.arrow_forward_ios_rounded, size: 10, color: meta.color),
+                          ],
+                        ),
                       ),
                     ),
                   ),
@@ -746,7 +760,7 @@ class _TrackerScreenState extends ConsumerState<TrackerScreen> {
         ref.invalidate(weeklyStatsProvider);
       },
       child: ListView(
-        padding: const EdgeInsets.fromLTRB(16, 12, 16, 170),
+        padding: EdgeInsets.fromLTRB(16, 12, 16, context.navBarInset + 152),
         children: [
           // A. Streak Banner
           overallAsync.when(
@@ -756,7 +770,7 @@ class _TrackerScreenState extends ConsumerState<TrackerScreen> {
               return _buildStreakCard(theme, streak, bestStreak);
             },
             loading: () => const SizedBox(height: 100, child: Center(child: CircularProgressIndicator())),
-            error: (_, __) => const SizedBox.shrink(),
+            error: (_, _) => const SizedBox.shrink(),
           ),
           const SizedBox(height: 18),
 
@@ -764,7 +778,7 @@ class _TrackerScreenState extends ConsumerState<TrackerScreen> {
           overallAsync.when(
             data: (summary) => _buildKeyMetricsGrid(theme, summary),
             loading: () => const SizedBox(height: 140, child: Center(child: CircularProgressIndicator())),
-            error: (_, __) => const SizedBox.shrink(),
+            error: (_, _) => const SizedBox.shrink(),
           ),
           const SizedBox(height: 24),
 
@@ -795,7 +809,7 @@ class _TrackerScreenState extends ConsumerState<TrackerScreen> {
           overallAsync.when(
             data: (summary) => _buildBadgesSection(theme, summary),
             loading: () => const SizedBox.shrink(),
-            error: (_, __) => const SizedBox.shrink(),
+            error: (_, _) => const SizedBox.shrink(),
           ),
           const SizedBox(height: 24),
 
@@ -862,27 +876,36 @@ class _TrackerScreenState extends ConsumerState<TrackerScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    ArabicText(
-                      '$streak يوم متتالي',
-                      style: GoogleFonts.cairo(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
+                    Expanded(
+                      child: ArabicText(
+                        '$streak يوم متتالي',
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: GoogleFonts.cairo(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
                       ),
                     ),
                     if (bestStreak > 0)
-                      Container(
+                      Flexible(
+                        fit: FlexFit.loose,
+                        child: Container(
                         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                         decoration: BoxDecoration(
                           color: Colors.black.withValues(alpha: 0.15),
                           borderRadius: BorderRadius.circular(10),
                         ),
-                        child: ArabicText(
-                          'أفضل سلسلة: $bestStreak',
-                          style: GoogleFonts.cairo(fontSize: 11, color: Colors.white),
+                        child: FittedBox(
+                          fit: BoxFit.scaleDown,
+                          child: ArabicText(
+                            'أفضل سلسلة: $bestStreak',
+                            style: GoogleFonts.cairo(fontSize: 11, color: Colors.white),
+                          ),
                         ),
+                      ),
                       ),
                   ],
                 ),
@@ -910,14 +933,22 @@ class _TrackerScreenState extends ConsumerState<TrackerScreen> {
     final adhkar = (summary['totalAdhkar'] as int?) ?? 0;
     final totalCompleted = (summary['totalCompletedTasks'] as int?) ?? 0;
 
-    return GridView.count(
-      crossAxisCount: 2,
-      crossAxisSpacing: 10,
-      mainAxisSpacing: 10,
-      shrinkWrap: true,
-      physics: const NeverScrollableScrollPhysics(),
-      childAspectRatio: 1.5,
-      children: [
+    return LayoutBuilder(builder: (context, constraints) {
+      // أعمدة متجاوبة: موبايل 2، تابلت/عريض 3-4
+      final columns = AppInsets.columnsFor(
+        constraints.maxWidth,
+        targetTile: 170,
+        min: 2,
+        max: 4,
+      );
+      return GridView.count(
+        crossAxisCount: columns,
+        crossAxisSpacing: 10,
+        mainAxisSpacing: 10,
+        shrinkWrap: true,
+        physics: const NeverScrollableScrollPhysics(),
+        childAspectRatio: 1.5,
+        children: [
         _buildMetricItem(
           theme: theme,
           title: 'صفحات القرآن',
@@ -950,8 +981,9 @@ class _TrackerScreenState extends ConsumerState<TrackerScreen> {
           icon: Icons.check_circle_rounded,
           color: const Color(0xFF10B981),
         ),
-      ],
-    );
+        ],
+      );
+    });
   }
 
   Widget _buildMetricItem({
@@ -977,15 +1009,21 @@ class _TrackerScreenState extends ConsumerState<TrackerScreen> {
             children: [
               Icon(icon, size: 16, color: color),
               const SizedBox(width: 6),
-              ArabicText(
-                title,
-                style: GoogleFonts.cairo(fontSize: 12, color: theme.hintColor, fontWeight: FontWeight.bold),
+              Expanded(
+                child: ArabicText(
+                  title,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: GoogleFonts.cairo(fontSize: 12, color: theme.hintColor, fontWeight: FontWeight.bold),
+                ),
               ),
             ],
           ),
           const SizedBox(height: 6),
           ArabicText(
             value,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
             style: GoogleFonts.cairo(
               fontSize: 20,
               fontWeight: FontWeight.bold,
@@ -994,6 +1032,8 @@ class _TrackerScreenState extends ConsumerState<TrackerScreen> {
           ),
           ArabicText(
             unit,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
             style: GoogleFonts.cairo(fontSize: 10, color: theme.hintColor),
           ),
         ],
@@ -1136,8 +1176,16 @@ class _TrackerScreenState extends ConsumerState<TrackerScreen> {
       ),
     ];
 
-    return GridView.count(
-      crossAxisCount: 2,
+    return LayoutBuilder(builder: (context, constraints) {
+      // أعمدة متجاوبة: موبايل 2، تابلت/عريض 3-4
+      final columns = AppInsets.columnsFor(
+        constraints.maxWidth,
+        targetTile: 150,
+        min: 2,
+        max: 4,
+      );
+      return GridView.count(
+      crossAxisCount: columns,
       crossAxisSpacing: 10,
       mainAxisSpacing: 10,
       shrinkWrap: true,
@@ -1188,6 +1236,8 @@ class _TrackerScreenState extends ConsumerState<TrackerScreen> {
                 children: [
                   ArabicText(
                     badge.title,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
                     style: GoogleFonts.cairo(
                       fontSize: 13,
                       fontWeight: FontWeight.bold,
@@ -1196,6 +1246,8 @@ class _TrackerScreenState extends ConsumerState<TrackerScreen> {
                   ),
                   ArabicText(
                     badge.desc,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
                     style: GoogleFonts.cairo(
                       fontSize: 9.5,
                       color: theme.hintColor,
@@ -1207,7 +1259,8 @@ class _TrackerScreenState extends ConsumerState<TrackerScreen> {
           ),
         );
       }).toList(),
-    );
+      );
+    });
   }
 
   Widget _buildActionNavigationTile({

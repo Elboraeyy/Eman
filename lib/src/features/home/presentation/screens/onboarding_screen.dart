@@ -185,11 +185,21 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
     final artHeight = (MediaQuery.of(context).size.height * 0.32)
         .clamp(210.0, 250.0);
 
-    return Padding(
+    // المحتوى قابل للتمرير لو الشاشة قصيرة/لووك سكب — بدل ما يعمل overflow
+    // مع المنتصف الرأسي طبيعي لما المساحة تتسمح
+    return SafeArea(
+      top: false,
+      bottom: true,
+      child: Padding(
       padding: const EdgeInsets.symmetric(horizontal: 28),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          return SingleChildScrollView(
+            child: ConstrainedBox(
+              constraints: BoxConstraints(minHeight: constraints.maxHeight),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
           // الرسم التوضيحي — دخول حركي + طفو خفيف مستمر
           // (FittedBox يصغّر المشهد تلقائيًا عشان ما يفيضش على الشاشات القصيرة)
           (floatLoop(
@@ -246,6 +256,11 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                 curve: Curves.easeOutCubic,
               ),
         ],
+              ),
+            ),
+          );
+        },
+      ),
       ),
     );
   }

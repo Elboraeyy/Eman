@@ -8,6 +8,7 @@ import '../../domain/entities/quran_entities.dart';
 import 'mushaf_screen.dart'; // Reuses verseTafsirProvider
 import 'surah_detail_screen.dart'; // Reuses singleSurahProvider, surahDetailsProvider
 import 'package:iman/src/core/widgets/arabic_text.dart';
+import 'package:iman/src/core/responsive/app_insets.dart';
 
 class TafsirDetailScreen extends ConsumerStatefulWidget {
   final int surahNumber;
@@ -99,7 +100,7 @@ class _TafsirDetailScreenState extends ConsumerState<TafsirDetailScreen> with Si
 
   Widget _buildTafsirList(List<Ayah> ayahs, ThemeData theme, String tafsirId) {
     return ListView.builder(
-      padding: const EdgeInsets.all(16.0),
+      padding: EdgeInsets.fromLTRB(16, 16, 16, AppInsets.page(context, gap: 16)),
       itemCount: ayahs.length,
       itemBuilder: (context, index) {
         final ayah = ayahs[index];

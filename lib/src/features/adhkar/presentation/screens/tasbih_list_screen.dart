@@ -7,6 +7,7 @@ import 'package:flutter/services.dart';
 import '../../data/repositories/adhkar_repository_provider.dart';
 import '../../domain/entities/adhkar_entities.dart';
 import 'package:iman/src/core/widgets/arabic_text.dart';
+import 'package:iman/src/core/responsive/app_insets.dart';
 
 final tasbihListProvider = FutureProvider<List<Tasbih>>((ref) async {
   final repo = ref.watch(adhkarRepositoryProvider);
@@ -41,7 +42,7 @@ class TasbihListScreen extends ConsumerWidget {
         child: const Icon(Icons.add),
       ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(20.0),
+        padding: EdgeInsets.fromLTRB(20, 20, 20, 20 + context.navBarInset),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [

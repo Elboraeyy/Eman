@@ -9,6 +9,7 @@ import '../../../../core/database/shared_preferences_provider.dart';
 import '../../../quran/presentation/controllers/audio_player_controller.dart';
 import '../../../prayer_times/presentation/controllers/prayer_times_controller.dart';
 import 'package:iman/src/core/widgets/arabic_text.dart';
+import 'package:iman/src/core/responsive/app_insets.dart';
 
 // Prayer Calculation Method Model
 class CalculationMethod {
@@ -48,7 +49,7 @@ class SettingsScreen extends ConsumerWidget {
         ),
       ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.fromLTRB(20.0, 20.0, 20.0, 120.0),
+        padding: EdgeInsets.fromLTRB(20.0, 20.0, 20.0, context.shellBottomPadding),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -625,7 +626,7 @@ class SettingsScreen extends ConsumerWidget {
                                           ),
                                         ),
                                       ),
-                                      _buildAlertChip(sheetContext, theme,
+                                      Flexible(child: _buildAlertChip(sheetContext, theme,
                                         icon: Icons.notifications_off,
                                         label: 'صامت',
                                         selected: (prefs.getInt('prayer_alert_${prayer.$2}') ?? (prayer.$3 ? 1 : 0)) == 0,
@@ -633,9 +634,9 @@ class SettingsScreen extends ConsumerWidget {
                                           prefs.setInt('prayer_alert_${prayer.$2}', 0);
                                           sheetRef.invalidate(sharedPreferencesProvider);
                                         },
-                                      ),
+                                      )),
                                       const SizedBox(width: 8),
-                                      _buildAlertChip(sheetContext, theme,
+                                      Flexible(child: _buildAlertChip(sheetContext, theme,
                                         icon: Icons.notifications,
                                         label: 'رنين',
                                         selected: (prefs.getInt('prayer_alert_${prayer.$2}') ?? (prayer.$3 ? 1 : 0)) == 1,
@@ -643,10 +644,10 @@ class SettingsScreen extends ConsumerWidget {
                                           prefs.setInt('prayer_alert_${prayer.$2}', 1);
                                           sheetRef.invalidate(sharedPreferencesProvider);
                                         },
-                                      ),
+                                      )),
                                       if (prayer.$3) ...[
                                         const SizedBox(width: 8),
-                                        _buildAlertChip(sheetContext, theme,
+                                        Flexible(child: _buildAlertChip(sheetContext, theme,
                                           icon: Icons.notifications_active,
                                           label: 'أذان',
                                           selected: (prefs.getInt('prayer_alert_${prayer.$2}') ?? 1) == 2,
@@ -654,7 +655,7 @@ class SettingsScreen extends ConsumerWidget {
                                             prefs.setInt('prayer_alert_${prayer.$2}', 2);
                                             sheetRef.invalidate(sharedPreferencesProvider);
                                           },
-                                        ),
+                                        )),
                                       ],
                                     ],
                                   ),
@@ -694,23 +695,26 @@ class SettingsScreen extends ConsumerWidget {
             width: selected ? 1.2 : 1,
           ),
         ),
-        child: Row(
-          children: [
-            ArabicText(
-              label,
-              style: GoogleFonts.cairo(
-                fontSize: 10,
-                fontWeight: selected ? FontWeight.bold : FontWeight.normal,
+        child: FittedBox(
+          fit: BoxFit.scaleDown,
+          child: Row(
+            children: [
+              ArabicText(
+                label,
+                style: GoogleFonts.cairo(
+                  fontSize: 10,
+                  fontWeight: selected ? FontWeight.bold : FontWeight.normal,
+                  color: selected ? activeColor : theme.disabledColor,
+                ),
+              ),
+              const SizedBox(width: 3),
+              Icon(
+                icon,
+                size: 13,
                 color: selected ? activeColor : theme.disabledColor,
               ),
-            ),
-            const SizedBox(width: 3),
-            Icon(
-              icon,
-              size: 13,
-              color: selected ? activeColor : theme.disabledColor,
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

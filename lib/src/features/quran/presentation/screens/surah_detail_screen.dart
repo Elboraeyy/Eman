@@ -9,6 +9,7 @@ import '../../domain/entities/quran_entities.dart';
 import '../controllers/audio_player_controller.dart';
 import 'mushaf_screen.dart'; // Reuses providers like verseTafsirProvider, isVerseFavoriteProvider
 import 'package:iman/src/core/widgets/arabic_text.dart';
+import 'package:iman/src/core/responsive/app_insets.dart';
 
 final surahDetailsProvider = FutureProvider.family<List<Ayah>, int>((ref, surahNumber) async {
   final repo = ref.watch(quranRepositoryProvider);
@@ -100,7 +101,7 @@ class _SurahDetailScreenState extends ConsumerState<SurahDetailScreen> with Sing
 
   Widget _buildAyahListView(List<Ayah> ayahs, ThemeData theme, int mode) {
     return ListView.builder(
-      padding: const EdgeInsets.all(16.0),
+      padding: EdgeInsets.fromLTRB(16, 16, 16, AppInsets.page(context, gap: 16)),
       itemCount: ayahs.length,
       itemBuilder: (context, index) {
         final ayah = ayahs[index];

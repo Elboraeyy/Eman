@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:iman/src/core/responsive/app_insets.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:iman/src/core/widgets/arabic_text.dart';
 
@@ -17,7 +18,7 @@ class PrivacyPolicyScreen extends StatelessWidget {
         ),
       ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(20.0),
+        padding: EdgeInsets.fromLTRB(20, 20, 20, AppInsets.page(context, gap: 20)),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [

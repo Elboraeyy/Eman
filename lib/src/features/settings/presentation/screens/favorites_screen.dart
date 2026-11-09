@@ -7,6 +7,7 @@ import 'package:flutter/services.dart';
 import 'package:iman/src/features/quran/domain/entities/quran_entities.dart' as quran;
 import 'package:iman/src/features/quran/data/repositories/quran_repository_provider.dart';
 import 'package:iman/src/features/hadith/domain/entities/hadith_entities.dart' as hadith;
+import 'package:iman/src/core/responsive/app_insets.dart';
 import 'package:iman/src/features/hadith/data/repositories/hadith_repository_provider.dart';
 import 'package:iman/src/core/widgets/arabic_text.dart';
 
@@ -71,7 +72,7 @@ class _FavoritesScreenState extends ConsumerState<FavoritesScreen> with SingleTi
                 );
               }
               return ListView.builder(
-                padding: const EdgeInsets.all(16),
+                padding: EdgeInsets.fromLTRB(16, 16, 16, AppInsets.page(context, gap: 16)),
                 itemCount: verses.length,
                 itemBuilder: (context, index) {
                   final verse = verses[index];
@@ -95,7 +96,7 @@ class _FavoritesScreenState extends ConsumerState<FavoritesScreen> with SingleTi
                 );
               }
               return ListView.builder(
-                padding: const EdgeInsets.all(16),
+                padding: EdgeInsets.fromLTRB(16, 16, 16, AppInsets.page(context, gap: 16)),
                 itemCount: hadiths.length,
                 itemBuilder: (context, index) {
                   final had = hadiths[index];
@@ -164,21 +165,25 @@ class _FavoritesScreenState extends ConsumerState<FavoritesScreen> with SingleTi
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  FutureBuilder<quran.Surah?>(
-                    future: ref.read(quranRepositoryProvider).getSurahByNumber(verse.surahNumber),
-                    builder: (context, snapshot) {
-                      final name = snapshot.data?.nameArabic ?? '';
-                      return ArabicText(
-                        'سورة $name - آية ${verse.numberInSurah}',
-                        style: GoogleFonts.cairo(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 14,
-                          color: theme.colorScheme.primary,
-                        ),
-                      );
-                    },
+                  Expanded(
+                    child: FutureBuilder<quran.Surah?>(
+                      future: ref.read(quranRepositoryProvider).getSurahByNumber(verse.surahNumber),
+                      builder: (context, snapshot) {
+                        final name = snapshot.data?.nameArabic ?? '';
+                        return ArabicText(
+                          'سورة $name - آية ${verse.numberInSurah}',
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: GoogleFonts.cairo(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 14,
+                            color: theme.colorScheme.primary,
+                          ),
+                        );
+                      },
+                    ),
                   ),
                   IconButton(
                     icon: Icon(Icons.bookmark, color: theme.colorScheme.secondary, size: 20),

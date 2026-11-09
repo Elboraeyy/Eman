@@ -9,6 +9,7 @@ import 'package:flutter/services.dart';
 import '../../data/repositories/hadith_repository_provider.dart';
 import '../../domain/entities/hadith_entities.dart';
 import 'package:iman/src/core/widgets/arabic_text.dart';
+import 'package:iman/src/core/responsive/app_insets.dart';
 
 // Providers for loading books and categories are imported from hadith_repository_provider.dart
 
@@ -323,7 +324,7 @@ class _HadithIndexScreenState extends ConsumerState<HadithIndexScreen> {
       body: _isSearching
           ? _buildSearchResults(hadithsAsync, theme)
           : ListView(
-              padding: const EdgeInsets.symmetric(vertical: 8),
+              padding: EdgeInsets.fromLTRB(0, 8, 0, 8 + context.navBarInset),
               children: [
                 booksAsync.when(
                   data: (books) {
@@ -568,7 +569,7 @@ class _HadithIndexScreenState extends ConsumerState<HadithIndexScreen> {
         }
 
         return ListView.builder(
-          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+          padding: EdgeInsets.fromLTRB(20, 16, 20, 16 + context.navBarInset),
           itemCount: hadiths.length,
           itemBuilder: (context, idx) {
             final hadith = hadiths[idx];

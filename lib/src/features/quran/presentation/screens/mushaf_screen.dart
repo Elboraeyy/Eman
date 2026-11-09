@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'dart:async';
+import 'dart:math' as math;
 import 'package:flutter/gestures.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -18,6 +19,7 @@ import '../controllers/quran_progress_controller.dart';
 import 'package:iman/src/core/widgets/arabic_text.dart';
 import 'package:iman/src/core/widgets/surah_name_frame.dart';
 import 'package:iman/src/core/constants/surah_names_tashkeel.dart';
+import 'package:iman/src/core/responsive/app_insets.dart';
 
 // Providers for page fetching and dynamic font loading
 final qcfPageProvider = FutureProvider.family<QcfPage, int>((
@@ -315,7 +317,12 @@ class _MushafScreenState extends ConsumerState<MushafScreen> {
             color: theme.scaffoldBackgroundColor,
             borderRadius: const BorderRadius.vertical(top: Radius.circular(32)),
           ),
-          padding: const EdgeInsets.all(24),
+          padding: EdgeInsets.fromLTRB(
+            24,
+            24,
+            24,
+            AppInsets.sheetBottom(context, gap: 24),
+          ),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -570,7 +577,7 @@ class _MushafScreenState extends ConsumerState<MushafScreen> {
             color: theme.scaffoldBackgroundColor,
             borderRadius: const BorderRadius.vertical(top: Radius.circular(32)),
           ),
-          padding: const EdgeInsets.symmetric(vertical: 16),
+          padding: EdgeInsets.fromLTRB(24, 16, 24, AppInsets.sheetBottom(context, gap: 16)),
           constraints: BoxConstraints(
             maxHeight: MediaQuery.of(context).size.height * 0.6,
           ),
@@ -878,12 +885,17 @@ class _MushafScreenState extends ConsumerState<MushafScreen> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             const BackButton(),
-            ArabicText(
-              'خيارات التلاوة والاستماع',
-              style: GoogleFonts.cairo(
-                fontWeight: FontWeight.bold,
-                fontSize: 16,
-                color: theme.colorScheme.primary,
+            Expanded(
+              child: ArabicText(
+                'خيارات التلاوة والاستماع',
+                style: GoogleFonts.cairo(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 16,
+                  color: theme.colorScheme.primary,
+                ),
+                textAlign: TextAlign.center,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
               ),
             ),
             IconButton(
@@ -953,7 +965,7 @@ class _MushafScreenState extends ConsumerState<MushafScreen> {
 
             return Padding(
               padding: EdgeInsets.only(
-                bottom: MediaQuery.of(context).viewInsets.bottom,
+                bottom: AppInsets.sheetBottom(context, gap: 8),
               ),
               child: Container(
                 decoration: BoxDecoration(
@@ -1309,7 +1321,7 @@ class _MushafScreenState extends ConsumerState<MushafScreen> {
       builder: (context) {
         return Padding(
           padding: EdgeInsets.only(
-            bottom: MediaQuery.of(context).viewInsets.bottom,
+            bottom: AppInsets.sheetBottom(context, gap: 8),
           ),
           child: Container(
             decoration: BoxDecoration(
@@ -1666,6 +1678,9 @@ class _MushafScreenState extends ConsumerState<MushafScreen> {
     final currentJuz = _getJuzForPage(pageNum);
     final pageBookmark = _getBookmarkForPage(pageNum);
     final statusBarHeight = MediaQuery.of(context).padding.top;
+    // مسافة النظام السفلية (أزرار/شريط التنقّل الجوه الشاشة) عشان كل العناصر
+    // السفلية تفضل فوقها على أي جهاز
+    final pageNavInset = AppInsets.navBar(context);
 
     return Container(
       color: theme.scaffoldBackgroundColor,
@@ -1847,8 +1862,9 @@ class _MushafScreenState extends ConsumerState<MushafScreen> {
                   ),
 
                   // 4. رقم الصفحة (أسفل المنتصف - مرتفع قليلاً)
+                  // مبدأ النظام: نرفعه فوق شريط التنقّل/الأزرار الجوه الشاشة
                   Positioned(
-                    bottom: 22,
+                    bottom: pageNavInset + 14,
                     left: 0,
                     right: 0,
                     child: Center(
@@ -1897,7 +1913,9 @@ class _MushafScreenState extends ConsumerState<MushafScreen> {
                       top:
                           statusBarHeight +
                           50.0, // تباعد مناسب أسفل أزرار الرأس
-                      bottom: 48.0, // تباعد مناسب فوق رقم الصفحة السفلي
+                      bottom:
+                          56.0 +
+                          pageNavInset, // تباعد فوق رقم الصفحة السفلي + شريط النظام
                       left: 12.0,
                       right: 12.0,
                     ),
@@ -1905,8 +1923,65 @@ class _MushafScreenState extends ConsumerState<MushafScreen> {
                       child: LayoutBuilder(
                         builder: (context, constraints) {
                           final isFirstTwoPages = pageNum == 1 || pageNum == 2;
-                          final fontSize = constraints.maxWidth / 14.8;
+                          final maxW = constraints.maxWidth;
+                          final maxH = constraints.maxHeight;
                           final lineHeight = isFirstTwoPages ? 1.2 : 1.6;
+
+                          // ═══ مقاس الخط متوازن بين العرض والارتفاع ═══
+                          // قبل كده كان بيتحسب من العرض بس — ففي التابلت وفي
+                          // أي شاشة نسبتها أصغر، عمود السطور كان بيطلع أطول
+                          // من المساحة المتاحة فآخر سطر بيتقص برّه الشاشة.
+                          // دلوقتي بنحسب مقسمين:
+                          // (أ) الحد الأقصى حسب العرض — زي زمان.
+                          // (ب) الحد الأوسط حسب الارتفاع: نخصم ارتفاعات
+                          //     عناصر ثابتة معروفة (البسملة/فريم السورة +
+                          //     التباعد) ونقسم الباقي على عدد سطور النص.
+                          final fontSizeByWidth = maxW / 14.8;
+
+                          int textLineCount = 0;
+                          int bismillahCount = 0;
+                          int headerCount = 0;
+                          for (final line in page.lines) {
+                            if (line.isBismillah) {
+                              bismillahCount++;
+                            } else if (line.surahNumber != null &&
+                                line.surahNumber! > 0) {
+                              headerCount++;
+                            } else {
+                              textLineCount++;
+                            }
+                          }
+
+                          // ارتفاعات محجوزة للعناصر الخاصة (حسب مقاساتها
+                          // الحقيقية: الصورة/الفريم بأبعادها داخل Padding)
+                          final bismillahHeight =
+                              (maxW * 0.62) / (1458 / 273) + 2.0;
+                          final surahFrameHeight =
+                              maxW / (678 / 79) + 4.0;
+                          double reserved = 0.0;
+                          reserved += bismillahCount * bismillahHeight;
+                          reserved += headerCount * surahFrameHeight;
+
+                          // التباعد الزائد بين العناصر (صفحات الفاتحة/البقرة)
+                          final childCount = page.lines.length;
+                          final spacingTotal =
+                              isFirstTwoPages && childCount > 1
+                                  ? 4.0 * (childCount - 1)
+                                  : 0.0;
+
+                          // هامش أمان صغير (1.5% + 2px) يغطي أي فرق قياس
+                          // جزئي، والسطر يفضل دايمًا جوه المساحة المتاحة
+                          final availableForText =
+                              (maxH - reserved - spacingTotal) * 0.985 - 2.0;
+                          final fontSizeByHeight =
+                              textLineCount > 0
+                                  ? availableForText /
+                                      (textLineCount * lineHeight)
+                                  : fontSizeByWidth;
+                          final fontSize = math.max(
+                            4.0,
+                            math.min(fontSizeByWidth, fontSizeByHeight),
+                          );
 
                           return Column(
                             mainAxisAlignment: isFirstTwoPages
@@ -2144,6 +2219,9 @@ class _VerseLineWidgetState extends State<VerseLineWidget> {
       child: RichText(
         softWrap: false,
         textAlign: TextAlign.center,
+        // إيقاف تكبير النص حسب إعدادات النظام: خط المصحف الخطوفي لازم يفضل
+        // بمقاس ثابت محسوب بدقة عشان السطور تطلع جوه الصفحة على أي جهاز
+        textScaler: TextScaler.noScaling,
         text: TextSpan(
           style: TextStyle(
             fontFamily: widget.fontFamily,
@@ -2210,7 +2288,12 @@ class _VerseQuickViewSheet extends ConsumerWidget {
           BoxShadow(color: Colors.black26, blurRadius: 10, spreadRadius: 2),
         ],
       ),
-      padding: const EdgeInsets.all(24.0),
+      padding: EdgeInsets.fromLTRB(
+        24,
+        24,
+        24,
+        AppInsets.sheetBottom(context, gap: 24),
+      ),
       constraints: BoxConstraints(
         maxHeight: MediaQuery.of(context).size.height * 0.85,
       ),
@@ -2762,7 +2845,7 @@ class _ReciterSelectionSheetState
         16,
         16,
         16,
-        MediaQuery.of(context).viewInsets.bottom,
+        AppInsets.sheetBottom(context, gap: 8),
       ),
       constraints: BoxConstraints(
         maxHeight: MediaQuery.of(context).size.height * 0.7,

@@ -8,6 +8,7 @@ import '../../domain/entities/quran_entities.dart' as quran;
 import '../../data/repositories/quran_repository_provider.dart';
 import 'quran_index_screen.dart';
 import 'package:iman/src/core/widgets/arabic_text.dart';
+import 'package:iman/src/core/responsive/app_insets.dart';
 
 final quranSearchQueryProvider = StateProvider<String>((ref) => '');
 
@@ -147,7 +148,12 @@ class _QuranSearchScreenState extends ConsumerState<QuranSearchScreen> {
             child: !showResults
                 ? _buildEmptyState(theme)
                 : SingleChildScrollView(
-                    padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+                    padding: EdgeInsets.fromLTRB(
+                      16.0,
+                      8.0,
+                      16.0,
+                      AppInsets.page(context, gap: 16),
+                    ),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
@@ -350,22 +356,26 @@ class _QuranSearchScreenState extends ConsumerState<QuranSearchScreen> {
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      FutureBuilder<quran.Surah?>(
-                        future: ref.read(quranRepositoryProvider).getSurahByNumber(a.surahNumber),
-                        builder: (context, snapshot) {
-                          final name = snapshot.data?.nameArabic ?? '';
-                          return ArabicText(
-                            'سورة $name - آية ${a.numberInSurah}',
-                            style: GoogleFonts.cairo(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 13,
-                              color: theme.colorScheme.secondary,
-                            ),
-                          );
-                        },
+                      Expanded(
+                        child: FutureBuilder<quran.Surah?>(
+                          future: ref.read(quranRepositoryProvider).getSurahByNumber(a.surahNumber),
+                          builder: (context, snapshot) {
+                            final name = snapshot.data?.nameArabic ?? '';
+                            return ArabicText(
+                              'سورة $name - آية ${a.numberInSurah}',
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: GoogleFonts.cairo(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 13,
+                                color: theme.colorScheme.secondary,
+                              ),
+                            );
+                          },
+                        ),
                       ),
+                      const SizedBox(width: 8),
                       Container(
                         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                         decoration: BoxDecoration(

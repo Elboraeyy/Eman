@@ -7,6 +7,7 @@ import '../../domain/entities/quran_entities.dart';
 import '../../data/repositories/quran_repository_provider.dart';
 import '../controllers/quran_progress_controller.dart';
 import 'package:iman/src/core/widgets/arabic_text.dart';
+import 'package:iman/src/core/responsive/app_insets.dart';
 
 final surahsListProvider = FutureProvider<List<Surah>>((ref) async {
   final repo = ref.watch(quranRepositoryProvider);
@@ -214,7 +215,7 @@ class _QuranIndexScreenState extends ConsumerState<QuranIndexScreen> with Single
                   data: (surahs) {
                     final startPages = startPagesAsync.value ?? {};
                     return ListView.builder(
-                      padding: const EdgeInsets.fromLTRB(16, 8, 16, 110),
+                      padding: EdgeInsets.fromLTRB(16, 8, 16, context.shellBottomPadding),
                       itemCount: surahs.length,
                       itemBuilder: (context, index) {
                         final surah = surahs[index];
@@ -230,7 +231,7 @@ class _QuranIndexScreenState extends ConsumerState<QuranIndexScreen> with Single
                 juzsAsync.when(
                   data: (juzs) {
                     return ListView.builder(
-                      padding: const EdgeInsets.fromLTRB(16, 8, 16, 110),
+                      padding: EdgeInsets.fromLTRB(16, 8, 16, context.shellBottomPadding),
                       itemCount: juzs.length,
                       itemBuilder: (context, index) {
                         final juz = juzs[index];
@@ -253,7 +254,7 @@ class _QuranIndexScreenState extends ConsumerState<QuranIndexScreen> with Single
                 customBookmarks.isEmpty
                     ? _buildEmptyBookmarksState(theme)
                     : ListView.builder(
-                        padding: const EdgeInsets.fromLTRB(16, 8, 16, 110),
+                        padding: EdgeInsets.fromLTRB(16, 8, 16, context.shellBottomPadding),
                         itemCount: customBookmarks.length,
                         itemBuilder: (context, index) {
                           final bookmark = customBookmarks[index];
@@ -268,7 +269,8 @@ class _QuranIndexScreenState extends ConsumerState<QuranIndexScreen> with Single
       floatingActionButton: lastReadPage <= 1
           ? null
           : Padding(
-              padding: const EdgeInsets.only(bottom: 95.0),
+              // فوق الشريط العائم + شريط التنقّل السفلي للنظام
+              padding: EdgeInsets.only(bottom: context.navBarInset + 96),
               child: SizedBox(
                 height: 40.0,
                 child: FloatingActionButton.extended(
@@ -292,36 +294,39 @@ class _QuranIndexScreenState extends ConsumerState<QuranIndexScreen> with Single
 
   Widget _buildTabItem(ThemeData theme, String label, String count, bool isSelected) {
     return Tab(
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-            decoration: BoxDecoration(
-              color: isSelected
-                  ? theme.colorScheme.primary.withValues(alpha: 0.2)
-                  : theme.dividerColor.withValues(alpha: 0.1),
-              borderRadius: BorderRadius.circular(12),
+      child: FittedBox(
+        fit: BoxFit.scaleDown,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+              decoration: BoxDecoration(
+                color: isSelected
+                    ? theme.colorScheme.primary.withValues(alpha: 0.2)
+                    : theme.dividerColor.withValues(alpha: 0.1),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: ArabicText(
+                count,
+                style: GoogleFonts.cairo(
+                  fontSize: 11,
+                  fontWeight: FontWeight.bold,
+                  color: isSelected ? theme.colorScheme.primary : theme.textTheme.bodyMedium?.color,
+                ),
+              ),
             ),
-            child: ArabicText(
-              count,
+            const SizedBox(width: 8),
+            ArabicText(
+              label,
               style: GoogleFonts.cairo(
-                fontSize: 11,
+                fontSize: 14,
                 fontWeight: FontWeight.bold,
                 color: isSelected ? theme.colorScheme.primary : theme.textTheme.bodyMedium?.color,
               ),
             ),
-          ),
-          const SizedBox(width: 8),
-          ArabicText(
-            label,
-            style: GoogleFonts.cairo(
-              fontSize: 14,
-              fontWeight: FontWeight.bold,
-              color: isSelected ? theme.colorScheme.primary : theme.textTheme.bodyMedium?.color,
-            ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -416,25 +421,29 @@ class _QuranIndexScreenState extends ConsumerState<QuranIndexScreen> with Single
                   ],
                 ),
               ),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.end,
-                children: [
-                  ArabicText(
-                    surah.nameEnglish,
-                    style: GoogleFonts.cairo(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 12,
-                      color: theme.colorScheme.primary.withValues(alpha: 0.7),
+              Flexible(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    ArabicText(
+                      surah.nameEnglish,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: GoogleFonts.cairo(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 12,
+                        color: theme.colorScheme.primary.withValues(alpha: 0.7),
+                      ),
                     ),
-                  ),
-                  ArabicText(
-                    'صفحة $startPage',
-                    style: GoogleFonts.cairo(
-                      fontSize: 11,
-                      color: theme.textTheme.bodyMedium?.color,
+                    ArabicText(
+                      'صفحة $startPage',
+                      style: GoogleFonts.cairo(
+                        fontSize: 11,
+                        color: theme.textTheme.bodyMedium?.color,
+                      ),
                     ),
-                  ),
                 ],
+              ),
               ),
             ],
           ),

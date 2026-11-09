@@ -4,6 +4,7 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart' hide TextDirection;
 import 'package:iman/src/core/widgets/arabic_text.dart';
+import 'package:iman/src/core/responsive/app_insets.dart';
 import '../../data/repositories/tracker_repository_provider.dart';
 import 'tracker_screen.dart';
 
@@ -77,7 +78,7 @@ class TaskHistoryScreen extends ConsumerWidget {
           ref.invalidate(historyDaysProvider);
         },
         child: SingleChildScrollView(
-          padding: const EdgeInsets.fromLTRB(20, 16, 20, 120),
+          padding: EdgeInsets.fromLTRB(20, 16, 20, 120 + context.navBarInset),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
@@ -85,7 +86,7 @@ class TaskHistoryScreen extends ConsumerWidget {
               summaryAsync.when(
                 data: (summary) => _buildAchievementCard(theme, summary),
                 loading: () => const SizedBox(height: 140, child: Center(child: CircularProgressIndicator())),
-                error: (_, __) => const SizedBox.shrink(),
+                error: (_, _) => const SizedBox.shrink(),
               ),
 
               const SizedBox(height: 28),
@@ -103,7 +104,7 @@ class TaskHistoryScreen extends ConsumerWidget {
               weeklyAsync.when(
                 data: (stats) => _buildWeeklyChart(theme, stats),
                 loading: () => const SizedBox(height: 120, child: Center(child: CircularProgressIndicator())),
-                error: (_, __) => const SizedBox.shrink(),
+                error: (_, _) => const SizedBox.shrink(),
               ),
 
               const SizedBox(height: 28),
@@ -121,7 +122,7 @@ class TaskHistoryScreen extends ConsumerWidget {
               summaryAsync.when(
                 data: (summary) => _buildBadgesRow(theme, summary),
                 loading: () => const SizedBox.shrink(),
-                error: (_, __) => const SizedBox.shrink(),
+                error: (_, _) => const SizedBox.shrink(),
               ),
 
               const SizedBox(height: 28),
@@ -190,11 +191,12 @@ class TaskHistoryScreen extends ConsumerWidget {
             ),
             const Divider(height: 28),
             Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                _buildStatItem('$currentStreak أيام', 'سلسلة متواصلة', theme),
-                _buildStatItem('المستوى $level', 'رتبة الطاعة', theme),
-                _buildStatItem('$bestStreak أيام', 'أعلى التزام', theme),
+                Expanded(child: _buildStatItem('$currentStreak أيام', 'سلسلة متواصلة', theme)),
+                const SizedBox(width: 10),
+                Expanded(child: _buildStatItem('المستوى $level', 'رتبة الطاعة', theme)),
+                const SizedBox(width: 10),
+                Expanded(child: _buildStatItem('$bestStreak أيام', 'أعلى التزام', theme)),
               ],
             ),
           ],
@@ -208,6 +210,8 @@ class TaskHistoryScreen extends ConsumerWidget {
       children: [
         ArabicText(
           value,
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
           style: GoogleFonts.cairo(
             fontWeight: FontWeight.bold,
             fontSize: 15,
@@ -216,6 +220,8 @@ class TaskHistoryScreen extends ConsumerWidget {
         ),
         ArabicText(
           label,
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
           style: GoogleFonts.cairo(fontSize: 11, color: theme.hintColor),
         ),
       ],
@@ -243,7 +249,6 @@ class TaskHistoryScreen extends ConsumerWidget {
       child: Padding(
         padding: const EdgeInsets.all(18.0),
         child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           crossAxisAlignment: CrossAxisAlignment.end,
           children: entries.map((entry) {
             final val = entry.value.clamp(0.0, 1.0);
@@ -251,24 +256,28 @@ class TaskHistoryScreen extends ConsumerWidget {
             final date = DateTime.tryParse(entry.key);
             final dayName = date != null ? DateFormat('E', 'ar').format(date) : '';
 
-            return Column(
-              children: [
-                Container(
-                  width: 14,
-                  height: (70 * val) > 6 ? (70 * val) : 6,
-                  decoration: BoxDecoration(
-                    color: isFull
-                        ? const Color(0xFF10B981)
-                        : (val > 0.3 ? theme.colorScheme.primary : theme.colorScheme.primary.withValues(alpha: 0.2)),
-                    borderRadius: BorderRadius.circular(6),
+            return Expanded(
+              child: Column(
+                children: [
+                  Container(
+                    width: 14,
+                    height: (70 * val) > 6 ? (70 * val) : 6,
+                    decoration: BoxDecoration(
+                      color: isFull
+                          ? const Color(0xFF10B981)
+                          : (val > 0.3 ? theme.colorScheme.primary : theme.colorScheme.primary.withValues(alpha: 0.2)),
+                      borderRadius: BorderRadius.circular(6),
+                    ),
                   ),
-                ),
-                const SizedBox(height: 8),
-                ArabicText(
-                  dayName,
-                  style: GoogleFonts.cairo(fontSize: 11, fontWeight: FontWeight.bold),
-                ),
-              ],
+                  const SizedBox(height: 8),
+                  ArabicText(
+                    dayName,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: GoogleFonts.cairo(fontSize: 11, fontWeight: FontWeight.bold),
+                  ),
+                ],
+              ),
             );
           }).toList(),
         ),
@@ -288,39 +297,43 @@ class TaskHistoryScreen extends ConsumerWidget {
     ];
 
     return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: badges.map((badge) {
-        return Column(
-          children: [
-            Container(
-              width: 58,
-              height: 58,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: badge.isUnlocked
-                    ? theme.colorScheme.primary.withValues(alpha: 0.15)
-                    : theme.disabledColor.withValues(alpha: 0.08),
-                border: Border.all(
-                  color: badge.isUnlocked ? theme.colorScheme.primary : Colors.transparent,
-                  width: 1.5,
+        return Expanded(
+          child: Column(
+            children: [
+              Container(
+                width: 58,
+                height: 58,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: badge.isUnlocked
+                      ? theme.colorScheme.primary.withValues(alpha: 0.15)
+                      : theme.disabledColor.withValues(alpha: 0.08),
+                  border: Border.all(
+                    color: badge.isUnlocked ? theme.colorScheme.primary : Colors.transparent,
+                    width: 1.5,
+                  ),
+                ),
+                child: Icon(
+                  badge.icon,
+                  color: badge.isUnlocked ? theme.colorScheme.primary : theme.disabledColor,
+                  size: 26,
                 ),
               ),
-              child: Icon(
-                badge.icon,
-                color: badge.isUnlocked ? theme.colorScheme.primary : theme.disabledColor,
-                size: 26,
+              const SizedBox(height: 6),
+              ArabicText(
+                badge.name,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                textAlign: TextAlign.center,
+                style: GoogleFonts.cairo(
+                  fontSize: 12,
+                  fontWeight: FontWeight.bold,
+                  color: badge.isUnlocked ? theme.colorScheme.primary : theme.disabledColor,
+                ),
               ),
-            ),
-            const SizedBox(height: 6),
-            ArabicText(
-              badge.name,
-              style: GoogleFonts.cairo(
-                fontSize: 12,
-                fontWeight: FontWeight.bold,
-                color: badge.isUnlocked ? theme.colorScheme.primary : theme.disabledColor,
-              ),
-            ),
-          ],
+            ],
+          ),
         );
       }).toList(),
     ).animate().fade(delay: 200.ms);

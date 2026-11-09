@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 import '../../data/repositories/tracker_repository_provider.dart';
 import 'tracker_screen.dart'; // Reuses providers like tasksListProvider, completionsForDateProvider
 import 'package:iman/src/core/widgets/arabic_text.dart';
+import 'package:iman/src/core/responsive/app_insets.dart';
 
 class TaskCustomizationScreen extends ConsumerWidget {
   const TaskCustomizationScreen({super.key});
@@ -46,7 +47,7 @@ class TaskCustomizationScreen extends ConsumerWidget {
           }
 
           return SingleChildScrollView(
-            padding: const EdgeInsets.fromLTRB(20, 16, 20, 120),
+            padding: EdgeInsets.fromLTRB(20, 16, 20, 120 + context.navBarInset),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
@@ -163,8 +164,12 @@ class TaskCustomizationScreen extends ConsumerWidget {
                 color: theme.scaffoldBackgroundColor,
                 borderRadius: const BorderRadius.vertical(top: Radius.circular(30.0)),
               ),
-              padding: const EdgeInsets.all(24.0),
-              child: Column(
+              padding: EdgeInsets.fromLTRB(24, 24, 24, AppInsets.sheetBottom(context, gap: 24)),
+              constraints: BoxConstraints(
+                maxHeight: MediaQuery.of(context).size.height * 0.85,
+              ),
+              child: SingleChildScrollView(
+                child: Column(
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
@@ -235,6 +240,7 @@ class TaskCustomizationScreen extends ConsumerWidget {
                     child: ArabicText('حفظ العبادة', style: GoogleFonts.cairo(fontWeight: FontWeight.bold)),
                   ),
                 ],
+                ),
               ),
             ),
           ),

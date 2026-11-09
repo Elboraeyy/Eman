@@ -69,19 +69,22 @@ class CompassScreen extends ConsumerWidget {
                     _buildCalibrationBanner(theme),
                     const SizedBox(height: 24),
 
-                    // 3. Compass Stack
+                    // 3. Compass Stack — الحجم ديناميكي بدل ثابت 290 عشان ما يفيضش على الشاشات الضيقة
                     Center(
-                      child: SizedBox(
-                        width: 290,
-                        height: 290,
-                        child: Stack(
-                          alignment: Alignment.center,
-                          children: [
+                      child: LayoutBuilder(builder: (context, constraints) {
+                        final dialSize = math.min(290.0, constraints.maxWidth);
+                        final dialInner = dialSize - 10.0;
+                        return SizedBox(
+                          width: dialSize,
+                          height: dialSize,
+                          child: Stack(
+                            alignment: Alignment.center,
+                            children: [
                             // Aligned Glow Effect (Emerald Green)
                             if (qiblaState.isAligned)
                               Container(
-                                width: 290,
-                                height: 290,
+                                width: dialSize,
+                                height: dialSize,
                                 decoration: BoxDecoration(
                                   shape: BoxShape.circle,
                                   boxShadow: [
@@ -97,7 +100,7 @@ class CompassScreen extends ConsumerWidget {
 
                             // Proximity/Alignment Ring
                             CustomPaint(
-                              size: const Size(290, 290),
+                              size: Size(dialSize, dialSize),
                               painter: CompassProximityRingPainter(
                                 needleAngle: qiblaState.needleAngle,
                                 isAligned: qiblaState.isAligned,
@@ -110,7 +113,7 @@ class CompassScreen extends ConsumerWidget {
                             Transform.rotate(
                               angle: -qiblaState.heading * math.pi / 180,
                               child: CustomPaint(
-                                size: const Size(280, 280),
+                                size: Size(dialInner, dialInner),
                                 painter: CompassDialPainter(
                                   qiblaAngle: qiblaState.qiblaAngle,
                                   primaryColor: theme.colorScheme.primary,
@@ -124,7 +127,7 @@ class CompassScreen extends ConsumerWidget {
                             Transform.rotate(
                               angle: qiblaState.needleAngle * math.pi / 180,
                               child: CustomPaint(
-                                size: const Size(280, 280),
+                                size: Size(dialInner, dialInner),
                                 painter: CompassNeedlePainter(
                                   isAligned: qiblaState.isAligned,
                                   primaryColor: theme.colorScheme.primary,
@@ -159,7 +162,9 @@ class CompassScreen extends ConsumerWidget {
                               ),
                             ),
                           ],
-                        ),
+                          ),
+                        );
+                      },
                       ),
                     ),
                     const SizedBox(height: 32),
@@ -340,12 +345,17 @@ class CompassScreen extends ConsumerWidget {
             size: 28,
           ),
           const SizedBox(width: 12),
-          ArabicText(
-            text,
-            style: GoogleFonts.cairo(
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
-              color: isAligned ? const Color(0xFF2E7D32) : theme.textTheme.titleLarge?.color,
+          Flexible(
+            fit: FlexFit.loose,
+            child: ArabicText(
+              text,
+              maxLines: 2,
+              textAlign: TextAlign.center,
+              style: GoogleFonts.cairo(
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+                color: isAligned ? const Color(0xFF2E7D32) : theme.textTheme.titleLarge?.color,
+              ),
             ),
           ),
         ],
@@ -372,14 +382,17 @@ class CompassScreen extends ConsumerWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              ArabicText(
-                title,
-                style: GoogleFonts.cairo(
-                  fontSize: 13,
-                  fontWeight: FontWeight.bold,
-                  color: theme.textTheme.bodyMedium?.color,
+              Expanded(
+                child: ArabicText(
+                  title,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: GoogleFonts.cairo(
+                    fontSize: 13,
+                    fontWeight: FontWeight.bold,
+                    color: theme.textTheme.bodyMedium?.color,
+                  ),
                 ),
               ),
               Icon(

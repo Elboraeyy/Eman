@@ -419,6 +419,10 @@ class _MainShellState extends ConsumerState<MainShell> with SingleTickerProvider
             const SizedBox(height: 3),
             ArabicText(
               label,
+              // مقيد عشان نص النظام المكبّر ما يكسرش ارتفاع الشريط الثابت
+              textScaler: TextScaler.linear(1.2),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
               style: GoogleFonts.cairo(
                 fontSize: 10,
                 fontWeight: isActive ? FontWeight.bold : FontWeight.w500,

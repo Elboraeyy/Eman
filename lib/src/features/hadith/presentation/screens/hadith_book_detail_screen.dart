@@ -8,6 +8,7 @@ import '../../data/repositories/hadith_repository_provider.dart';
 import '../../domain/entities/hadith_entities.dart';
 import 'hadith_index_screen.dart'; // To reuse HadithSearchFilter
 import 'package:iman/src/core/widgets/arabic_text.dart';
+import 'package:iman/src/core/responsive/app_insets.dart';
 
 final bookHadithsProvider = FutureProvider.family<List<Hadith>, int>((ref, bookId) async {
   final repo = ref.watch(hadithRepositoryProvider);
@@ -247,7 +248,7 @@ class _HadithBookDetailScreenState extends ConsumerState<HadithBookDetailScreen>
           }
 
           return ListView.builder(
-            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+            padding: EdgeInsets.fromLTRB(20, 16, 20, 16 + context.navBarInset),
             itemCount: filteredHadiths.length,
             itemBuilder: (context, idx) {
               final hadith = filteredHadiths[idx];

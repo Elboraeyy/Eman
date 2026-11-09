@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:iman/src/core/responsive/app_insets.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:iman/src/core/widgets/arabic_text.dart';
@@ -19,7 +20,7 @@ class AboutScreen extends StatelessWidget {
       ),
       body: Center(
         child: SingleChildScrollView(
-          padding: const EdgeInsets.all(24.0),
+          padding: EdgeInsets.fromLTRB(24, 24, 24, AppInsets.page(context, gap: 24)),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [

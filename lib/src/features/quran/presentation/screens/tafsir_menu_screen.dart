@@ -3,6 +3,7 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:go_router/go_router.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:iman/src/core/widgets/arabic_text.dart';
+import 'package:iman/src/core/responsive/app_insets.dart';
 
 class TafsirMenuScreen extends StatelessWidget {
   const TafsirMenuScreen({super.key});
@@ -40,7 +41,7 @@ class TafsirMenuScreen extends StatelessWidget {
         ),
       ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(24.0),
+        padding: EdgeInsets.fromLTRB(24, 24, 24, AppInsets.page(context, gap: 24)),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
